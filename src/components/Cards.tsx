@@ -78,7 +78,7 @@ export function CardProjeto({ projeto }: { projeto: ProjetoComAutor }) {
       <p className="miudo">{projeto.o_que_e}</p>
       {projeto.busca_pessoas ? (
         <>
-          <span className="rotulo" style={{ marginTop: '0.75rem' }}>Procura</span>
+          <span className="rotulo" style={{ marginTop: '0.75rem' }}>Procura quem sabe</span>
           <ul className="chips" aria-label="Conhecimentos procurados">
             {projeto.conhecimentos_procurados.map((c) => (
               <li key={c}><span className="chip">{c}</span></li>
@@ -87,7 +87,7 @@ export function CardProjeto({ projeto }: { projeto: ProjetoComAutor }) {
         </>
       ) : (
         <p className="miudo" style={{ marginTop: '0.75rem' }}>
-          <span className="chip chip--inverso">Não está buscando pessoas</span>
+          <span className="chip chip--inverso">Não tá procurando gente agora</span>
         </p>
       )}
     </article>

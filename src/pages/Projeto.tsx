@@ -22,7 +22,7 @@ export function Projeto() {
   if (projeto.carregando) {
     return (
       <section className="faixa faixa--claro">
-        <div className="faixa__interno"><Carregando quantidade={1} rotulo="Carregando o projeto" /></div>
+        <div className="faixa__interno"><Carregando quantidade={1} rotulo="Buscando o projeto" /></div>
       </section>
     );
   }
@@ -42,8 +42,8 @@ export function Projeto() {
       <section className="faixa faixa--claro">
         <div className="faixa__interno">
           <div className="cartaz cartaz--vermelho">
-            <h2>Projeto não encontrado</h2>
-            <p>Ele pode ter sido despublicado por quem o criou.</p>
+            <h2>Esse projeto<br />não existe mais</h2>
+            <p>Quem publicou pode ter tirado ele do mural.</p>
             <div className="acoes">
               <Link className="botao botao--preto" to="/projetos">
                 <span className="seta" aria-hidden="true" />Voltar ao mural
@@ -69,12 +69,12 @@ export function Projeto() {
         <div className="faixa__interno">
           <Link className="migalha" to="/projetos">
             <span className="seta" aria-hidden="true" style={{ transform: 'scaleX(-1)' }} />
-            Mural
+            Voltar ao mural
           </Link>
           {p.estado !== 'publicado' && (
             <p style={{ margin: '0.5rem 0' }}>
               <span className="chip chip--alerta">
-                {p.estado === 'rascunho' ? 'Rascunho — só você vê' : 'Despublicado'}
+                {p.estado === 'rascunho' ? 'Rascunho — só você vê' : 'Fora do mural'}
               </span>
             </p>
           )}
@@ -186,7 +186,7 @@ export function Projeto() {
       <section className="faixa faixa--preto-2">
         <div className="faixa__interno">
           <h2>Discussões<br />deste projeto</h2>
-          {discussoes.carregando && <Carregando quantidade={1} rotulo="Carregando discussões" />}
+          {discussoes.carregando && <Carregando quantidade={1} rotulo="Buscando os assuntos" />}
           {discussoes.erro && (
             <Erro mensagem={discussoes.erro} aoTentarDeNovo={discussoes.recarregar} />
           )}

@@ -35,10 +35,10 @@ export function Projetos() {
       <section className="faixa faixa--preto faixa--fina">
         <div className="faixa__interno">
           <h1>Projetos</h1>
-          <p className="miudo">O que a turma está tocando — e o que cada projeto procura.</p>
+          <p className="miudo">O que a turma tá tocando — e quem cada projeto procura.</p>
           <div className="acoes">
             <Link className="botao botao--amarelo" to="/projetos/novo">
-              <span className="seta" aria-hidden="true" />Publicar projeto
+              <span className="seta" aria-hidden="true" />Publicar meu projeto
             </Link>
           </div>
         </div>
@@ -49,7 +49,7 @@ export function Projetos() {
           <h2 className="visualmente-oculto">Filtros</h2>
           <div className="filtros">
             <div>
-              <label className="rotulo" htmlFor="p-conhecimento">Procura por</label>
+              <label className="rotulo" htmlFor="p-conhecimento">Procura quem sabe</label>
               <select id="p-conhecimento" value={conhecimento}
                       onChange={(e) => setConhecimento(e.target.value as Habilidade | '')}>
                 <option value="">Qualquer conhecimento</option>
@@ -65,7 +65,7 @@ export function Projetos() {
               </select>
             </div>
             <div>
-              <label className="rotulo" htmlFor="p-estagio">Estágio</label>
+              <label className="rotulo" htmlFor="p-estagio">Em que pé está</label>
               <select id="p-estagio" value={estagio}
                       onChange={(e) => setEstagio(e.target.value)}>
                 <option value="">Todos</option>
@@ -91,8 +91,8 @@ export function Projetos() {
           <div className="filtros__rodape">
             <p className="contagem" aria-live="polite">
               {projetos.carregando
-                ? 'Procurando…'
-                : total === 1 ? '1 projeto' : `${total} projetos`}
+                ? 'Buscando os projetos…'
+                : total === 1 ? '1 projeto no mural' : `${total} projetos no mural`}
             </p>
             {filtrando && (
               <button type="button" className="botao botao--preto botao--pequeno" onClick={limpar}>
@@ -105,7 +105,7 @@ export function Projetos() {
 
       <section className="faixa faixa--claro">
         <div className="faixa__interno">
-          {projetos.carregando && <Carregando rotulo="Carregando o mural" />}
+          {projetos.carregando && <Carregando rotulo="Buscando os projetos" />}
 
           {!projetos.carregando && projetos.erro && (
             <Erro mensagem={projetos.erro} aoTentarDeNovo={projetos.recarregar} />
