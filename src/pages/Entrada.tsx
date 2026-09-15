@@ -1,20 +1,20 @@
 import { Link } from 'react-router-dom';
 
-const CAMINHOS = [
+const BLOCOS = [
   {
-    titulo: 'Pessoas',
-    texto: 'Cada participante declara o que faz e quais habilidades oferece. ' +
-      'Você descobre quem faz o que falta no seu projeto.',
+    titulo: 'Gente',
+    texto: 'Cada uma de nós chega com uma história e um ofício. Aqui você conta o seu ' +
+      '— e acha quem tem o que falta no que você tá construindo.',
   },
   {
     titulo: 'Projetos',
-    texto: 'Cada projeto diz em que estágio está e que conhecimentos procura — ' +
-      'na mesma lista das habilidades do perfil. Dá para saber na hora se você serve.',
+    texto: 'Ninguém faz sozinho. Cada projeto diz em que pé está e quem precisa chegar ' +
+      'junto. Dá pra ler e saber na hora se é com você.',
   },
   {
-    titulo: 'Temas',
-    texto: 'Discussões abertas a partir dos projetos, agrupadas por assunto. ' +
-      'Dá para chegar a uma pessoa pelo interesse, não só pela vaga.',
+    titulo: 'Assuntos',
+    texto: 'O que a gente pensa junto rende mais do que o que a gente pensa sozinho. ' +
+      'Toda conversa nasce de um projeto e fica aberta pra quem quiser entrar.',
   },
 ];
 
@@ -27,18 +27,21 @@ export function Entrada() {
             Curso de produção cultural negra · Escola B
           </p>
           <h1>
-            Você já<br />se viu.<br />
-            <span style={{ color: 'var(--amarelo)' }}>Agora se<br />encontre.</span>
+            A gente se vê<br />toda terça.<br />
+            <span style={{ color: 'var(--amarelo)' }}>Mas ainda não<br />se encontrou.</span>
           </h1>
           <p style={{ maxWidth: '34rem', marginTop: '1.25rem' }}>
-            Um lugar onde a turma declara o que oferece, publica o que está tocando
-            e diz o que está procurando. A conversa continua no WhatsApp — aqui
-            você descobre o pretexto para começá-la.
+            Somos mais de 800 pessoas fazendo cultura em cantos diferentes do Brasil,
+            e cada uma carrega um pedaço do que falta pra outra.
+          </p>
+          <p style={{ maxWidth: '34rem' }}>
+            Este lugar existe pra uma coisa só: transformar quem assiste junto em
+            quem faz junto.
           </p>
           <div className="acoes">
             <Link className="botao botao--amarelo" to="/criar-conta">
               <span className="seta" aria-hidden="true" />
-              Criar meu perfil
+              Começar pelo meu perfil
             </Link>
             <Link className="botao botao--contorno" to="/entrar">Já tenho conta</Link>
           </div>
@@ -52,13 +55,13 @@ export function Entrada() {
             {Array.from({ length: 8 }, (_, i) => <span className="seta" key={i} />)}
           </div>
           <div className="grade grade--3">
-            {CAMINHOS.map((c) => (
-              <article className="card" key={c.titulo}>
+            {BLOCOS.map((b) => (
+              <article className="card" key={b.titulo}>
                 <h3 className="card__titulo">
                   <span className="seta" aria-hidden="true" />
-                  {c.titulo}
+                  {b.titulo}
                 </h3>
-                <p className="miudo">{c.texto}</p>
+                <p className="miudo">{b.texto}</p>
               </article>
             ))}
           </div>
@@ -67,26 +70,17 @@ export function Entrada() {
 
       <section className="faixa faixa--vermelho">
         <div className="faixa__interno">
-          <h2>O que isto não é</h2>
-          <p style={{ maxWidth: '38rem' }}>
-            Não é rede social: não tem feed, curtida nem seguidor. Não é mensageiro:
-            a conversa migra para o WhatsApp ou o Instagram. Não é algoritmo de match —
-            o sistema torna a necessidade visível, quem decide é você.
-          </p>
-        </div>
-      </section>
-
-      <section className="faixa faixa--claro">
-        <div className="faixa__interno">
-          <h2>Comece pelo<br />seu perfil</h2>
-          <p style={{ maxWidth: '34rem' }}>
-            Leva menos de quatro minutos no celular. Nome, o que você faz, sua cidade,
-            duas ou três frases sobre você e as habilidades que você oferece.
+          <h2>
+            Uma pessoa sozinha<br />tira um projeto<br />do papel.
+          </h2>
+          <p style={{ maxWidth: '36rem' }}>
+            Oitocentas mudam o que entra em cartaz, o que ganha edital, o que vira
+            referência.
           </p>
           <div className="acoes">
-            <Link className="botao botao--vermelho" to="/criar-conta">
+            <Link className="botao botao--preto" to="/criar-conta">
               <span className="seta" aria-hidden="true" />
-              Criar meu perfil
+              Começar pelo meu perfil
             </Link>
           </div>
         </div>

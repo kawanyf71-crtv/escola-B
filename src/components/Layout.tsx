@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useSessao } from '../lib/sessao';
-import { modoLocal } from '../data';
 
 const LINKS = [
   { para: '/pessoas', texto: 'Pessoas' },
@@ -109,17 +108,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
       <footer className="rodape">
         <div className="faixa__interno">
           <p className="rotulo">Rede Escola B</p>
-          <p className="miudo">
-            Curso de produção cultural negra · Escola B. Perfis, projetos e discussões
-            são visíveis para todo participante logado.
+          <p className="miudo" style={{ maxWidth: '34rem' }}>
+            Feito por uma aluna da turma, pra turma. O curso acaba em novembro — o que
+            a gente construir aqui não precisa acabar junto.
           </p>
-          {modoLocal && (
-            <p className="miudo">
-              <span className="chip chip--alerta">Modo local</span>{' '}
-              Os dados desta sessão ficam no seu navegador. Configure as chaves do
-              Supabase para que a turma inteira veja a mesma rede.
-            </p>
-          )}
         </div>
       </footer>
     </div>

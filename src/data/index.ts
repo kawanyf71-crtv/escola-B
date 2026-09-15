@@ -16,4 +16,16 @@ function escolher(): Repositorio {
 }
 
 export const repo: Repositorio = escolher();
-export const modoLocal = repo.nome === 'local';
+
+/**
+ * Qual adaptador subiu e um recado tecnico quando for o local. Vai para o
+ * console de proposito: e informacao para quem esta construindo o site, nao
+ * para quem participa do curso — a interface nao fala de Supabase.
+ */
+if (repo.nome === 'local') {
+  console.info(
+    '[Rede Escola B] Rodando com o adaptador local: os dados ficam no navegador ' +
+    'de quem abre e ninguém vê a rede de mais ninguém. Preencha VITE_SUPABASE_URL ' +
+    'e VITE_SUPABASE_ANON_KEY para a turma inteira compartilhar a mesma rede.',
+  );
+}
