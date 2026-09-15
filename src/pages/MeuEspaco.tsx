@@ -82,7 +82,7 @@ export function MeuEspaco() {
                             to={`/projetos/${p.id}/editar`}>Editar</Link>
                       {p.busca_pessoas && (
                         <Link className="botao botao--vermelho botao--pequeno"
-                              to={`/projetos/${p.id}/interessados`}>Quem chegou junto</Link>
+                              to={`/projetos/${p.id}/quem-chegou-junto`}>Quem chegou junto</Link>
                       )}
                     </div>
                   </div>

@@ -33,7 +33,7 @@ export class RepositorioSupabase implements Repositorio {
 
   private async exigirUsuario(): Promise<string> {
     const { data } = await this.cliente.auth.getUser();
-    if (!data.user) throw new Error('Você precisa estar logada para fazer isso.');
+    if (!data.user) throw new Error('Entra na sua conta pra fazer isso.');
     return data.user.id;
   }
 
@@ -47,7 +47,7 @@ export class RepositorioSupabase implements Repositorio {
 
   async criarConta(email: string, senha: string): Promise<Sessao> {
     const { data, error } = await this.cliente.auth.signUp({ email, password: senha });
-    erro(error, 'Não foi possível criar a conta');
+    erro(error, 'Não deu pra criar a conta');
     if (!data.session || !data.user) {
       throw new Error(
         'Conta criada, mas falta confirmar o e-mail. Desligue a confirmação de e-mail no ' +
@@ -73,7 +73,7 @@ export class RepositorioSupabase implements Repositorio {
     const usuario = await this.exigirUsuario();
     // As demais tabelas caem por `on delete cascade` a partir de participantes.
     const { error } = await this.cliente.from('participantes').delete().eq('id', usuario);
-    erro(error, 'Não foi possível excluir a conta');
+    erro(error, 'Não deu pra apagar a conta');
     await this.cliente.auth.signOut();
   }
 
@@ -84,25 +84,25 @@ export class RepositorioSupabase implements Repositorio {
     if (!sessao) return null;
     const { data, error } = await this.cliente
       .from('participantes').select('*').eq('id', sessao.usuario_id).maybeSingle();
-    erro(error, 'Não foi possível carregar seu perfil');
+    erro(error, 'Não deu pra buscar seu perfil');
     return (data as Participante) ?? null;
   }
 
   async salvarPerfil(dados: DadosPerfil): Promise<Participante> {
     const sessao = await this.sessaoAtual();
-    if (!sessao) throw new Error('Você precisa estar logada para fazer isso.');
+    if (!sessao) throw new Error('Entra na sua conta pra fazer isso.');
     const { data, error } = await this.cliente
       .from('participantes')
       .upsert({ id: sessao.usuario_id, email: sessao.email, ...dados })
       .select('*').single();
-    erro(error, 'Não foi possível salvar o perfil');
+    erro(error, 'Não deu pra salvar');
     return data as Participante;
   }
 
   async obterParticipante(id: string): Promise<Participante | null> {
     const { data, error } = await this.cliente
       .from('participantes').select('*').eq('id', id).maybeSingle();
-    erro(error, 'Não foi possível carregar o perfil');
+    erro(error, 'Não deu pra buscar o perfil');
     return (data as Participante) ?? null;
   }
 
@@ -114,7 +114,7 @@ export class RepositorioSupabase implements Repositorio {
     if (f.tema) q = q.contains('temas_interesse', [f.tema]);
     if (f.cidade) q = q.ilike('cidade', f.cidade);
     const { data, error } = await q;
-    erro(error, 'Não foi possível carregar o diretório');
+    erro(error, 'Não deu pra buscar a turma');
     return (data ?? []) as Participante[];
   }
 
@@ -123,8 +123,8 @@ export class RepositorioSupabase implements Repositorio {
       this.cliente.from('participantes').select('cidade'),
       this.cliente.from('projetos').select('onde_cidade').eq('estado', 'publicado'),
     ]);
-    erro(pessoas.error, 'Não foi possível carregar as cidades');
-    erro(projetos.error, 'Não foi possível carregar as cidades');
+    erro(pessoas.error, 'Não deu pra buscar as cidades');
+    erro(projetos.error, 'Não deu pra buscar as cidades');
     const cidades = new Set<string>();
     (pessoas.data ?? []).forEach((r) => {
       const c = (r as { cidade: string | null }).cidade?.trim();
@@ -148,14 +148,14 @@ export class RepositorioSupabase implements Repositorio {
     if (f.conhecimento) q = q.contains('conhecimentos_procurados', [f.conhecimento]);
     if (f.cidade) q = q.ilike('onde_cidade', f.cidade);
     const { data, error } = await q;
-    erro(error, 'Não foi possível carregar o mural');
+    erro(error, 'Não deu pra buscar os projetos');
     return (data ?? []) as unknown as ProjetoComAutor[];
   }
 
   async obterProjeto(id: string): Promise<ProjetoComAutor | null> {
     const { data, error } = await this.cliente
       .from('projetos').select(PROJETO_COM_AUTOR).eq('id', id).maybeSingle();
-    erro(error, 'Não foi possível carregar o projeto');
+    erro(error, 'Não deu pra buscar o projeto');
     return (data as unknown as ProjetoComAutor) ?? null;
   }
 
@@ -163,7 +163,7 @@ export class RepositorioSupabase implements Repositorio {
     const { data, error } = await this.cliente
       .from('projetos').select(PROJETO_COM_AUTOR)
       .eq('autor_id', participanteId).order('criado_em', { ascending: false });
-    erro(error, 'Não foi possível carregar os projetos');
+    erro(error, 'Não deu pra buscar os projetos');
     return (data ?? []) as unknown as ProjetoComAutor[];
   }
 
@@ -171,7 +171,7 @@ export class RepositorioSupabase implements Repositorio {
     const usuario = await this.exigirUsuario();
     const { data, error } = await this.cliente
       .from('projetos').insert({ autor_id: usuario, ...dados }).select('*').single();
-    erro(error, 'Não foi possível publicar o projeto');
+    erro(error, 'Não deu pra publicar');
     const projeto = data as Projeto;
     if (discussao) {
       // RN-004: a discussao so existe amarrada ao projeto recem-criado.
@@ -183,13 +183,13 @@ export class RepositorioSupabase implements Repositorio {
   async atualizarProjeto(id: string, dados: DadosProjeto): Promise<Projeto> {
     const { data, error } = await this.cliente
       .from('projetos').update(dados).eq('id', id).select('*').single();
-    erro(error, 'Não foi possível salvar o projeto');
+    erro(error, 'Não deu pra salvar');
     return data as Projeto;
   }
 
   async definirEstadoProjeto(id: string, estado: Projeto['estado']): Promise<void> {
     const { error } = await this.cliente.from('projetos').update({ estado }).eq('id', id);
-    erro(error, 'Não foi possível alterar o projeto');
+    erro(error, 'Não deu pra mudar o projeto');
   }
 
   // --- Interesses ---
@@ -204,8 +204,8 @@ export class RepositorioSupabase implements Repositorio {
     }).select('*').single();
     if (error) {
       // RN-008 é garantida pela unique constraint do banco.
-      if (error.code === '23505') throw new Error('Você já manifestou interesse neste projeto.');
-      throw new Error(`Não foi possível registrar seu interesse: ${error.message}`);
+      if (error.code === '23505') throw new Error('Você já chegou junto neste projeto.');
+      throw new Error(`Não deu pra registrar: ${error.message}`);
     }
     return data as Interesse;
   }
@@ -214,7 +214,7 @@ export class RepositorioSupabase implements Repositorio {
     const usuario = await this.exigirUsuario();
     const { error } = await this.cliente.from('interesses').delete()
       .eq('projeto_id', projetoId).eq('participante_id', usuario);
-    erro(error, 'Não foi possível cancelar o interesse');
+    erro(error, 'Não deu pra cancelar');
   }
 
   async meuInteresseNoProjeto(projetoId: string): Promise<Interesse | null> {
@@ -222,7 +222,7 @@ export class RepositorioSupabase implements Repositorio {
     if (!sessao) return null;
     const { data, error } = await this.cliente.from('interesses').select('*')
       .eq('projeto_id', projetoId).eq('participante_id', sessao.usuario_id).maybeSingle();
-    erro(error, 'Não foi possível verificar seu interesse');
+    erro(error, 'Não deu pra conferir');
     return (data as Interesse) ?? null;
   }
 
@@ -230,7 +230,7 @@ export class RepositorioSupabase implements Repositorio {
     const { data, error } = await this.cliente.from('interesses')
       .select(`*, participante:participantes!interesses_participante_id_fkey(*)`)
       .eq('projeto_id', projetoId).order('criado_em', { ascending: false });
-    erro(error, 'Não foi possível carregar os interessados');
+    erro(error, 'Não deu pra buscar quem chegou junto');
     return (data ?? []) as unknown as InteresseComParticipante[];
   }
 
@@ -239,7 +239,7 @@ export class RepositorioSupabase implements Repositorio {
     const { data, error } = await this.cliente.from('interesses')
       .select(`*, projeto:projetos!interesses_projeto_id_fkey(${PROJETO_COM_AUTOR})`)
       .eq('participante_id', usuario).order('criado_em', { ascending: false });
-    erro(error, 'Não foi possível carregar seus interesses');
+    erro(error, 'Não deu pra buscar onde você chegou junto');
     return (data ?? []) as unknown as InteresseComProjeto[];
   }
 
@@ -258,14 +258,14 @@ export class RepositorioSupabase implements Repositorio {
       .order('criado_em', { ascending: false });
     if (tema) q = q.eq('tema', tema);
     const { data, error } = await q;
-    erro(error, 'Não foi possível carregar as discussões');
+    erro(error, 'Não deu pra buscar os assuntos');
     return (data ?? []).map((d) => this.mapear(d as unknown as Record<string, unknown>));
   }
 
   async discussoesDoProjeto(projetoId: string): Promise<DiscussaoCompleta[]> {
     const { data, error } = await this.cliente.from('discussoes').select(DISCUSSAO_COMPLETA)
       .eq('projeto_origem_id', projetoId).order('criado_em', { ascending: false });
-    erro(error, 'Não foi possível carregar as discussões do projeto');
+    erro(error, 'Não deu pra buscar os assuntos do projeto');
     return (data ?? []).map((d) => this.mapear(d as unknown as Record<string, unknown>));
   }
 
@@ -276,8 +276,8 @@ export class RepositorioSupabase implements Repositorio {
         .eq('participante_id', participanteId),
       this.cliente.from('discussoes').select(DISCUSSAO_COMPLETA).eq('autor_id', participanteId),
     ]);
-    erro(participando.error, 'Não foi possível carregar as discussões');
-    erro(autoradas.error, 'Não foi possível carregar as discussões');
+    erro(participando.error, 'Não deu pra buscar os assuntos');
+    erro(autoradas.error, 'Não deu pra buscar os assuntos');
     const porId = new Map<string, DiscussaoCompleta>();
     (participando.data ?? []).forEach((linha) => {
       const d = (linha as unknown as { discussao: Record<string, unknown> | null }).discussao;
@@ -293,7 +293,7 @@ export class RepositorioSupabase implements Repositorio {
   async obterDiscussao(id: string): Promise<DiscussaoCompleta | null> {
     const { data, error } = await this.cliente.from('discussoes')
       .select(DISCUSSAO_COMPLETA).eq('id', id).maybeSingle();
-    erro(error, 'Não foi possível carregar a discussão');
+    erro(error, 'Não deu pra buscar o assunto');
     return data ? this.mapear(data as unknown as Record<string, unknown>) : null;
   }
 
@@ -302,7 +302,7 @@ export class RepositorioSupabase implements Repositorio {
     const { data, error } = await this.cliente.from('discussoes')
       .insert({ ...dados, projeto_origem_id: projetoId, autor_id: usuario })
       .select('*').single();
-    erro(error, 'Não foi possível abrir a discussão');
+    erro(error, 'Não deu pra puxar o assunto');
     const discussao = data as Discussao;
     await this.entrarNaDiscussao(discussao.id);
     return discussao;
@@ -310,14 +310,14 @@ export class RepositorioSupabase implements Repositorio {
 
   async excluirDiscussao(id: string): Promise<void> {
     const { error } = await this.cliente.from('discussoes').delete().eq('id', id);
-    erro(error, 'Não foi possível remover a discussão');
+    erro(error, 'Não deu pra apagar');
   }
 
   async participantesDaDiscussao(discussaoId: string): Promise<ParticipanteResumo[]> {
     const { data, error } = await this.cliente.from('participacoes_discussao')
       .select(`participante:participantes!participacoes_discussao_participante_id_fkey(${CAMPOS_RESUMO})`)
       .eq('discussao_id', discussaoId).order('criado_em', { ascending: true });
-    erro(error, 'Não foi possível carregar quem está na discussão');
+    erro(error, 'Não deu pra buscar quem tá na conversa');
     return (data ?? [])
       .map((l) => (l as unknown as { participante: ParticipanteResumo | null }).participante)
       .filter((p): p is ParticipanteResumo => p !== null);
@@ -330,14 +330,14 @@ export class RepositorioSupabase implements Repositorio {
         { discussao_id: discussaoId, participante_id: usuario },
         { onConflict: 'discussao_id,participante_id', ignoreDuplicates: true },
       );
-    erro(error, 'Não foi possível entrar na discussão');
+    erro(error, 'Não deu pra entrar na conversa');
   }
 
   async comentarios(discussaoId: string): Promise<ComentarioComAutor[]> {
     const { data, error } = await this.cliente.from('comentarios')
       .select(`*, autor:participantes!comentarios_autor_id_fkey(${CAMPOS_RESUMO})`)
       .eq('discussao_id', discussaoId).order('criado_em', { ascending: true });
-    erro(error, 'Não foi possível carregar os comentários');
+    erro(error, 'Não deu pra buscar a conversa');
     return (data ?? []) as unknown as ComentarioComAutor[];
   }
 
@@ -346,7 +346,7 @@ export class RepositorioSupabase implements Repositorio {
     const { data, error } = await this.cliente.from('comentarios')
       .insert({ discussao_id: discussaoId, autor_id: usuario, texto })
       .select('*').single();
-    erro(error, 'Não foi possível enviar o comentário');
+    erro(error, 'Não deu pra mandar');
     await this.entrarNaDiscussao(discussaoId);
     return data as Comentario;
   }
@@ -356,7 +356,7 @@ export class RepositorioSupabase implements Repositorio {
   async participantesPorTema(tema: Tema): Promise<Participante[]> {
     const { data, error } = await this.cliente.from('participantes').select('*')
       .contains('temas_interesse', [tema]).order('criado_em', { ascending: false });
-    erro(error, 'Não foi possível carregar quem se interessa por este tema');
+    erro(error, 'Não deu pra buscar quem se move por isso');
     return (data ?? []) as Participante[];
   }
 
@@ -364,7 +364,7 @@ export class RepositorioSupabase implements Repositorio {
     const { data, error } = await this.cliente.from('projetos').select(PROJETO_COM_AUTOR)
       .eq('estado', 'publicado').contains('temas', [tema])
       .order('criado_em', { ascending: false });
-    erro(error, 'Não foi possível carregar os projetos deste tema');
+    erro(error, 'Não deu pra buscar os projetos deste tema');
     return (data ?? []) as unknown as ProjetoComAutor[];
   }
 }

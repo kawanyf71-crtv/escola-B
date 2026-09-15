@@ -34,7 +34,7 @@ export function CardPessoa({ pessoa }: { pessoa: Participante }) {
         </div>
       </div>
       <p className="miudo">{pessoa.mini_bio}</p>
-      <ul className="chips" aria-label="Habilidades que oferece">
+      <ul className="chips" aria-label="O que sabe fazer">
         {pessoa.habilidades_oferecidas.map((h) => (
           <li key={h}><span className="chip">{h}</span></li>
         ))}
@@ -79,7 +79,7 @@ export function CardProjeto({ projeto }: { projeto: ProjetoComAutor }) {
       {projeto.busca_pessoas ? (
         <>
           <span className="rotulo" style={{ marginTop: '0.75rem' }}>Procura quem sabe</span>
-          <ul className="chips" aria-label="Conhecimentos procurados">
+          <ul className="chips" aria-label="Quem o projeto procura">
             {projeto.conhecimentos_procurados.map((c) => (
               <li key={c}><span className="chip">{c}</span></li>
             ))}
@@ -105,7 +105,7 @@ export function CardDiscussao({ discussao }: { discussao: DiscussaoCompleta }) {
         <Link to={`/assuntos/${discussao.id}`}>{discussao.titulo}</Link>
       </h3>
       <p className="card__meta">
-        {discussao.autor ? `Aberta por ${discussao.autor.nome}` : 'Aberta na rede'}
+        {discussao.autor ? `Puxado por ${discussao.autor.nome}` : 'Puxado na rede'}
         {discussao.projeto ? ' · nasceu de ' : ''}
         {discussao.projeto && (
           <Link to={`/projetos/${discussao.projeto.id}`}>{discussao.projeto.nome}</Link>

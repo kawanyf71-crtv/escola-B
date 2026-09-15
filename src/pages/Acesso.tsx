@@ -19,11 +19,11 @@ function FormularioAcesso({ modo }: { modo: 'entrar' | 'criar' }) {
   async function enviar(e: FormEvent) {
     e.preventDefault();
     const novos: Record<string, string> = {};
-    if (!email.trim()) novos.email = 'Informe seu e-mail.';
+    if (!email.trim()) novos.email = 'Faltou o e-mail.';
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
       novos.email = 'Esse e-mail não parece válido.';
     }
-    if (!senha) novos.senha = 'Informe uma senha.';
+    if (!senha) novos.senha = 'Faltou a senha.';
     else if (criando && senha.length < SENHA_MINIMA) {
       novos.senha = `A senha precisa de pelo menos ${SENHA_MINIMA} caracteres.`;
     }
@@ -41,7 +41,7 @@ function FormularioAcesso({ modo }: { modo: 'entrar' | 'criar' }) {
         navegar('/pessoas');
       }
     } catch (e2) {
-      setFalha(e2 instanceof Error ? e2.message : 'Não foi possível continuar.');
+      setFalha(e2 instanceof Error ? e2.message : 'Não deu pra continuar.');
     } finally {
       setEnviando(false);
     }
@@ -93,7 +93,7 @@ function FormularioAcesso({ modo }: { modo: 'entrar' | 'criar' }) {
 
             <button className="botao botao--vermelho botao--bloco" type="submit" disabled={enviando}>
               <span className="seta" aria-hidden="true" />
-              {enviando ? 'Um instante…' : criando ? 'Criar conta' : 'Entrar'}
+              {enviando ? 'Só um segundo…' : criando ? 'Criar conta' : 'Entrar'}
             </button>
           </form>
 
@@ -101,7 +101,7 @@ function FormularioAcesso({ modo }: { modo: 'entrar' | 'criar' }) {
             {criando ? (
               <>Já tem conta? <Link to="/entrar">Entrar</Link>.</>
             ) : (
-              <>Primeira vez? <Link to="/criar-conta">Criar meu perfil</Link>.</>
+              <>Primeira vez? <Link to="/criar-conta">Começar pelo meu perfil</Link>.</>
             )}
           </p>
         </div>

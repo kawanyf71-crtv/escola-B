@@ -45,9 +45,9 @@ function gravar(b: Banco): void {
     // localStorage este adaptador nao tem onde guardar nada, entao e melhor
     // dizer isso do que deixar a tela falhar com um erro sem sentido.
     throw new Error(
-      'Seu navegador está bloqueando o armazenamento local, e é nele que esta ' +
-      'demonstração guarda os dados. Saia da navegação privada ou libere os ' +
-      'dados do site e tente de novo.',
+      'Seu navegador tá bloqueando o armazenamento do site, e é ali que esta ' +
+      'demonstração guarda tudo. Sai da aba anônima ou libera os dados do site ' +
+      'e tenta de novo.',
     );
   }
 }
@@ -93,7 +93,7 @@ export class RepositorioLocal implements Repositorio {
   readonly nome = 'local' as const;
 
   private exigirSessao(b: Banco): Sessao {
-    if (!b.sessao) throw new Error('Você precisa estar logada para fazer isso.');
+    if (!b.sessao) throw new Error('Entra na sua conta pra fazer isso.');
     return b.sessao;
   }
 
@@ -121,7 +121,7 @@ export class RepositorioLocal implements Repositorio {
     const b = ler();
     const limpo = email.trim().toLowerCase();
     if (b.contas.some((c) => c.email === limpo)) {
-      throw new Error('Já existe uma conta com esse e-mail. Tente entrar.');
+      throw new Error('Já tem uma conta com esse e-mail. Tenta entrar.');
     }
     const conta: Conta = { id: id(), email: limpo, senha_hash: await hash(senha) };
     b.contas.push(conta);
@@ -275,9 +275,9 @@ export class RepositorioLocal implements Repositorio {
     const b = ler();
     const s = this.exigirSessao(b);
     const indice = b.projetos.findIndex((p) => p.id === pid);
-    if (indice < 0) throw new Error('Projeto não encontrado.');
+    if (indice < 0) throw new Error('Esse projeto não existe mais.');
     if (b.projetos[indice].autor_id !== s.usuario_id) {
-      throw new Error('Só quem publicou o projeto pode editá-lo.');
+      throw new Error('Só quem publicou pode mexer nele.');
     }
     const atualizado: Projeto = { ...b.projetos[indice], ...dados };
     b.projetos[indice] = atualizado;
@@ -289,9 +289,9 @@ export class RepositorioLocal implements Repositorio {
     const b = ler();
     const s = this.exigirSessao(b);
     const projeto = b.projetos.find((p) => p.id === pid);
-    if (!projeto) throw new Error('Projeto não encontrado.');
+    if (!projeto) throw new Error('Esse projeto não existe mais.');
     if (projeto.autor_id !== s.usuario_id) {
-      throw new Error('Só quem publicou o projeto pode alterá-lo.');
+      throw new Error('Só quem publicou pode mexer nele.');
     }
     projeto.estado = estado;
     gravar(b);
@@ -305,14 +305,14 @@ export class RepositorioLocal implements Repositorio {
     const b = ler();
     const s = this.exigirSessao(b);
     const projeto = b.projetos.find((p) => p.id === projetoId);
-    if (!projeto) throw new Error('Projeto não encontrado.');
-    if (!projeto.busca_pessoas) throw new Error('Este projeto não está buscando pessoas.');
+    if (!projeto) throw new Error('Esse projeto não existe mais.');
+    if (!projeto.busca_pessoas) throw new Error('Este projeto não tá procurando gente agora.');
     if (projeto.autor_id === s.usuario_id) {
-      throw new Error('Este projeto é seu — não dá para se candidatar a ele.');
+      throw new Error('Esse projeto é seu — quem chega junto são os outros.');
     }
     // RN-008: um interesse por par pessoa/projeto.
     if (b.interesses.some((i) => i.projeto_id === projetoId && i.participante_id === s.usuario_id)) {
-      throw new Error('Você já manifestou interesse neste projeto.');
+      throw new Error('Você já chegou junto neste projeto.');
     }
     const interesse: Interesse = {
       id: id(), projeto_id: projetoId, participante_id: s.usuario_id,
@@ -345,7 +345,7 @@ export class RepositorioLocal implements Repositorio {
     const s = this.exigirSessao(b);
     const projeto = b.projetos.find((p) => p.id === projetoId);
     if (!projeto || projeto.autor_id !== s.usuario_id) {
-      throw new Error('Só quem publicou o projeto vê os interessados.');
+      throw new Error('Só quem publicou vê quem chegou junto.');
     }
     return maisRecentePrimeiro(b.interesses.filter((i) => i.projeto_id === projetoId)).map((i) => ({
       ...i,
@@ -403,9 +403,9 @@ export class RepositorioLocal implements Repositorio {
     const b = ler();
     const s = this.exigirSessao(b);
     const projeto = b.projetos.find((p) => p.id === projetoId);
-    if (!projeto) throw new Error('Projeto não encontrado.'); // RN-004
+    if (!projeto) throw new Error('Esse projeto não existe mais.'); // RN-004
     if (projeto.autor_id !== s.usuario_id) {
-      throw new Error('Só quem publicou o projeto pode abrir discussões nele.');
+      throw new Error('Só quem publicou pode puxar assunto no projeto.');
     }
     const nova: Discussao = {
       id: id(), ...dados, projeto_origem_id: projetoId,
@@ -424,7 +424,7 @@ export class RepositorioLocal implements Repositorio {
     const s = this.exigirSessao(b);
     const d = b.discussoes.find((x) => x.id === did);
     if (!d) return;
-    if (d.autor_id !== s.usuario_id) throw new Error('Só a autora pode remover a discussão.');
+    if (d.autor_id !== s.usuario_id) throw new Error('Só quem abriu pode apagar.');
     b.discussoes = b.discussoes.filter((x) => x.id !== did);
     b.comentarios = b.comentarios.filter((c) => c.discussao_id !== did);
     b.participacoes = b.participacoes.filter((x) => x.discussao_id !== did);

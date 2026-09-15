@@ -35,7 +35,7 @@ export function useConsulta<T>(buscar: () => Promise<T>, deps: unknown[]): Consu
       })
       .catch((e: unknown) => {
         if (chamada !== ultimaChamada.current) return;
-        setErro(e instanceof Error ? e.message : 'Algo deu errado. Tente de novo.');
+        setErro(e instanceof Error ? e.message : 'Travou aqui. Tenta de novo.');
       })
       .finally(() => {
         if (chamada !== ultimaChamada.current) return;

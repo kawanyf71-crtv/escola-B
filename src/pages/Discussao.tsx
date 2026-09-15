@@ -195,7 +195,7 @@ export function Discussao() {
             </button>
             {!jaEstou && (
               <p className="miudo" style={{ marginTop: '0.75rem' }}>
-                Ao comentar você entra na conversa automaticamente.
+                Ao mandar, você já entra na conversa.
               </p>
             )}
           </form>
@@ -204,7 +204,7 @@ export function Discussao() {
 
       <section className="faixa faixa--preto-2">
         <div className="faixa__interno">
-          <h2>Quem está aqui</h2>
+          <h2>Quem tá aqui</h2>
           {participantes.carregando && (
             <Carregando quantidade={2} rotulo="Buscando quem tá na conversa" />
           )}

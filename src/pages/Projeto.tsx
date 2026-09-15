@@ -97,7 +97,7 @@ export function Projeto() {
                 <span className="seta" aria-hidden="true" />Editar
               </Link>
               {p.busca_pessoas && (
-                <Link className="botao botao--contorno" to={`/projetos/${p.id}/interessados`}>
+                <Link className="botao botao--contorno" to={`/projetos/${p.id}/quem-chegou-junto`}>
                   Ver quem chegou junto
                 </Link>
               )}
@@ -164,7 +164,7 @@ export function Projeto() {
           )}
           {p.ja_existiu && p.ja_existiu_links && (
             <div>
-              <span className="rotulo">Já aconteceu antes</span>
+              <span className="rotulo">Já rolou antes</span>
               <p className="miudo" style={{ whiteSpace: 'pre-wrap', overflowWrap: 'anywhere' }}>
                 {p.ja_existiu_links}
               </p>
@@ -315,13 +315,13 @@ function BlocoProcura({
 
         {souAutora && (
           <div className="acoes">
-            <Link className="botao botao--preto" to={`/projetos/${projeto.id}/interessados`}>
+            <Link className="botao botao--preto" to={`/projetos/${projeto.id}/quem-chegou-junto`}>
               <span className="seta" aria-hidden="true" />Ver quem chegou junto
             </Link>
           </div>
         )}
 
-        {!souAutora && interesse.carregando && <p style={{ marginTop: '1.5rem' }}>Verificando…</p>}
+        {!souAutora && interesse.carregando && <p style={{ marginTop: '1.5rem' }}>Só um segundo…</p>}
 
         {/* RN-008 / H4: um interesse por pessoa; ao voltar, o botão diz que já foi. */}
         {!souAutora && !interesse.carregando && jaManifestei && (

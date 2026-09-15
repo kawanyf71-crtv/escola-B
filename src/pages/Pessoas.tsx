@@ -32,9 +32,9 @@ export function Pessoas() {
     <>
       <section className="faixa faixa--preto faixa--fina">
         <div className="faixa__interno">
-          <h1>Pessoas</h1>
+          <h1>Gente</h1>
           <p className="miudo">
-            Quem está no curso, o que cada uma faz e o que oferece.
+            Quem tá no curso, o que cada uma faz e o que sabe fazer.
           </p>
         </div>
       </section>
@@ -44,7 +44,7 @@ export function Pessoas() {
           <h2 className="visualmente-oculto">Filtros</h2>
           <div className="filtros">
             <div>
-              <label className="rotulo" htmlFor="f-habilidade">Habilidade</label>
+              <label className="rotulo" htmlFor="f-habilidade">Sabe fazer</label>
               <select id="f-habilidade" value={habilidade}
                       onChange={(e) => setHabilidade(e.target.value as Habilidade | '')}>
                 <option value="">Todas</option>
@@ -60,7 +60,7 @@ export function Pessoas() {
               </select>
             </div>
             <div>
-              <label className="rotulo" htmlFor="f-tema">Tema de interesse</label>
+              <label className="rotulo" htmlFor="f-tema">O que move</label>
               <select id="f-tema" value={tema}
                       onChange={(e) => setTema(e.target.value as Tema | '')}>
                 <option value="">Todos</option>
@@ -78,8 +78,8 @@ export function Pessoas() {
           <div className="filtros__rodape">
             <p className="contagem" aria-live="polite">
               {pessoas.carregando
-                ? 'Procurando…'
-                : total === 1 ? '1 pessoa' : `${total} pessoas`}
+                ? 'Buscando a turma…'
+                : total === 1 ? '1 pessoa na roda' : `${total} pessoas na roda`}
             </p>
             {filtrando && (
               <button type="button" className="botao botao--preto botao--pequeno" onClick={limpar}>
@@ -92,7 +92,7 @@ export function Pessoas() {
 
       <section className="faixa faixa--claro">
         <div className="faixa__interno">
-          {pessoas.carregando && <Carregando rotulo="Carregando o diretório" />}
+          {pessoas.carregando && <Carregando rotulo="Buscando a turma" />}
 
           {!pessoas.carregando && pessoas.erro && (
             <Erro mensagem={pessoas.erro} aoTentarDeNovo={pessoas.recarregar} />

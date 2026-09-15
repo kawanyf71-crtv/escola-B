@@ -29,8 +29,8 @@ function Espera() {
   return (
     <section className="faixa faixa--preto">
       <div className="faixa__interno">
-        <h1>Carregando</h1>
-        <span className="visualmente-oculto" role="status">Carregando a rede…</span>
+        <h1>Só um<br />segundo…</h1>
+        <span className="visualmente-oculto" role="status">Buscando a rede…</span>
       </div>
     </section>
   );
@@ -85,7 +85,7 @@ function Rotas() {
           element={<Protegida><FormularioProjeto /></Protegida>}
         />
         <Route
-          path="/projetos/:id/interessados"
+          path="/projetos/:id/quem-chegou-junto"
           element={<Protegida><Interessados /></Protegida>}
         />
 
@@ -107,7 +107,7 @@ function NaoEncontrada() {
   return (
     <section className="faixa faixa--vermelho">
       <div className="faixa__interno">
-        <h1>Esta página<br />não existe</h1>
+        <h1>Essa página<br />não existe</h1>
         <div className="acoes">
           <Link className="botao botao--preto" to="/">
             <span className="seta" aria-hidden="true" />Voltar ao começo

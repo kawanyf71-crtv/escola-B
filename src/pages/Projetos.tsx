@@ -52,7 +52,7 @@ export function Projetos() {
               <label className="rotulo" htmlFor="p-conhecimento">Procura quem sabe</label>
               <select id="p-conhecimento" value={conhecimento}
                       onChange={(e) => setConhecimento(e.target.value as Habilidade | '')}>
-                <option value="">Qualquer conhecimento</option>
+                <option value="">Tanto faz</option>
                 {HABILIDADES.map((h) => <option key={h} value={h}>{h}</option>)}
               </select>
             </div>

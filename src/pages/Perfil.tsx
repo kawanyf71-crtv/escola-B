@@ -121,7 +121,7 @@ export function Perfil() {
           )}
           {p.disponibilidade.length > 0 && (
             <div>
-              <span className="rotulo">Disponibilidade</span>
+              <span className="rotulo">Topa participar como</span>
               <ul className="chips">
                 {p.disponibilidade.map((d) => (
                   <li key={d}><span className="chip chip--inverso">{d}</span></li>
@@ -179,7 +179,7 @@ export function Perfil() {
               {souEu && (
                 <div className="acoes">
                   <Link className="botao botao--preto" to="/projetos/novo">
-                    <span className="seta" aria-hidden="true" />Publicar projeto
+                    <span className="seta" aria-hidden="true" />Publicar meu projeto
                   </Link>
                 </div>
               )}
