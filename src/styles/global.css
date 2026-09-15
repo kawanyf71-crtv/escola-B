@@ -465,6 +465,11 @@ a.chip:hover, a.chip:focus-visible { text-decoration: underline; }
 /* ----------------------------------------------------------------- molduras */
 /* Foto emoldurada com borda preta de 7px. */
 
+/* O rosto e o que gera identificacao — e a premissa do produto, gente que se ve
+   e nao se conecta. As medidas nasceram desenhadas para 390px, onde a foto do
+   card ocupa 20% da largura e a do perfil 36%. Sem escalar, no desktop elas
+   caiam para 14% e 12%: a mesma foto, perdida numa tela larga. */
+
 .moldura {
   border: 7px solid var(--preto);
   background: var(--amarelo);
@@ -475,6 +480,38 @@ a.chip:hover, a.chip:focus-visible { text-decoration: underline; }
 }
 
 .moldura--grande { width: 8rem; height: 8rem; }
+
+/* A moldura preta de 7px some sobre faixa preta, e ali a foto fica sem contorno
+   nenhum — a regra da marca existe justamente pra separar a imagem do fundo.
+   Sobre superficie escura ela vira off-white, que cumpre o mesmo papel sem
+   competir com a borda amarela do card em volta. */
+.faixa--preto .moldura,
+.faixa--preto-2 .moldura { border-color: var(--off-white); }
+
+/* A foto grande e alta o bastante pra deixar o nome solto no topo. Centrar o
+   texto contra ela distribui o espaco sem mexer na ordem do conteudo. */
+.pessoa-linha:has(.moldura--grande) { align-items: center; }
+
+/* O :not() e necessario: sem ele esta regra tem a mesma especificidade de
+   `.moldura--grande` e, por vir depois, encolheria a foto do perfil de 128px
+   para 112px entre 640px e 880px de largura. */
+@media (min-width: 40rem) {
+  .moldura:not(.moldura--grande) { width: 7rem; height: 7rem; }
+  .moldura--vazia:not(.moldura--grande) { font-size: 2.25rem; }
+
+  .moldura--grande { width: 11rem; height: 11rem; }
+  .moldura--grande.moldura--vazia { font-size: 3.75rem; }
+}
+
+@media (min-width: 55rem) {
+  /* 16rem = 256px, o teto util: a foto e guardada com 512px de lado, entao
+     exibir maior que isso so faria o navegador esticar num ecra retina. */
+  .moldura--grande { width: 16rem; height: 16rem; }
+  .moldura--grande.moldura--vazia { font-size: 5.5rem; }
+
+  /* A previa do upload acompanha o tamanho em que a foto vai aparecer. */
+  .zona-imagem--quadrada { max-width: 16rem; }
+}
 
 .moldura--vazia {
   display: flex;
