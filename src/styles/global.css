@@ -841,6 +841,18 @@ select {
 }
 .migalha:hover { text-decoration: underline; }
 
+/* O bloco de correspondencia e o climax da tela, mas ocupava 38% da viewport a
+   390px — quatro linhas forcadas de titulo mais o respiro cheio da faixa. Fica
+   compacto: o texto e o mesmo, a tipografia e que para de tomar a tela. */
+.faixa--encaixe { padding: 1.25rem 0; }
+
+.faixa--encaixe h2 {
+  font-size: clamp(1.375rem, 5.6vw, 2rem);
+  margin-bottom: 0.5rem;
+}
+
+.faixa--encaixe p { margin-bottom: 0.625rem; }
+
 /* Bloco de correspondencia (RF-008): o destaque mais importante do produto. */
 .correspondencia {
   background: var(--amarelo);

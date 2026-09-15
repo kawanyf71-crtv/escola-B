@@ -137,11 +137,11 @@ export function Projeto() {
 
       {/* RF-008: o destaque de correspondência é o coração do produto. */}
       {mostraCorrespondencia && (
-        <section className="faixa faixa--amarelo">
+        <section className="faixa faixa--amarelo faixa--encaixe">
           <div className="faixa__interno">
-            <h2>
-              Você tem<br />exatamente o que<br />este projeto<br />tá procurando
-            </h2>
+            {/* Sem quebras forçadas: elas empurravam o título para quatro linhas
+                e faziam o bloco ocupar 38% da tela a 390px. */}
+            <h2>Você tem exatamente o que este projeto tá procurando</h2>
             <p className="destaque">
               Não é coincidência. Foi pra isso que este lugar foi feito.
             </p>
