@@ -35,8 +35,8 @@ export function Cartaz({
 export function VazioDeFiltro({ aoLimpar }: { aoLimpar: () => void }) {
   return (
     <div className="cartaz cartaz--vermelho">
-      <h3>Ninguém com essa combinação</h3>
-      <p>Os filtros estão apertados demais. Tire um deles e olhe de novo.</p>
+      <h3>Não achamos<br />ninguém assim.<br />Ainda.</h3>
+      <p>Tira um filtro e tenta de novo — a turma tá chegando aos poucos.</p>
       <div className="acoes">
         <button type="button" className="botao botao--preto" onClick={aoLimpar}>
           <span className="seta" aria-hidden="true" />
@@ -71,13 +71,13 @@ export function Erro({ mensagem, aoTentarDeNovo }: {
 }) {
   return (
     <div className="cartaz cartaz--vermelho" role="alert">
-      <h3>Não deu certo</h3>
+      <h3>Travou aqui</h3>
       <p>{mensagem}</p>
       {aoTentarDeNovo && (
         <div className="acoes">
           <button type="button" className="botao botao--preto" onClick={aoTentarDeNovo}>
             <span className="seta" aria-hidden="true" />
-            Tentar de novo
+            Tenta de novo
           </button>
         </div>
       )}

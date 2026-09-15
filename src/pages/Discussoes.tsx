@@ -65,16 +65,15 @@ export function Discussoes() {
 
           {!discussoes.carregando && !discussoes.erro && total === 0 && !tema && (
             <Cartaz
-              titulo="Nenhuma conversa aberta ainda"
-              acao={{ texto: 'Publicar projeto e abrir discussão', para: '/projetos/novo' }}
+              titulo="Ainda ninguém puxou conversa"
+              acao={{ texto: 'Publicar projeto e puxar um assunto', para: '/projetos/novo' }}
             >
               <p>
-                Aqui ficam as discussões de todos os projetos, agrupadas por tema. Elas
-                nascem junto com um projeto: quem publica pode abrir um assunto ligado a
-                ele, e qualquer pessoa da turma entra — mesmo sem fazer parte do projeto.
+                Toda conversa aqui nasce de um projeto. Publica o seu e abre a
+                primeira: tem gente pensando nisso e ainda não sabe que você existe.
               </p>
               <p className="miudo">
-                Também dá para <Link to="/temas">olhar os temas</Link> antes de decidir.
+                Dá pra <Link to="/temas">olhar os temas</Link> antes de decidir.
               </p>
             </Cartaz>
           )}

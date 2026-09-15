@@ -117,14 +117,13 @@ export function Projetos() {
 
           {!projetos.carregando && !projetos.erro && total === 0 && !filtrando && (
             <Cartaz
-              titulo="O mural está esperando o primeiro"
+              titulo="Nenhum projeto ainda. Toda cena começa assim."
               cor="vermelho"
               acao={{ texto: 'Publicar o primeiro projeto', para: '/projetos/novo' }}
             >
               <p>
-                Nenhum projeto publicado ainda. Publique o seu — mesmo em estágio de
-                ideia. É o projeto que declara o que precisa, e é assim que alguém
-                descobre que serve para ele.
+                Alguém tem que ser o primeiro. Pode ser uma ideia que ainda mora só
+                na sua cabeça — é publicando que ela encontra gente.
               </p>
             </Cartaz>
           )}

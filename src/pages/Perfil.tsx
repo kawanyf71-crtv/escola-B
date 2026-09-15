@@ -172,8 +172,8 @@ export function Perfil() {
               <h3>Nenhum projeto publicado ainda</h3>
               <p>
                 {souEu
-                  ? 'Publique o seu — nem que seja uma ideia. É o projeto que diz o que você precisa.'
-                  : `${p.nome.split(' ')[0]} ainda não publicou projeto nesta rede.`}
+                  ? 'Publica o seu — nem que seja uma ideia. É o projeto que diz o que você precisa.'
+                  : 'Ainda não publicou nenhum projeto.'}
               </p>
               {souEu && (
                 <div className="acoes">

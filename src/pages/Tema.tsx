@@ -65,11 +65,11 @@ export function Tema() {
           {!discussoes.carregando && !discussoes.erro && (discussoes.dados ?? []).length === 0 && (
             <div className="card card--escuro">
               <h3 className="card__titulo">
-                <span className="seta seta--amarela" aria-hidden="true" />Nada aberto aqui
+                <span className="seta seta--amarela" aria-hidden="true" />Ninguém puxou isso ainda
               </h3>
               <p className="miudo">
-                Ninguém puxou esse assunto ainda. Discussões nascem junto com um
-                projeto — publique o seu e abra a primeira.
+                Abre uma conversa e chama quem pensa nisso. Toda conversa aqui nasce
+                de um projeto — publica o seu e puxa a primeira.
               </p>
               <div className="acoes">
                 <Link className="botao botao--amarelo botao--pequeno" to="/projetos/novo">
@@ -95,8 +95,8 @@ export function Tema() {
             <div className="cartaz">
               <h3>Nenhum projeto<br />marcou este tema</h3>
               <p className="miudo">
-                Se o seu tem a ver com isso, marque o tema ao publicar — é assim que
-                ele aparece nesta página.
+                Se o seu tem a ver com isso, marca o tema ao publicar — é assim que
+                ele aparece aqui.
               </p>
             </div>
           )}
@@ -116,11 +116,11 @@ export function Tema() {
           {!pessoas.carregando && !pessoas.erro && (pessoas.dados ?? []).length === 0 && (
             <div className="card">
               <h3 className="card__titulo">
-                <span className="seta" aria-hidden="true" />Ninguém declarou ainda
+                <span className="seta" aria-hidden="true" />Ninguém marcou este tema ainda
               </h3>
               <p className="miudo">
-                Marque este tema no seu perfil para aparecer aqui e ser encontrada
-                por quem pensa o mesmo.
+                Marca ele no seu perfil e deixa a porta aberta: quem vier depois vai
+                te achar por aqui.
               </p>
               <div className="acoes">
                 <Link className="botao botao--vermelho botao--pequeno" to="/meu-perfil">

@@ -104,13 +104,12 @@ export function Pessoas() {
 
           {!pessoas.carregando && !pessoas.erro && total === 0 && !filtrando && (
             <Cartaz
-              titulo="Você é uma das primeiras por aqui"
+              titulo="A gente começa agora"
               acao={{ texto: 'Publicar meu projeto', para: '/projetos/novo' }}
             >
               <p>
-                O diretório começa vazio de propósito: ninguém foi importado de lista
-                nenhuma. Chame a turma no grupo do WhatsApp e publique seu projeto —
-                é o projeto que diz o que está faltando.
+                Você é das primeiras a chegar. Publica o seu e chama a turma no
+                grupo — essa rede só existe se a gente construir.
               </p>
             </Cartaz>
           )}
