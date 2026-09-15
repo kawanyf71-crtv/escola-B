@@ -98,7 +98,7 @@ export function Projeto() {
               </Link>
               {p.busca_pessoas && (
                 <Link className="botao botao--contorno" to={`/projetos/${p.id}/interessados`}>
-                  Ver interessados
+                  Ver quem chegou junto
                 </Link>
               )}
               <button type="button" className="botao botao--contorno"
@@ -126,12 +126,10 @@ export function Projeto() {
         <section className="faixa faixa--amarelo">
           <div className="faixa__interno">
             <h2>
-              Você<br />serve<br />para cá
+              Você tem<br />exatamente o que<br />este projeto<br />tá procurando
             </h2>
             <p className="destaque">
-              {encaixe.length === 1
-                ? 'Este projeto procura exatamente uma coisa que você declarou oferecer:'
-                : 'Este projeto procura exatamente estas coisas que você declarou oferecer:'}
+              Não é coincidência. Foi pra isso que este lugar foi feito.
             </p>
             <ul className="chips">
               {encaixe.map((h) => (
@@ -243,10 +241,10 @@ function BlocoProcura({
     return (
       <section className="faixa faixa--vermelho">
         <div className="faixa__interno">
-          <h2>Não está<br />buscando gente</h2>
+          <h2>Não tá<br />procurando gente<br />agora</h2>
           <p style={{ maxWidth: '32rem' }}>
-            Quem publicou marcou que não procura pessoas por enquanto. Se quiser
-            falar sobre o projeto mesmo assim, os contatos estão no perfil.
+            Se quiser falar sobre o projeto mesmo assim, o contato de quem publicou
+            está no perfil.
           </p>
           {projeto.autor && (
             <div className="acoes">
@@ -264,8 +262,8 @@ function BlocoProcura({
   async function enviar(e: FormEvent) {
     e.preventDefault();
     const novos: Record<string, string> = {};
-    if (!tipo) novos.tipo = 'Escolha como você quer participar.';
-    if (!mensagem.trim()) novos.mensagem = 'Escreva duas linhas sobre o que você pode oferecer.';
+    if (!tipo) novos.tipo = 'Marca como você topa entrar.';
+    if (!mensagem.trim()) novos.mensagem = 'Conta em duas linhas o que você traz.';
     setErros(novos);
     setFalha(null);
     if (Object.keys(novos).length > 0) return;
@@ -276,7 +274,7 @@ function BlocoProcura({
       setTipo('');
       aoRegistrar();
     } catch (e2) {
-      setFalha(e2 instanceof Error ? e2.message : 'Não foi possível registrar seu interesse.');
+      setFalha(e2 instanceof Error ? e2.message : 'Não deu pra registrar.');
     } finally {
       setEnviando(false);
     }
@@ -297,14 +295,14 @@ function BlocoProcura({
   return (
     <section className="faixa faixa--vermelho">
       <div className="faixa__interno">
-        <h2>O que este<br />projeto procura</h2>
-        <ul className="chips" aria-label="Conhecimentos procurados">
+        <h2>Quem este<br />projeto procura</h2>
+        <ul className="chips" aria-label="Quem o projeto procura">
           {projeto.conhecimentos_procurados.map((c) => (
             <li key={c}><span className="chip chip--inverso">{c}</span></li>
           ))}
         </ul>
         <p style={{ marginTop: '1rem' }}>
-          <span className="rotulo">Em regime de</span>
+          <span className="rotulo">Como seria participar</span>
         </p>
         <ul className="chips">
           {projeto.tipo_participacao.map((t) => (
@@ -318,7 +316,7 @@ function BlocoProcura({
         {souAutora && (
           <div className="acoes">
             <Link className="botao botao--preto" to={`/projetos/${projeto.id}/interessados`}>
-              <span className="seta" aria-hidden="true" />Ver quem se candidatou
+              <span className="seta" aria-hidden="true" />Ver quem chegou junto
             </Link>
           </div>
         )}
@@ -330,19 +328,19 @@ function BlocoProcura({
           <div style={{ marginTop: '1.5rem' }}>
             <p className="sucesso">
               <span className="seta" aria-hidden="true" />
-              Você já manifestou interesse aqui
+              Você já chegou junto aqui
             </p>
             <p className="miudo" style={{ marginTop: '0.75rem' }}>
-              Sua mensagem e seu perfil completo já estão com quem publicou o projeto.
+              Sua mensagem e seu perfil já estão com quem publicou o projeto.
               A conversa segue pelo WhatsApp ou Instagram.
             </p>
             <div className="acoes">
               <button type="button" className="botao botao--preto" disabled>
-                Interesse registrado
+                Você já chegou junto
               </button>
               <button type="button" className="botao botao--contorno"
                       onClick={cancelar} disabled={enviando}>
-                Cancelar meu interesse
+                Cancelar
               </button>
             </div>
           </div>
@@ -350,21 +348,22 @@ function BlocoProcura({
 
         {!souAutora && !interesse.carregando && !jaManifestei && (
           <form onSubmit={enviar} noValidate style={{ marginTop: '1.5rem', maxWidth: '34rem' }}>
-            <h3>Tenho interesse</h3>
+            <h3>Quero chegar junto</h3>
             {falha && <p className="aviso" role="alert">{falha}</p>}
             <EscolhaUnica
-              nome="tipo" legenda="Como você quer participar"
+              nome="tipo" legenda="Como você topa entrar"
               opcoes={projeto.tipo_participacao} valor={tipo}
               aoMudar={(v) => setTipo(v)} erro={erros.tipo} obrigatorio
             />
-            <Campo id="mensagem" rotulo="Duas linhas sobre o que você oferece"
-                   erro={erros.mensagem} obrigatorio>
+            <Campo id="mensagem" rotulo="Conta em duas linhas o que você traz"
+                   erro={erros.mensagem} obrigatorio
+                   dica="Não precisa vender nada. É só dizer quem você é e o que sabe fazer.">
               <textarea id="mensagem" value={mensagem} maxLength={500}
                         onChange={(e) => setMensagem(e.target.value)} />
             </Campo>
             <button className="botao botao--preto botao--bloco" type="submit" disabled={enviando}>
               <span className="seta" aria-hidden="true" />
-              {enviando ? 'Enviando…' : 'Enviar meu interesse'}
+              {enviando ? 'Enviando…' : 'Quero chegar junto'}
             </button>
             <p className="miudo" style={{ marginTop: '0.75rem' }}>
               Quem publicou vai ver seu perfil completo e esta mensagem.{' '}

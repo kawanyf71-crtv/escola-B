@@ -18,30 +18,29 @@ export function Interessados() {
             <span className="seta" aria-hidden="true" style={{ transform: 'scaleX(-1)' }} />
             {projeto.dados?.nome ?? 'Projeto'}
           </Link>
-          <h1>Quem<br />chegou</h1>
+          <h1>Essa gente quer<br />construir<br />com você</h1>
           <p className="miudo">
-            O perfil completo e a mensagem de cada pessoa que se candidatou.
-            Daqui você chama no WhatsApp ou no Instagram.
+            O perfil e a mensagem de cada pessoa que chegou junto. Daqui você chama
+            no WhatsApp ou no Instagram.
           </p>
         </div>
       </section>
 
       <section className="faixa faixa--claro">
         <div className="faixa__interno">
-          {lista.carregando && <Carregando quantidade={2} rotulo="Carregando interessados" />}
+          {lista.carregando && <Carregando quantidade={2} rotulo="Buscando quem chegou junto" />}
           {lista.erro && <Erro mensagem={lista.erro} aoTentarDeNovo={lista.recarregar} />}
 
           {!lista.carregando && !lista.erro && (lista.dados ?? []).length === 0 && (
             <div className="cartaz">
-              <h2>Ninguém<br />ainda</h2>
+              <h2>Ninguém<br />chegou ainda</h2>
               <p>
-                Nenhuma pessoa se candidatou a este projeto por enquanto. Vale checar
-                se os conhecimentos procurados estão bem escolhidos — é por eles que
-                alguém descobre que serve para cá.
+                Vale conferir se o "quem você procura" tá bem escolhido — é por ele
+                que alguém descobre que é com você.
               </p>
               <div className="acoes">
                 <Link className="botao botao--preto" to={`/projetos/${id}/editar`}>
-                  <span className="seta" aria-hidden="true" />Rever o que o projeto procura
+                  <span className="seta" aria-hidden="true" />Rever quem o projeto procura
                 </Link>
               </div>
             </div>
@@ -80,7 +79,7 @@ export function Interessados() {
                     <>
                       {encaixe.length > 0 && (
                         <div className="correspondencia" style={{ marginTop: '1rem' }}>
-                          <span className="rotulo">Bate com o que você procura</span>
+                          <span className="rotulo">Bate com quem você procura</span>
                           <ul className="chips">
                             {encaixe.map((h) => (
                               <li key={h}><span className="chip chip--inverso">{h}</span></li>
@@ -91,7 +90,7 @@ export function Interessados() {
 
                       <p style={{ marginTop: '1rem' }}>{pessoa.mini_bio}</p>
 
-                      <span className="rotulo" style={{ marginTop: '0.75rem' }}>Oferece</span>
+                      <span className="rotulo" style={{ marginTop: '0.75rem' }}>Sabe fazer</span>
                       <ul className="chips">
                         {pessoa.habilidades_oferecidas.map((h) => (
                           <li key={h}><span className="chip">{h}</span></li>
@@ -100,7 +99,7 @@ export function Interessados() {
 
                       {pessoa.temas_interesse.length > 0 && (
                         <>
-                          <span className="rotulo" style={{ marginTop: '0.75rem' }}>Temas</span>
+                          <span className="rotulo" style={{ marginTop: '0.75rem' }}>O que move</span>
                           <ul className="chips">
                             {pessoa.temas_interesse.map((t) => (
                               <li key={t}>
@@ -114,7 +113,7 @@ export function Interessados() {
                       {pessoa.disponibilidade.length > 0 && (
                         <>
                           <span className="rotulo" style={{ marginTop: '0.75rem' }}>
-                            Disponibilidade
+                            Topa participar como
                           </span>
                           <ul className="chips">
                             {pessoa.disponibilidade.map((d) => (

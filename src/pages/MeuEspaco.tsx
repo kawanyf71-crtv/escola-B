@@ -35,7 +35,7 @@ export function MeuEspaco() {
       <section className="faixa faixa--amarelo faixa--fina">
         <div className="faixa__interno">
           <h1>Meu<br />espaço</h1>
-          <p className="miudo">Seus projetos, quem chegou até eles e onde você se candidatou.</p>
+          <p className="miudo">Seus projetos, quem chegou junto e onde você chegou junto.</p>
           <div className="acoes">
             <Link className="botao botao--preto" to="/meu-perfil">
               <span className="seta" aria-hidden="true" />Editar meu perfil
@@ -52,15 +52,16 @@ export function MeuEspaco() {
       <section className="faixa faixa--claro">
         <div className="faixa__interno">
           <h2>Meus projetos</h2>
-          {projetos.carregando && <Carregando quantidade={2} rotulo="Carregando seus projetos" />}
+          {projetos.carregando && <Carregando quantidade={2} rotulo="Buscando os seus projetos" />}
           {projetos.erro && <Erro mensagem={projetos.erro} aoTentarDeNovo={projetos.recarregar} />}
 
           {!projetos.carregando && !projetos.erro && (projetos.dados ?? []).length === 0 && (
             <div className="cartaz cartaz--vermelho">
-              <h3>Você ainda não publicou nada</h3>
+              <h3>Você ainda<br />não publicou nada</h3>
               <p>
-                Sem projeto, ninguém sabe o que você precisa — e você não pode abrir
-                discussão, porque toda discussão nasce de um projeto. Comece por uma ideia.
+                Sem projeto, ninguém sabe o que falta pra você — e não dá pra puxar
+                assunto, porque toda conversa aqui nasce de um projeto. Começa por
+                uma ideia.
               </p>
               <div className="acoes">
                 <Link className="botao botao--preto" to="/projetos/novo">
@@ -81,7 +82,7 @@ export function MeuEspaco() {
                             to={`/projetos/${p.id}/editar`}>Editar</Link>
                       {p.busca_pessoas && (
                         <Link className="botao botao--vermelho botao--pequeno"
-                              to={`/projetos/${p.id}/interessados`}>Interessados</Link>
+                              to={`/projetos/${p.id}/interessados`}>Quem chegou junto</Link>
                       )}
                     </div>
                   </div>
@@ -99,9 +100,9 @@ export function MeuEspaco() {
 
       <section className="faixa faixa--preto-2">
         <div className="faixa__interno">
-          <h2>Onde me<br />candidatei</h2>
+          <h2>Onde eu<br />cheguei junto</h2>
           {interesses.carregando && (
-            <Carregando quantidade={2} rotulo="Carregando seus interesses" />
+            <Carregando quantidade={2} rotulo="Buscando onde você chegou junto" />
           )}
           {interesses.erro && (
             <Erro mensagem={interesses.erro} aoTentarDeNovo={interesses.recarregar} />
@@ -109,9 +110,9 @@ export function MeuEspaco() {
 
           {!interesses.carregando && !interesses.erro && (interesses.dados ?? []).length === 0 && (
             <p>
-              Nenhum interesse enviado ainda.{' '}
-              <Link to="/projetos">Veja o mural</Link> e filtre por uma habilidade que
-              você oferece.
+              Você ainda não chegou junto em nada.{' '}
+              <Link to="/projetos">Dá uma olhada no mural</Link> e filtra por algo que
+              você sabe fazer.
             </p>
           )}
 
