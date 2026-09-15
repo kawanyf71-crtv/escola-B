@@ -76,12 +76,12 @@ Três suítes, todas contra o navegador de verdade em 390px:
 
 | Comando | O que confere |
 |---|---|
-| `npm run verificar:jornada` | Os critérios de aceite das histórias H1–H6 e os requisitos funcionais que dependem de interação: validações, correspondência de habilidade, interesse único, assunto que atravessa projeto. |
+| `npm run verificar:jornada` | Os critérios de aceite das histórias H1–H6 e os requisitos funcionais que dependem de interação: validações, correspondência de habilidade, interesse único, assunto que atravessa projeto, e a navegação do celular (a barra leva de uma seção a outra, diz onde se está, e o menu guarda só o que é secundário). |
 | `npm run verificar:contraste` | Contraste AA (WCAG 1.4.3) em todo texto visível, incluindo estados vazio, de erro e sem sessão. |
 | `npm run verificar:acessibilidade` | Alvos de toque de 44px, rótulo em todo controle, `alt` em toda imagem, um `h1` por página, link de pulo no primeiro Tab. |
 | `npm run verificar:imagem` | O upload: compressão de um PNG de 12 MB, limite de 512x512 na foto e 1280px na capa, pré-visualização, remoção, arrastar e soltar, tipo recusado, persistência e compatibilidade com URL antiga. |
 | `npm run verificar:exemplo` | O lote de demonstração: quantos registros de cada tipo, quais páginas de tema ficaram com conteúdo, se algum card estoura em 390px, se o selo EXEMPLO aparece em todo card do lote, se um perfil de exemplo consegue entrar (não pode) e se apagar o lote deixa intacto o que é de verdade. |
-| `npm run verificar:ritmo` | As regras de cor por tipo de página. Na página-cartaz: nunca duas faixas da mesma cor coladas, no máximo uma faixa amarela por tela, preto como base da maior parte da área pintada. Na página-ferramenta: fundo preto único, nenhuma faixa pintando por conta própria. Nas duas: nenhum botão que suma na superfície atrás dele. |
+| `npm run verificar:ritmo` | As regras de cor por tipo de página. Na página-cartaz: nunca duas faixas da mesma cor coladas, no máximo uma faixa amarela por tela, preto como base da maior parte da área pintada. Na página-ferramenta: fundo preto único, nenhuma faixa pintando por conta própria. Nas duas: nenhum botão que suma na superfície atrás dele, e nenhum campo ou chip de opção sem 3:1 entre o que o identifica e o fundo. O menu de tela cheia entra na conta — é a única superfície que só existe depois de um clique, e por isso a única que passava sem ser medida. |
 
 Variáveis que as suítes aceitam:
 
@@ -320,6 +320,30 @@ conteúdo, `--e3`; entre seções, `--e4`.
 E a separação entre seções, que era troca de fundo, passa a ser uma régua de 3px
 vermelha de 4rem acima do título amarelo da seção. Curta de propósito: régua da
 largura toda corta a página de novo; régua de 4rem agrupa o que vem embaixo.
+
+### Navegação contínua
+
+No celular, a navegação era um botão que abria um menu amarelo em tela cheia:
+para trocar de seção a pessoa saía da página e voltava sem referência de onde
+estava — mais um corte, agora no tempo em vez do espaço.
+
+Agora existe uma barra fixa no rodapé, abaixo de 55rem, com quatro itens: Gente,
+Projetos, Assuntos e Meu espaço. Quatro porque acima disso cada alvo fica menor
+que o dedo. Cada item é seta da marca mais rótulo; o item ativo fica amarelo e
+sublinhado — sublinhado porque cor sozinha não pode ser o único indicador
+visual (WCAG 1.4.1), e é a mesma marcação que a navegação do desktop já usava.
+
+O que sobrou — Temas e Sair — ficou no menu de tela cheia, que deixa de ser a
+navegação e passa a ser só o que se usa de vez em quando, atrás de um botão de
+contorno no cabeçalho em vez de um retângulo amarelo. O cabeçalho afina junto:
+no celular ele é só a marca à esquerda e esse botão à direita.
+
+A migalha de volta em amarelo, logo abaixo do cabeçalho, é o outro fio de
+continuidade — está em todas as telas de detalhe (perfil, projeto, assunto,
+tema, quem chegou junto).
+
+No desktop nada disso aparece: a barra some, a navegação horizontal completa
+continua no cabeçalho.
 
 ### Proporção e ritmo (página-cartaz)
 

@@ -322,6 +322,17 @@ await p.getByRole('link', { name: 'Kawany Feliciano' }).first().click();
 await p.waitForURL(/\/pessoas\/[0-9a-f-]{36}$/);
 await conferir('/pessoas/:id');
 
+/* O menu de tela cheia e a unica superficie que so existe depois de um clique —
+   e por isso a unica que nunca era medida. Botao preto sobre ele ja sumiu uma
+   vez. */
+await ir(p, '/pessoas');
+await p.getByRole('button', { name: /^Menu$/i }).click();
+await p.waitForTimeout(300);
+for (const aviso of await p.evaluate(BOTOES_SUMIDOS)) {
+  problemas.push(`/pessoas (menu aberto): botão ${aviso}`);
+}
+await p.getByRole('button', { name: /^Fechar$/i }).click();
+
 /* Entrada, cadastro e login só existem deslogado — logado as três redirecionam
    pra dentro do app. É aqui que a página-cartaz entra na conta. */
 await sair(p);

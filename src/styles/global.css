@@ -818,10 +818,12 @@ select {
   padding-top: env(safe-area-inset-top, 0px);
 }
 
+/* No celular o cabecalho e so marca e botao de menu, e afina: a navegacao saiu
+   dele e foi pra barra de baixo, onde o polegar alcanca. */
 .cabecalho__barra {
   max-width: var(--largura);
   margin: 0 auto;
-  padding: 0.75rem var(--gutter);
+  padding: 0.5rem var(--gutter);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -863,6 +865,15 @@ select {
 /* A navegacao horizontal so existe no desktop; no celular tudo vive no menu
    de tela cheia, inclusive o Sair. */
 .nav-desktop { display: none; }
+
+/* O botao que abre o menu deixa de ser amarelo cheio: ele nao e mais a
+   navegacao, e so o caminho pro que se usa de vez em quando. O rotulo e a seta
+   e que o identificam — o contorno e só limite. */
+.menu-botao--discreto {
+  background: transparent;
+  border: 1px solid var(--linha);
+  color: var(--tinta);
+}
 
 .nav-sair {
   font-weight: 600;
@@ -926,7 +937,8 @@ select {
 
 .menu-cheio nav { display: flex; flex-direction: column; }
 
-.menu-cheio nav a {
+.menu-cheio nav a,
+.menu-cheio nav button {
   display: flex;
   align-items: center;
   font-family: var(--corpo);
@@ -941,9 +953,79 @@ select {
   border-bottom: 4px solid var(--preto);
 }
 
+.menu-cheio nav button {
+  width: 100%;
+  background: transparent;
+  border-width: 0 0 4px;
+  border-style: solid;
+  cursor: pointer;
+  text-align: left;
+}
+
 .menu-cheio nav a[aria-current='page'] { background: var(--preto); color: var(--amarelo); }
 
 /* ------------------------------------------------------------------- rodape */
+
+/* ---------------------------------------------------- barra do celular */
+
+.barra-baixo {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 25;
+  display: flex;
+  background: var(--preto);
+  border-top: 1px solid var(--linha);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.barra-baixo a {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3125rem;
+  min-height: var(--alvo);
+  padding: 0.5rem 0.25rem;
+  font-family: var(--corpo);
+  font-weight: 600;
+  font-size: 0.6875rem;
+  line-height: 1;
+  text-transform: uppercase;
+  text-align: center;
+  color: var(--tinta);
+  text-decoration: none;
+}
+
+.barra-baixo .seta {
+  width: 0.875rem;
+  height: 0.875rem;
+  margin: 0;
+}
+
+/* O amarelo diz onde se esta; o sublinhado diz a mesma coisa sem depender de
+   cor, que e o que a norma pede (1.4.1). E a mesma marcacao que a navegacao
+   do desktop ja usa. */
+.barra-baixo a[aria-current='page'] {
+  color: var(--amarelo);
+  text-decoration: underline;
+}
+
+/* O rodape e o ultimo bloco da pagina: e nele que entra o espaco da barra, pra
+   nada terminar escondido atras dela. */
+.pagina--com-barra .rodape {
+  padding-bottom: calc(2rem + var(--alvo) + 1rem + env(safe-area-inset-bottom, 0px));
+}
+
+@media (min-width: 55rem) {
+  .barra-baixo { display: none; }
+  .cabecalho__barra { padding: 0.75rem var(--gutter); }
+  .pagina--com-barra .rodape {
+    padding-bottom: calc(2rem + env(safe-area-inset-bottom, 0px));
+  }
+}
 
 .rodape {
   background: var(--preto);
@@ -1053,6 +1135,7 @@ select {
 /* Cartaz e card continuam sendo superficie propria: ali a guarda volta a ser
    medida contra o fundo do bloco, e nao contra o da pagina. */
 .pagina--app .cartaz .botao--preto,
+.pagina--app .menu-cheio .botao--preto,
 .pagina--app .card .botao--preto { background: var(--preto); color: var(--tinta); }
 .pagina--app .cartaz--preto .botao--preto { background: var(--amarelo); color: var(--preto); }
 .pagina--app .cartaz--vermelho .botao--vermelho { background: var(--preto); color: var(--tinta); }
@@ -1067,7 +1150,8 @@ select {
    Com um fundo so, ele fica amarelo em toda a pagina — menos dentro das ilhas
    de cor que ainda existem, onde amarelo sobre amarelo sumiria. */
 .pagina--app :focus-visible { outline-color: var(--amarelo); }
-.pagina--app .cartaz:not(.cartaz--preto) :focus-visible { outline-color: var(--preto); }
+.pagina--app .cartaz:not(.cartaz--preto) :focus-visible,
+.pagina--app .menu-cheio :focus-visible { outline-color: var(--preto); }
 
 /* Escala de titulo da pagina-ferramenta. O h1 de 8.6vw e medida de cartaz: numa
    tela interna ele toma a viewport inteira e faz o conteudo parecer legenda.

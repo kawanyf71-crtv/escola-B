@@ -269,6 +269,38 @@ await checar('RF-017 quem abriu o assunto pode apagá-lo', async () => {
   await p.getByRole('button', { name: /apagar este assunto/i }).waitFor({ timeout: 3000 });
 });
 
+// ------------------------------------------------- navegacao do celular
+await ir(p, '/pessoas');
+
+await checar('A barra do celular leva de uma seção a outra', async () => {
+  await p.locator('.barra-baixo').getByRole('link', { name: 'Projetos' }).click();
+  await p.waitForURL('**/projetos', { timeout: 3000 });
+});
+
+await checar('A barra diz em que seção a pessoa está', async () => {
+  const atual = p.locator('.barra-baixo a[aria-current="page"]');
+  await atual.waitFor({ timeout: 3000 });
+  const texto = (await atual.innerText()).trim();
+  if (!/projetos/i.test(texto)) throw new Error(`marcou "${texto}", não Projetos`);
+});
+
+await checar('O menu guarda só o que é secundário', async () => {
+  await p.getByRole('button', { name: /^Menu$/i }).click();
+  const menu = p.getByRole('dialog', { name: /menu/i });
+  await menu.getByRole('link', { name: /Temas/i }).waitFor({ timeout: 3000 });
+  await menu.getByRole('button', { name: /^Sair$/i }).waitFor({ timeout: 3000 });
+  // O que está na barra não se repete aqui: seriam dois caminhos pro mesmo lugar.
+  if (await menu.getByRole('link', { name: 'Gente' }).count() > 0) {
+    throw new Error('o menu repete um item que já está na barra');
+  }
+});
+
+await checar('Dá pra fechar o menu e continuar de onde estava', async () => {
+  await p.getByRole('button', { name: /fechar/i }).click();
+  await p.getByRole('dialog', { name: /menu/i }).waitFor({ state: 'hidden', timeout: 3000 });
+  if (!p.url().includes('/projetos')) throw new Error('saiu da página ao abrir o menu');
+});
+
 // -------------------------------------------------- responsividade 390px
 await checar('Nenhuma tela rola na horizontal a 390px', async () => {
   for (const rota of ['/pessoas', '/projetos', '/assuntos', '/temas',
