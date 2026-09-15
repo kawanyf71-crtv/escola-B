@@ -79,6 +79,7 @@ Três suítes, todas contra o navegador de verdade em 390px:
 | `npm run verificar:jornada` | Os critérios de aceite das histórias H1–H6 e os requisitos funcionais que dependem de interação: validações, correspondência de habilidade, interesse único, assunto que atravessa projeto. |
 | `npm run verificar:contraste` | Contraste AA (WCAG 1.4.3) em todo texto visível, incluindo estados vazio, de erro e sem sessão. |
 | `npm run verificar:acessibilidade` | Alvos de toque de 44px, rótulo em todo controle, `alt` em toda imagem, um `h1` por página, link de pulo no primeiro Tab. |
+| `npm run verificar:ritmo` | As regras de proporção e ritmo da identidade: nunca duas faixas da mesma cor coladas, no máximo uma faixa amarela por tela, preto como base da maior parte da área pintada, e nenhum botão que suma na superfície atrás dele. |
 
 Variáveis que as suítes aceitam:
 
@@ -182,13 +183,40 @@ de terceiro, economiza conexões no 4G e garante que a assinatura tipográfica
 apareça mesmo em rede que bloqueie o Google Fonts. Trocar pela Shapiro 95 Super,
 se a Escola B tiver a licença, são duas linhas em `src/styles/fontes.css`.
 
+### Proporção e ritmo
+
+O preto é a base: 45% a 76% da área pintada em cada tela, medido pelo
+`verificar:ritmo`, que desconta da faixa os blocos com fundo próprio — uma
+faixa amarela cheia de cards pretos pinta muito menos amarelo do que a altura
+dela sugere. Telas de leitura longa (formulários, a lista de quem chegou junto)
+ficam em off-white por regra e não entram nessa conta.
+
+O amarelo é acento: no máximo uma faixa cheia por tela, às vezes nenhuma. As
+faixas alternam preto → off-white → acento → preto, e duas da mesma cor nunca
+se encostam.
+
+O vermelho é a terceira cor e é o que quebra o binário amarelo/preto: títulos de
+seção, botão secundário, ações destrutivas, setas de destaque e os números de
+contagem.
+
+Onde não há fotografia, os elementos gráficos da marca entram como quebra: setas
+triangulares maciças e o globo em traço grosso sem preenchimento
+(`src/components/Grafismo.tsx`). Os estados vazios ganham uma seta grande como
+elemento visual central.
+
 ### Desvios conscientes da marca
 
 Os dois que a spec já previu, mais um que apareceu na conferência:
 
 1. **Botão amarelo leva texto `#111111`**, não branco (previsto na spec).
 2. **Corpo a 16px**, não 12,8px (previsto na spec).
-3. **Sobre vermelho, texto pequeno leva tinta preta.** `#F1F1F1` sobre `#ED3124`
+3. **Título de seção em faixa amarela fica preto, não vermelho.** O vermelho
+   sobre o amarelo dá **2,90:1** — reprova até no limiar de texto grande (3:1).
+   Vermelho como cor de título funciona sobre preto (4,56:1) e sobre off-white
+   (3,67:1, válido porque todo `h2` tem no mínimo 28px), e é onde ele está. Na
+   faixa amarela, a marca de destaque antes do título é que fica vermelha — ela
+   é decorativa e não responde por contraste de texto.
+4. **Sobre vermelho, texto pequeno leva tinta preta.** `#F1F1F1` sobre `#ED3124`
    dá 3,67:1 e reprova em AA para texto normal. Só passa quando o rótulo conta
    como "texto grande" — o que vale para o botão padrão (19px em Archivo Black),
    mas não para botão pequeno, aviso de erro ou texto corrido dentro de uma

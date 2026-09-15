@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { Globo } from '../components/Grafismo';
 import { TEMAS, slugTema } from '../lib/dominio';
 
 export function Temas() {
@@ -6,6 +7,7 @@ export function Temas() {
     <>
       <section className="faixa faixa--preto faixa--fina">
         <div className="faixa__interno">
+          <Globo className="grafismo-solto" />
           <h1>Temas</h1>
           <p className="miudo" style={{ maxWidth: '34rem' }}>
             O segundo caminho até as pessoas. Cada tema junta os assuntos abertos,

@@ -32,7 +32,7 @@ export function MeuEspaco() {
 
   return (
     <>
-      <section className="faixa faixa--amarelo faixa--fina">
+      <section className="faixa faixa--preto faixa--fina">
         <div className="faixa__interno">
           <h1>Meu<br />espaço</h1>
           <p className="miudo">Seus projetos, quem chegou junto e onde você chegou junto.</p>
@@ -49,14 +49,15 @@ export function MeuEspaco() {
         </div>
       </section>
 
-      <section className="faixa faixa--claro">
+      <section className="faixa faixa--vermelho">
         <div className="faixa__interno">
           <h2>Meus projetos</h2>
           {projetos.carregando && <Carregando quantidade={2} rotulo="Buscando os seus projetos" />}
           {projetos.erro && <Erro mensagem={projetos.erro} aoTentarDeNovo={projetos.recarregar} />}
 
           {!projetos.carregando && !projetos.erro && (projetos.dados ?? []).length === 0 && (
-            <div className="cartaz cartaz--vermelho">
+            <div className="cartaz cartaz--preto">
+              <span className="seta seta--cartaz" aria-hidden="true" />
               <h3>Você ainda<br />não publicou nada</h3>
               <p>
                 Sem projeto, ninguém sabe o que falta pra você. Começa por uma ideia —
@@ -97,7 +98,7 @@ export function MeuEspaco() {
         </div>
       </section>
 
-      <section className="faixa faixa--preto-2">
+      <section className="faixa faixa--claro">
         <div className="faixa__interno">
           <h2>Onde eu<br />cheguei junto</h2>
           {interesses.carregando && (
@@ -139,7 +140,7 @@ export function MeuEspaco() {
         </div>
       </section>
 
-      <section className="faixa faixa--claro">
+      <section className="faixa faixa--preto">
         <div className="faixa__interno" style={{ maxWidth: '36rem' }}>
           <h2>Sair da rede</h2>
           <p className="miudo">
@@ -148,13 +149,15 @@ export function MeuEspaco() {
           </p>
           {!confirmando ? (
             <div className="acoes">
-              <button type="button" className="botao botao--contorno"
+              <button type="button" className="botao botao--vermelho"
                       onClick={() => setConfirmando(true)}>
+                <span className="seta" aria-hidden="true" />
                 Apagar minha conta
               </button>
             </div>
           ) : (
             <div className="cartaz cartaz--vermelho">
+              <span className="seta seta--cartaz" aria-hidden="true" />
               <h3>Tem certeza?</h3>
               <p>Tudo que você publicou some junto.</p>
               <div className="acoes">

@@ -57,6 +57,9 @@ export function Projeto() {
 
   const souAutora = perfil?.id === p.autor_id;
   const encaixe = correspondencia(perfil?.habilidades_oferecidas, p.conhecimentos_procurados);
+  const mostraCorrespondencia = encaixe.length > 0 && !souAutora;
+  // Sem a faixa amarela no meio, a capa encostaria no "Sobre", que é claro.
+  const faixaDaCapa = mostraCorrespondencia ? 'faixa--claro' : 'faixa--vermelho';
 
   async function alterarEstado(estado: 'publicado' | 'despublicado') {
     await repo.definirEstadoProjeto(id, estado);
@@ -113,7 +116,7 @@ export function Projeto() {
       </section>
 
       {p.imagem && (
-        <section className="faixa faixa--claro faixa--fina">
+        <section className={`faixa ${faixaDaCapa} faixa--fina`}>
           <div className="faixa__interno">
             <img className="card__capa" src={p.imagem} alt={`Capa de ${p.nome}`}
                  style={{ aspectRatio: '21 / 9' }} />
@@ -122,7 +125,7 @@ export function Projeto() {
       )}
 
       {/* RF-008: o destaque de correspondência é o coração do produto. */}
-      {encaixe.length > 0 && !souAutora && (
+      {mostraCorrespondencia && (
         <section className="faixa faixa--amarelo">
           <div className="faixa__interno">
             <h2>
@@ -181,7 +184,7 @@ export function Projeto() {
       />
 
       {/* RF-012: todas as discussões vinculadas ao projeto. */}
-      <section className="faixa faixa--preto-2">
+      <section className="faixa faixa--claro">
         <div className="faixa__interno">
           <h2>Assuntos<br />deste projeto</h2>
           {discussoes.carregando && <Carregando quantidade={1} rotulo="Buscando os assuntos" />}
@@ -239,7 +242,7 @@ function BlocoProcura({
   // "Não busca pessoas": sem botão, só o contato de quem publicou (spec seção 9).
   if (!projeto.busca_pessoas) {
     return (
-      <section className="faixa faixa--vermelho">
+      <section className="faixa faixa--preto">
         <div className="faixa__interno">
           <h2>Não tá<br />procurando gente<br />agora</h2>
           <p style={{ maxWidth: '32rem' }}>
@@ -293,7 +296,7 @@ function BlocoProcura({
   const jaManifestei = interesse.dados !== null;
 
   return (
-    <section className="faixa faixa--vermelho">
+    <section className="faixa faixa--preto">
       <div className="faixa__interno">
         <h2>Quem este<br />projeto procura</h2>
         <ul className="chips" aria-label="Quem o projeto procura">

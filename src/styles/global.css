@@ -20,7 +20,16 @@
   --gutter: 1rem;
   --largura: 68rem;
   --alvo: 2.75rem; /* 44px: alvo minimo de toque */
+
+  /* Tokens de superficie. Cada faixa redefine os seus, e o valor herdado mais
+     proximo vence — entao um card sabe em que fundo esta sem que nenhuma regra
+     precise nomear a combinacao. */
   --tinta-link: var(--preto);
+  --acento: var(--vermelho);      /* seta de destaque, contorno de botao */
+  --tinta-titulo: var(--vermelho); /* titulo de secao */
+  --card-fundo: var(--off-white);
+  --card-borda: var(--preto);
+  --card-tinta: var(--preto);
 }
 
 *,
@@ -100,6 +109,11 @@ h1, h2, h3, h4 {
 
 /* 8.6vw faz caber ANCESTRALIDADE (o termo mais longo das listas fixas) em
    uma linha a 390px; acima disso a palavra partia com uma letra orfa. */
+/* Titulo de secao leva a cor de acento da superficie. Todo h2 tem no minimo
+   28px, entao conta como texto grande e o vermelho passa em AA sobre preto
+   (4,56:1) e sobre off-white (3,67:1). Sobre amarelo o token vira preto. */
+.faixa h2 { color: var(--tinta-titulo); }
+
 h1 { font-size: clamp(1.875rem, 8.6vw, 4.5rem); }
 h2 { font-size: clamp(1.75rem, 7.5vw, 3rem); }
 h3 { font-size: clamp(1.25rem, 5vw, 1.75rem); }
@@ -151,14 +165,45 @@ p:last-child { margin-bottom: 0; }
    as escuras vem DEPOIS — senao a variante escura de um bloco claro herda
    tinta preta sobre fundo preto. */
 .faixa--amarelo, .faixa--vermelho, .faixa--claro, .menu-cheio,
-.cartaz, .cartaz--vermelho, .card, .correspondencia,
+.cartaz, .cartaz--vermelho, .correspondencia,
 .esqueleto { --tinta-link: var(--preto); }
 
 .faixa--preto, .faixa--preto-2, .cabecalho, .rodape,
-.cartaz--preto, .card--escuro { --tinta-link: var(--amarelo); }
+.cartaz--preto { --tinta-link: var(--amarelo); }
 
-.faixa--preto .botao--contorno,
-.faixa--preto-2 .botao--contorno { color: var(--amarelo); }
+/* O card NAO fixa a tinta do link: sobre faixa clara ele e off-white e herda
+   preto, sobre faixa escura e transparente e herda amarelo. So quando o fundo
+   do card diverge do fundo da faixa e que ele precisa declarar a sua. */
+.faixa--amarelo .card, .faixa--vermelho .card,
+.card--escuro { --tinta-link: var(--amarelo); }
+
+/* Sobre preto o card fica de contorno, sem preenchimento: e o que deixa o
+   fundo aparecer e o preto chegar aos 60-70% da tela numa lista longa. */
+.faixa--preto, .faixa--preto-2 {
+  --card-fundo: transparent;
+  --card-borda: var(--amarelo);
+  --card-tinta: var(--off-white);
+}
+
+/* Sobre amarelo e sobre vermelho o card e preto: devolve massa escura a uma
+   faixa de cor cheia, em vez de empilhar placa sobre placa. */
+.faixa--amarelo, .faixa--vermelho {
+  --card-fundo: var(--preto);
+  --card-borda: var(--preto);
+  --card-tinta: var(--off-white);
+}
+
+/* O vermelho nao alcanca 3:1 sobre o amarelo (2,90:1), entao sobre amarelo e
+   sobre o proprio vermelho o acento e preto. Nas demais superficies o acento e
+   vermelho, que e o que quebra o binario amarelo/preto. */
+.faixa--amarelo, .faixa--vermelho, .cartaz, .cartaz--vermelho, .correspondencia {
+  --acento: var(--preto);
+  --tinta-titulo: var(--preto);
+}
+
+.faixa--preto, .faixa--preto-2 { --tinta-titulo: var(--vermelho); }
+
+
 
 .faixa--fina { padding: 1.25rem 0; }
 
@@ -178,6 +223,24 @@ p:last-child { margin-bottom: 0; }
 .seta--baixo  { clip-path: polygon(0 0, 100% 0, 50% 100%); }
 .seta--grande { width: 1.4rem; height: 1.4rem; }
 .seta--amarela { background: var(--amarelo); }
+.seta--acento  { background: var(--acento); }
+
+/* Seta como elemento grafico central, nao como pontuacao: e o que da textura
+   ao estado vazio, onde nao ha foto nenhuma pra quebrar a placa de cor. */
+.seta--cartaz {
+  width: 4rem;
+  height: 4rem;
+  margin: 0 0 1rem;
+  display: block;
+}
+
+/* Grafismo de quebra: o globo em traco grosso, sem preenchimento, usado onde a
+   faixa nao tem fotografia. Puramente decorativo. */
+.grafismo-solto {
+  display: block;
+  color: var(--acento);
+  margin-bottom: 1.25rem;
+}
 
 /* Divisor: fileira de setas. */
 .divisor {
@@ -218,10 +281,12 @@ p:last-child { margin-bottom: 0; }
 .botao--preto    { background: var(--preto);    color: var(--off-white); }
 .botao--claro    { background: var(--off-white); color: var(--preto); }
 
+/* Botao secundario: contorno na cor de acento — vermelho onde ele passa em
+   contraste, preto sobre amarelo e sobre vermelho. */
 .botao--contorno {
   background: transparent;
-  color: currentColor;
-  border: 4px solid currentColor;
+  color: var(--acento);
+  border: 4px solid var(--acento);
   border-radius: 0;
 }
 
@@ -237,6 +302,24 @@ p:last-child { margin-bottom: 0; }
    4,5:1 — o #F1F1F1 sobre vermelho so da 3,67:1. Mesma regra ja aplicada as
    faixas vermelhas: sobre vermelho, texto pequeno leva tinta preta (4,59:1). */
 .botao--pequeno.botao--vermelho { color: var(--preto); }
+
+/* Um botao preenchido precisa se destacar da superficie atras dele — a WCAG
+   pede 3:1 entre componente e fundo (1.4.11). Quando a variante coincide com a
+   cor da faixa, o botao continua legivel e some como objeto: e o caso do botao
+   vermelho numa faixa vermelha. Aqui a variante troca pela cor que contrasta
+   naquela superficie. */
+.faixa--preto .botao--preto,
+.faixa--preto-2 .botao--preto  { background: var(--amarelo);  color: var(--preto); }
+.faixa--amarelo .botao--amarelo  { background: var(--preto);  color: var(--off-white); }
+.faixa--vermelho .botao--vermelho { background: var(--preto); color: var(--off-white); }
+.faixa--claro .botao--amarelo    { background: var(--vermelho); color: var(--off-white); }
+
+/* Cartaz e card sao superficies proprias dentro da faixa: ali a variante volta
+   a valer, medida contra o fundo do bloco e nao contra o da faixa. */
+.cartaz .botao--preto, .card .botao--preto { background: var(--preto); color: var(--off-white); }
+.cartaz .botao--amarelo, .card .botao--amarelo { background: var(--amarelo); color: var(--preto); }
+.cartaz--preto .botao--preto { background: var(--amarelo); color: var(--preto); }
+.cartaz--vermelho .botao--vermelho { background: var(--preto); color: var(--off-white); }
 
 .acoes {
   display: flex;
@@ -294,9 +377,9 @@ a.chip:hover, a.chip:focus-visible { text-decoration: underline; }
 
 .card {
   display: block;
-  background: var(--off-white);
-  color: var(--preto);
-  border: 4px solid var(--preto);
+  background: var(--card-fundo);
+  color: var(--card-tinta);
+  border: 4px solid var(--card-borda);
   border-radius: 0;
   padding: 1rem;
   text-decoration: none;
@@ -308,9 +391,16 @@ a.chip:hover, a.chip:focus-visible { text-decoration: underline; }
   color: inherit;
 }
 
-.card--escuro { background: var(--preto); color: var(--off-white); border-color: var(--amarelo); }
+/* O card escuro tira a borda da superficie em que esta: preta sobre faixa clara
+   (o bloco preto ja se identifica sozinho), amarela sobre faixa preta. Amarelo
+   sobre off-white dava 1,27:1 e lia como sujeira. */
+.card--escuro {
+  background: var(--preto);
+  color: var(--off-white);
+  border-color: var(--card-borda);
+}
 
-.card:hover, .card:focus-visible { border-color: var(--vermelho); }
+.card:hover, .card:focus-visible { border-color: var(--acento); }
 
 /* O titulo do card e o alvo principal para abrir pessoa, projeto ou discussao:
    precisa dos 44px de toque, nao so da altura da linha do texto. */
@@ -506,12 +596,15 @@ select {
   margin-top: 1rem;
 }
 
+/* Numero de contagem em vermelho. A 24px conta como texto grande, o que faz o
+   vermelho passar em AA sobre off-white (3,67:1) — a 16px reprovaria. */
 .contagem {
   font-weight: 900;
   font-family: var(--titulo);
   text-transform: uppercase;
-  font-size: 1rem;
+  font-size: 1.5rem;
   line-height: 1;
+  color: var(--acento);
 }
 
 /* ------------------------------------------------- estados: vazio/erro/load */

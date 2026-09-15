@@ -55,7 +55,7 @@ export function Tema() {
         </div>
       </section>
 
-      <section className="faixa faixa--amarelo">
+      <section className="faixa faixa--claro">
         <div className="faixa__interno">
           <h2>Assuntos<br />abertos</h2>
           {discussoes.carregando && <Carregando quantidade={2} rotulo="Buscando os assuntos" />}
@@ -86,13 +86,14 @@ export function Tema() {
         </div>
       </section>
 
-      <section className="faixa faixa--claro">
+      <section className="faixa faixa--amarelo">
         <div className="faixa__interno">
           <h2>Projetos<br />neste tema</h2>
           {projetos.carregando && <Carregando quantidade={2} rotulo="Buscando os projetos" />}
           {projetos.erro && <Erro mensagem={projetos.erro} aoTentarDeNovo={projetos.recarregar} />}
           {!projetos.carregando && !projetos.erro && (projetos.dados ?? []).length === 0 && (
-            <div className="cartaz">
+            <div className="cartaz cartaz--preto">
+              <span className="seta seta--cartaz" aria-hidden="true" />
               <h3>Nenhum projeto<br />marcou este tema</h3>
               <p className="miudo">
                 Se o seu tem a ver com isso, marca o tema ao publicar — é assim que
@@ -108,7 +109,7 @@ export function Tema() {
         </div>
       </section>
 
-      <section className="faixa faixa--vermelho">
+      <section className="faixa faixa--preto">
         <div className="faixa__interno">
           <h2>Quem se<br />interessa</h2>
           {pessoas.carregando && <Carregando quantidade={2} rotulo="Buscando a turma" />}

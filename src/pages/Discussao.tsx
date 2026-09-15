@@ -159,14 +159,16 @@ export function Discussao() {
           )}
           {souAutora && !confirmandoApagar && (
             <div className="acoes">
-              <button type="button" className="botao botao--contorno"
+              <button type="button" className="botao botao--vermelho"
                       onClick={() => setConfirmandoApagar(true)}>
+                <span className="seta" aria-hidden="true" />
                 Apagar este assunto
               </button>
             </div>
           )}
           {souAutora && confirmandoApagar && (
             <div className="cartaz cartaz--vermelho" style={{ marginTop: '1.25rem' }}>
+              <span className="seta seta--cartaz" aria-hidden="true" />
               <h3>Apagar o assunto?</h3>
               <p>A conversa inteira some junto. Não dá pra desfazer.</p>
               <div className="acoes">
@@ -243,7 +245,7 @@ export function Discussao() {
         </div>
       </section>
 
-      <section className="faixa faixa--preto-2">
+      <section className="faixa faixa--preto">
         <div className="faixa__interno">
           <h2>Quem tá aqui</h2>
           {participantes.carregando && (

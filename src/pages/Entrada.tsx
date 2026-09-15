@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { FileiraDeSetas, Globo } from '../components/Grafismo';
 
 const BLOCOS = [
   {
@@ -51,12 +52,10 @@ export function Entrada() {
         </div>
       </section>
 
-      <section className="faixa faixa--amarelo">
+      <section className="faixa faixa--claro">
         <div className="faixa__interno">
           <h2>Três caminhos<br />até uma pessoa</h2>
-          <div className="divisor" aria-hidden="true">
-            {Array.from({ length: 8 }, (_, i) => <span className="seta" key={i} />)}
-          </div>
+          <FileiraDeSetas />
           <div className="grade grade--3">
             {BLOCOS.map((b) => (
               <article className="card" key={b.titulo}>
@@ -73,6 +72,9 @@ export function Entrada() {
 
       <section className="faixa faixa--vermelho">
         <div className="faixa__interno">
+          {/* Sem fotografia, a faixa seria só placa de cor: o globo em traço
+              grosso é o elemento da marca que dá textura no lugar da imagem. */}
+          <Globo className="grafismo-solto" />
           <h2>
             Uma pessoa sozinha<br />tira um projeto<br />do papel.
           </h2>

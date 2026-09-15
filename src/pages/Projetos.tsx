@@ -44,7 +44,7 @@ export function Projetos() {
         </div>
       </section>
 
-      <section className="faixa faixa--amarelo faixa--fina">
+      <section className="faixa faixa--claro faixa--fina">
         <div className="faixa__interno">
           <h2 className="visualmente-oculto">Filtros</h2>
           <div className="filtros">
@@ -103,7 +103,7 @@ export function Projetos() {
         </div>
       </section>
 
-      <section className="faixa faixa--claro">
+      <section className="faixa faixa--preto">
         <div className="faixa__interno">
           {projetos.carregando && <Carregando rotulo="Buscando os projetos" />}
 

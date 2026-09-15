@@ -116,7 +116,7 @@ export function MeuPerfil() {
 
   return (
     <>
-      <section className="faixa faixa--amarelo">
+      <section className="faixa faixa--preto">
         <div className="faixa__interno">
           <h1>{editando ? 'Editar\nmeu perfil' : 'Quem é você\nnessa turma'}</h1>
           <p style={{ maxWidth: '32rem' }}>

@@ -91,7 +91,7 @@ export function Perfil() {
         </div>
       </section>
 
-      <section className="faixa faixa--amarelo">
+      <section className="faixa faixa--claro">
         <div className="faixa__interno empilhado">
           <div>
             <h2>Sabe fazer</h2>
@@ -163,7 +163,7 @@ export function Perfil() {
         </section>
       )}
 
-      <section className="faixa faixa--claro">
+      <section className="faixa faixa--preto">
         <div className="faixa__interno">
           <h2>Projetos</h2>
           {projetos.carregando && <Carregando quantidade={2} rotulo="Buscando os projetos" />}
@@ -193,7 +193,7 @@ export function Perfil() {
         </div>
       </section>
 
-      <section className="faixa faixa--preto-2">
+      <section className="faixa faixa--claro">
         <div className="faixa__interno">
           <h2>Assuntos</h2>
           {discussoes.carregando && <Carregando quantidade={2} rotulo="Buscando os assuntos" />}

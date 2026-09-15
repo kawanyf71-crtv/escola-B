@@ -28,7 +28,7 @@ export function Discussoes() {
         </div>
       </section>
 
-      <section className="faixa faixa--amarelo faixa--fina">
+      <section className="faixa faixa--claro faixa--fina">
         <div className="faixa__interno">
           <div className="filtros" style={{ gridTemplateColumns: '1fr' }}>
             <div>
@@ -56,7 +56,7 @@ export function Discussoes() {
         </div>
       </section>
 
-      <section className="faixa faixa--claro">
+      <section className="faixa faixa--preto">
         <div className="faixa__interno">
           {discussoes.carregando && <Carregando rotulo="Buscando os assuntos" />}
           {!discussoes.carregando && discussoes.erro && (

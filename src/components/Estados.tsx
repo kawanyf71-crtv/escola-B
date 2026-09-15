@@ -17,6 +17,7 @@ export function Cartaz({
   const classe = cor === 'amarelo' ? 'cartaz' : `cartaz cartaz--${cor}`;
   return (
     <div className={classe}>
+      <span className="seta seta--cartaz" aria-hidden="true" />
       <h2>{titulo}</h2>
       {children}
       {acao && (
@@ -35,6 +36,7 @@ export function Cartaz({
 export function VazioDeFiltro({ aoLimpar }: { aoLimpar: () => void }) {
   return (
     <div className="cartaz cartaz--vermelho">
+      <span className="seta seta--cartaz" aria-hidden="true" />
       <h3>Não achamos<br />ninguém assim.<br />Ainda.</h3>
       <p>Tira um filtro e tenta de novo — a turma tá chegando aos poucos.</p>
       <div className="acoes">
