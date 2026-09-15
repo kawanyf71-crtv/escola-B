@@ -269,6 +269,44 @@ await checar('RF-017 quem abriu o assunto pode apagá-lo', async () => {
   await p.getByRole('button', { name: /apagar este assunto/i }).waitFor({ timeout: 3000 });
 });
 
+// ---------------------------------------------------------------- home
+await checar('A marca leva à home de quem já está dentro', async () => {
+  await ir(p, '/pessoas');
+  await p.getByRole('link', { name: /^Nóis$/i }).click();
+  await p.waitForURL('**/inicio', { timeout: 3000 });
+  await p.getByRole('heading', { name: /ainda não\s*se encontrou/i }).waitFor({ timeout: 3000 });
+});
+
+await checar('A home troca os botões de fora pelos de dentro', async () => {
+  await p.getByRole('link', { name: /Ver a turma/i }).waitFor({ timeout: 3000 });
+  if (await p.getByRole('link', { name: /Começar pelo meu perfil/i }).count() > 0) {
+    throw new Error('a home oferece criar conta a quem já entrou');
+  }
+});
+
+await checar('A home diz que o site não é da Escola B', () =>
+  p.getByText(/não é da Escola B nem do BATEKOO/i).waitFor({ timeout: 3000 }));
+
+await checar('A mini bio começa recolhida e abre no clique', async () => {
+  const resto = p.locator('#bio-resto');
+  const botao = p.getByRole('button', { name: /Ler o resto/i });
+  if (await resto.isVisible()) throw new Error('o resto da bio já começa aberto');
+  await botao.click();
+  await resto.waitFor({ state: 'visible', timeout: 3000 });
+  await p.getByText(/não sabe fazer as coisas pela metade/i).waitFor({ timeout: 3000 });
+  await p.getByRole('button', { name: /Recolher/i }).click();
+  await resto.waitFor({ state: 'hidden', timeout: 3000 });
+});
+
+await checar('O botão do WhatsApp aponta pro número certo, em outra aba', async () => {
+  const zap = p.getByRole('link', { name: /WhatsApp/i });
+  const destino = await zap.getAttribute('href');
+  if (destino !== 'https://wa.me/5511940391863') throw new Error(`href é ${destino}`);
+  if (await zap.getAttribute('rel') !== 'noopener noreferrer') {
+    throw new Error('link externo sem rel="noopener noreferrer"');
+  }
+});
+
 // ------------------------------------------------- navegacao do celular
 await ir(p, '/pessoas');
 

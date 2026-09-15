@@ -124,7 +124,8 @@ for (const r of ['/temas/memoria', '/temas/periferias', '/temas/outro']) {
   await auditar(r);
 }
 
-for (const r of ['/pessoas', '/projetos', '/assuntos', '/temas', '/temas/ancestralidade',
+for (const r of ['/inicio', '/pessoas', '/projetos', '/assuntos', '/temas',
+                 '/temas/ancestralidade',
                  '/meu-espaco', '/meu-perfil', '/projetos/novo', '/assuntos/novo',
                  projeto, `${projeto}/quem-chegou-junto`]) {
   await (r.startsWith('http') ? p.goto(r) : ir(p, r));

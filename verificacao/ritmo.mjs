@@ -300,7 +300,7 @@ await p.getByRole('button', { name: /publicar pra turma ver/i }).click();
 await p.waitForURL(/\/projetos\/[0-9a-f-]{36}$/);
 const projeto = p.url();
 
-for (const rota of ['/pessoas', '/projetos', '/projetos/novo', '/assuntos',
+for (const rota of ['/inicio', '/pessoas', '/projetos', '/projetos/novo', '/assuntos',
                     '/assuntos/novo', '/temas', '/temas/ancestralidade',
                     '/meu-espaco', '/meu-perfil']) {
   await ir(p, rota);

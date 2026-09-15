@@ -321,6 +321,29 @@ E a separação entre seções, que era troca de fundo, passa a ser uma régua d
 vermelha de 4rem acima do título amarelo da seção. Curta de propósito: régua da
 largura toda corta a página de novo; régua de 4rem agrupa o que vem embaixo.
 
+### Duas entradas, o mesmo cartaz
+
+O cartaz de abertura (`src/components/Abertura.tsx`) roda em dois lugares: em
+`/`, para quem chega de fora, e em `/inicio`, a home de quem já entrou. O texto
+é o mesmo nos dois — é o que a plataforma é — e só os botões mudam: quem está de
+fora precisa criar conta, quem está dentro precisa de um caminho pra dentro do
+que já existe. São as duas únicas rotas `.pagina--cartaz`.
+
+A `/inicio` continua depois do cartaz com três seções que só existem lá:
+
+- **Como isso nasceu**, que abre dizendo que o site não é da Escola B nem do
+  BATEKOO, e sim um projeto independente de uma aluna da turma.
+- **Quem construiu**, uma mini bio com o primeiro parágrafo à vista e o resto
+  atrás de um botão (`aria-expanded` + `aria-controls`, o mesmo par que o menu
+  já usa). O botão fica depois do texto: assim abrir não empurra pra fora da
+  tela o que a pessoa acabou de clicar.
+- **O selo** "Pensado e sentido por humanos e desenvolvido por IA", com o
+  relato do vibe coding e um botão discreto de WhatsApp.
+
+A marca no cabeçalho leva pra `/inicio` quando há sessão, e pra `/` quando não
+há. O login continua caindo em `/pessoas` — a home é onde se volta, não onde se
+chega.
+
 ### Navegação contínua
 
 No celular, a navegação era um botão que abria um menu amarelo em tela cheia:
@@ -329,11 +352,11 @@ estava — mais um corte, agora no tempo em vez do espaço.
 
 Agora existe uma barra fixa no rodapé, abaixo de 55rem, com quatro itens: Gente,
 Projetos, Assuntos e Meu espaço. Quatro porque acima disso cada alvo fica menor
-que o dedo. Cada item é seta da marca mais rótulo; o item ativo fica amarelo e
+que o dedo — Início e Temas ficam no menu, e a home também está na marca. Cada item é seta da marca mais rótulo; o item ativo fica amarelo e
 sublinhado — sublinhado porque cor sozinha não pode ser o único indicador
 visual (WCAG 1.4.1), e é a mesma marcação que a navegação do desktop já usava.
 
-O que sobrou — Temas e Sair — ficou no menu de tela cheia, que deixa de ser a
+O que sobrou — Início, Temas e Sair — ficou no menu de tela cheia, que deixa de ser a
 navegação e passa a ser só o que se usa de vez em quando, atrás de um botão de
 contorno no cabeçalho em vez de um retângulo amarelo. O cabeçalho afina junto:
 no celular ele é só a marca à esquerda e esse botão à direita.

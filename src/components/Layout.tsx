@@ -7,7 +7,7 @@ import { useSessao } from '../lib/sessao';
  * peça de comunicação, vistas de uma vez. Todo o resto é página-ferramenta, de
  * fundo contínuo — lugar onde se permanece, rola e preenche.
  */
-const ROTAS_CARTAZ = new Set(['/']);
+const ROTAS_CARTAZ = new Set(['/', '/inicio']);
 
 /**
  * `barra` marca o que cabe na barra fixa do celular. São quatro — mais que isso
@@ -15,6 +15,7 @@ const ROTAS_CARTAZ = new Set(['/']);
  * que deixa de ser a navegação e passa a ser só o que se usa de vez em quando.
  */
 const LINKS = [
+  { para: '/inicio', texto: 'Início', barra: false },
   { para: '/pessoas', texto: 'Gente', barra: true },
   { para: '/projetos', texto: 'Projetos', barra: true },
   { para: '/assuntos', texto: 'Assuntos', barra: true },
@@ -53,7 +54,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
       <header className="cabecalho">
         <div className="cabecalho__barra">
-          <Link className="marca" to={logado ? '/pessoas' : '/'}>
+          <Link className="marca" to={logado ? '/inicio' : '/'}>
             <span className="seta seta--amarela" aria-hidden="true" />
             Nóis
           </Link>

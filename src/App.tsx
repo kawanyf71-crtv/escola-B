@@ -8,6 +8,7 @@ import { Discussao } from './pages/Discussao';
 import { Discussoes } from './pages/Discussoes';
 import { Entrada } from './pages/Entrada';
 import { FormularioProjeto } from './pages/FormularioProjeto';
+import { Inicio } from './pages/Inicio';
 import { Interessados } from './pages/Interessados';
 import { MeuEspaco } from './pages/MeuEspaco';
 import { MeuPerfil } from './pages/MeuPerfil';
@@ -69,6 +70,8 @@ function Rotas() {
         <Route path="/" element={<SoVisitante><Entrada /></SoVisitante>} />
         <Route path="/entrar" element={<SoVisitante><Entrar /></SoVisitante>} />
         <Route path="/criar-conta" element={<SoVisitante><CriarConta /></SoVisitante>} />
+
+        <Route path="/inicio" element={<Protegida><Inicio /></Protegida>} />
 
         <Route
           path="/meu-perfil"

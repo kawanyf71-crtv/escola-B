@@ -70,7 +70,8 @@ await criarParticipante(p, {
   area: 'Comunicação', habilidades: ['Produção'], temas: ['Ancestralidade'],
 });
 
-for (const r of ['/pessoas', '/projetos', '/projetos/novo', '/assuntos', '/assuntos/novo',
+for (const r of ['/inicio', '/pessoas', '/projetos', '/projetos/novo', '/assuntos',
+                 '/assuntos/novo',
                  '/temas', '/temas/ancestralidade', '/meu-espaco', '/meu-perfil']) {
   await ir(p, r);
   await auditar(r);

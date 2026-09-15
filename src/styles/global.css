@@ -1027,6 +1027,29 @@ select {
   }
 }
 
+/* ------------------------------------------------------------- home */
+
+/* A mini bio abre e fecha: o primeiro paragrafo fica a vista, o resto so pra
+   quem quiser. O botao mora depois do texto pra que abrir nao empurre o que a
+   pessoa acabou de clicar pra fora da tela. */
+.bio { max-width: 40rem; }
+.bio > .botao { margin-top: 0.75rem; }
+
+/* O selo e carimbo, nao titulo: retangulo de canto reto com contorno, na
+   familia dos chips e do selo de exemplo. */
+.selo-humano {
+  display: inline-block;
+  font-family: var(--titulo);
+  font-weight: 900;
+  font-size: 0.9375rem;
+  line-height: 1.2;
+  text-transform: uppercase;
+  color: var(--amarelo);
+  border: 3px solid var(--amarelo);
+  padding: 0.625rem 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
 .rodape {
   background: var(--preto);
   color: var(--off-white);
