@@ -126,10 +126,12 @@ function Corpo({ projetoId, inicial }: { projetoId?: string; inicial: Formulario
       }
     }
     if (form.abrir_discussao) {
-      if (!form.discussao_titulo.trim()) e.discussao_titulo = 'Dá um título ao assunto.';
+      if (!form.discussao_titulo.trim()) {
+        e.discussao_titulo = 'Diz sobre o que você quer conversar.';
+      }
       if (!form.discussao_tema) e.discussao_tema = 'Marca um tema — só um.';
       if (!form.discussao_descricao.trim()) {
-        e.discussao_descricao = 'Escreve o que você quer conversar.';
+        e.discussao_descricao = 'Conta melhor o que você quer discutir.';
       }
     }
     return e;
@@ -339,34 +341,41 @@ function Corpo({ projetoId, inicial }: { projetoId?: string; inicial: Formulario
             {/* H5 / RF-011: discussão opcional, criada junto com o projeto. */}
             {!projetoId && (
               <div className="cartaz cartaz--preto" style={{ margin: '2rem 0' }}>
-                <h3>Quer puxar<br />um assunto?</h3>
-                <p className="miudo">
-                  Puxa um assunto que tá te movendo. Tem gente aqui pensando a mesma
-                  coisa e vocês ainda não se falaram.
+                <h3>Quer abrir uma conversa sobre esse projeto?</h3>
+                <p className="miudo" style={{ maxWidth: '34rem' }}>
+                  Além de procurar gente pra trabalhar com você, dá pra abrir uma
+                  conversa aberta sobre alguma questão do projeto — uma dúvida de
+                  produção, um dilema de curadoria, uma decisão que você ainda não
+                  tomou. Qualquer pessoa da turma pode entrar e opinar, mesmo sem
+                  fazer parte do projeto. É onde a experiência de quem já passou por
+                  isso encontra quem está passando agora.
                 </p>
                 <SeletorSimNao
                   nome="abrir_discussao" legenda="" valor={form.abrir_discussao}
                   aoMudar={(v) => campo('abrir_discussao', v)}
-                  textoSim="Quero puxar" textoNao="Agora não"
+                  textoSim="Quero abrir" textoNao="Agora não"
                 />
 
                 {form.abrir_discussao && (
                   <div style={{ marginTop: '1rem' }}>
-                    <Campo id="discussao_titulo" rotulo="Título do assunto"
-                           erro={erros.discussao_titulo} obrigatorio>
+                    <Campo id="discussao_titulo" rotulo="Sobre o que você quer conversar"
+                           erro={erros.discussao_titulo} obrigatorio
+                           dica="Ex.: Como vocês fecham cachê de artista em projeto sem patrocínio?">
                       <input id="discussao_titulo" type="text" value={form.discussao_titulo}
                              onChange={(e) => campo('discussao_titulo', e.target.value)} />
                     </Campo>
                     <EscolhaUnica
-                      nome="discussao_tema" legenda="Tema da conversa" opcoes={TEMAS}
+                      nome="discussao_tema" legenda="Tema" opcoes={TEMAS}
                       valor={form.discussao_tema}
                       aoMudar={(v) => campo('discussao_tema', v)}
                       erro={erros.discussao_tema} obrigatorio
-                      dica="Um só. É ele que junta seu assunto com os outros."
+                      dica="Um só. É ele que junta sua conversa com as outras."
                     />
-                    <Campo id="discussao_descricao" rotulo="O que você quer conversar"
-                           erro={erros.discussao_descricao} obrigatorio>
+                    <Campo id="discussao_descricao" rotulo="Conta melhor o que você quer discutir"
+                           erro={erros.discussao_descricao} obrigatorio
+                           dica="Escreve do seu jeito. Aqui ninguém precisa ter resposta pronta.">
                       <textarea id="discussao_descricao" value={form.discussao_descricao}
+                                style={{ minHeight: '8rem' }}
                                 onChange={(e) => campo('discussao_descricao', e.target.value)} />
                     </Campo>
                   </div>

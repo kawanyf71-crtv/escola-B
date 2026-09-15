@@ -99,9 +99,9 @@ await marcarChip(p, 'Quem você procura', 'Fotografia');
 await marcarChip(p, 'Quem você procura', 'Comunicação');
 await marcarChip(p, 'Temas', 'Ancestralidade');
 await p.locator('#o_que_precisa').fill('Alguém para registrar em foto e cuidar da divulgação.');
-await p.locator('label.opcao', { hasText: 'Quero puxar' }).click();
+await p.locator('label.opcao', { hasText: 'Quero abrir' }).click();
 await p.locator('#discussao_titulo').fill('Baile é política de memória?');
-await marcarChip(p, 'Tema da conversa', 'Ancestralidade');
+await marcarChip(p, 'Tema', 'Ancestralidade');
 await p.locator('#discussao_descricao').fill('Quero discutir se a festa preserva memória ou a consome.');
 await p.getByRole('button', { name: /publicar pra turma ver/i }).click();
 
