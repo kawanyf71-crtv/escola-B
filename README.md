@@ -81,7 +81,7 @@ Três suítes, todas contra o navegador de verdade em 390px:
 | `npm run verificar:acessibilidade` | Alvos de toque de 44px, rótulo em todo controle, `alt` em toda imagem, um `h1` por página, link de pulo no primeiro Tab. |
 | `npm run verificar:imagem` | O upload: compressão de um PNG de 12 MB, limite de 512x512 na foto e 1280px na capa, pré-visualização, remoção, arrastar e soltar, tipo recusado, persistência e compatibilidade com URL antiga. |
 | `npm run verificar:exemplo` | O lote de demonstração: quantos registros de cada tipo, quais páginas de tema ficaram com conteúdo, se algum card estoura em 390px, se o selo EXEMPLO aparece em todo card do lote, se um perfil de exemplo consegue entrar (não pode) e se apagar o lote deixa intacto o que é de verdade. |
-| `npm run verificar:ritmo` | As regras de proporção e ritmo da identidade: nunca duas faixas da mesma cor coladas, no máximo uma faixa amarela por tela, preto como base da maior parte da área pintada, e nenhum botão que suma na superfície atrás dele. |
+| `npm run verificar:ritmo` | As regras de cor por tipo de página. Na página-cartaz: nunca duas faixas da mesma cor coladas, no máximo uma faixa amarela por tela, preto como base da maior parte da área pintada. Na página-ferramenta: fundo preto único, nenhuma faixa pintando por conta própria. Nas duas: nenhum botão que suma na superfície atrás dele. |
 
 Variáveis que as suítes aceitam:
 
@@ -243,17 +243,49 @@ de terceiro, economiza conexões no 4G e garante que a assinatura tipográfica
 apareça mesmo em rede que bloqueie o Google Fonts. Trocar pela Shapiro 95 Super,
 se a Escola B tiver a licença, são duas linhas em `src/styles/fontes.css`.
 
-### Proporção e ritmo
+### Dois tipos de página
 
-O preto é a base: 45% a 76% da área pintada em cada tela, medido pelo
-`verificar:ritmo`, que desconta da faixa os blocos com fundo próprio — uma
-faixa amarela cheia de cards pretos pinta muito menos amarelo do que a altura
-dela sugere. Telas de leitura longa (formulários, a lista de quem chegou junto)
-ficam em off-white por regra e não entram nessa conta.
+A identidade do BATEKOO é de peça gráfica, e peça gráfica é vista de uma vez:
+por isso um cartaz pode ser um bloco de cor inteiro. Um site não — é um lugar
+onde se permanece, rola e preenche. As duas coisas não obedecem à mesma regra,
+então o app declara qual é qual em `Layout.tsx` (`ROTAS_CARTAZ`) e o CSS trata
+cada uma no seu bloco:
+
+| | `.pagina--cartaz` | `.pagina--app` |
+|---|---|---|
+| onde | a entrada (`/`) | todo o resto |
+| o que é | peça de comunicação | ferramenta |
+| fundo | faixas alternadas de cor | preto contínuo, um só |
+| onde a cor vive | no campo de fundo | dentro dos objetos: título, chip, seta, borda, botão, estado |
+
+Na página-ferramenta a `.faixa` continua existindo como ritmo vertical, mas não
+pinta: `background: transparent`. Os tokens de componente (`--card-fundo`,
+`--tinta-link`, `--tinta-titulo`, `--acento`) passam a ter **um valor só na
+página inteira**, em vez de serem redefinidos por cada faixa. Era essa
+redefinição que fazia o mesmo card mudar de aparência três vezes na mesma tela.
+
+O preto ganha degraus para isso funcionar — `--superficie`, `--linha`, `--tinta`
+e companhia — que não são cinza de interface genérica: são níveis dentro do
+`#111111` da marca, o que permite um card existir sem precisar ser um retângulo
+amarelo.
+
+### Proporção e ritmo (página-cartaz)
+
+Na entrada, o preto é a base e precisa ocupar mais área pintada que qualquer
+outra cor, medido pelo `verificar:ritmo`, que desconta da faixa os blocos com
+fundo próprio — uma faixa amarela cheia de cards pretos pinta muito menos
+amarelo do que a altura dela sugere. Cabeçalho e rodapé entram na conta de área;
+na conta de alternância, não.
 
 O amarelo é acento: no máximo uma faixa cheia por tela, às vezes nenhuma. As
 faixas alternam preto → off-white → acento → preto, e duas da mesma cor nunca
 se encostam.
+
+Na página-ferramenta essas três regras não se aplicam — não há faixa pintada
+para alternar. No lugar delas o `verificar:ritmo` cobra o oposto: nenhuma faixa
+pinta fundo próprio, e o fundo da página é o preto da marca. O relatório lista
+as ilhas de superfície que sobram em cada tela (card, cartaz, campo branco),
+que é o material dos próximos passos.
 
 O vermelho é a terceira cor e é o que quebra o binário amarelo/preto: títulos de
 seção, botão secundário, ações destrutivas, setas de destaque e os números de

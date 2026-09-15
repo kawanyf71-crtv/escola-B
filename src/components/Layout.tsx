@@ -2,6 +2,13 @@ import { useEffect, useState } from 'react';
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useSessao } from '../lib/sessao';
 
+/**
+ * Páginas-cartaz: onde a marca dá o soco, com faixas alternadas de cor. São
+ * peça de comunicação, vistas de uma vez. Todo o resto é página-ferramenta, de
+ * fundo contínuo — lugar onde se permanece, rola e preenche.
+ */
+const ROTAS_CARTAZ = new Set(['/']);
+
 const LINKS = [
   { para: '/pessoas', texto: 'Gente' },
   { para: '/projetos', texto: 'Projetos' },
@@ -32,7 +39,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="pagina">
+    <div className={`pagina ${ROTAS_CARTAZ.has(local.pathname) ? 'pagina--cartaz' : 'pagina--app'}`}>
       <a className="pular" href="#conteudo">Pular para o conteúdo</a>
 
       <header className="cabecalho">

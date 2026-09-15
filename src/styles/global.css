@@ -14,6 +14,23 @@
   --off-white: #f1f1f1;
   --branco: #ffffff;
 
+  /* Degraus dentro do preto da marca. Nao sao cinza de superficie no sentido
+     que a auditoria proibe (fundo cinza de pagina, padrao SaaS): sao niveis
+     dentro do #111111, que e o que permite um card existir sem precisar ser um
+     retangulo amarelo.
+
+     Tres deles ainda nao tem uso: --superficie-2 e o campo de formulario, que
+     hoje e branco; --linha-forte e a borda de card em destaque; --tinta-fraca
+     e o texto secundario. Entram nos passos de superficie e tipografia. A
+     escala fica declarada inteira num lugar so pra os degraus serem escolhidos
+     juntos, e nao um a um conforme a tela pede. */
+  --superficie:   #191919;  /* card, painel */
+  --superficie-2: #202020;  /* campo de formulario, hover */
+  --linha:        #2e2e2e;  /* borda sutil */
+  --linha-forte:  #454545;  /* borda de card em destaque */
+  --tinta:        #f1f1f1;  /* texto principal */
+  --tinta-fraca:  #a8a8a8;  /* texto secundario, dica de campo */
+
   --titulo: 'Archivo Black', 'Arial Black', Impact, Haettenschweiler, sans-serif;
   --corpo: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 
@@ -920,6 +937,111 @@ select {
   display: flex;
   flex-direction: column;
 }
+
+/* ======================================================================
+   DOIS TIPOS DE PAGINA
+
+   A identidade do BATEKOO e de peca grafica: um cartaz e visto de uma vez e
+   por isso pode ser um bloco de cor inteiro. Um site nao — e um lugar onde se
+   permanece, rola e preenche. Dai a separacao:
+
+   .pagina--cartaz  a entrada publica. Faixas alternadas de cor, a marca dando
+                    o soco. E peca de comunicacao.
+   .pagina--app     todo o resto. Fundo continuo, e a cor da marca migra do
+                    fundo para dentro dos objetos: titulo, chip, seta, borda,
+                    botao, estado.
+
+   O que sai e so campo de cor como estrutura de pagina — que nao e regra da
+   marca, e consequencia de ela viver em cartazes.
+   ====================================================================== */
+
+/* Comportamento atual, sem nenhuma mudanca. A classe existe pra deixar a
+   intencao escrita no markup. */
+.pagina--cartaz { }
+
+.pagina--app {
+  background: var(--preto);
+  color: var(--tinta);
+
+  /* Um valor so, valido na pagina inteira. Antes cada faixa redefinia estes
+     tokens, e o mesmo componente mudava de aparencia tres vezes na mesma tela
+     — e isso que impedia o olho de ler a pagina como uma coisa so. */
+  --card-fundo: var(--superficie);
+  --card-borda: var(--linha);
+  --card-tinta: var(--tinta);
+  --tinta-titulo: var(--amarelo);
+  --tinta-link: var(--amarelo);
+  --acento: var(--vermelho);
+}
+
+/* A faixa deixa de pintar e vira so ritmo vertical. A tinta precisa cair
+   junto: sem isso, o texto preto de uma faixa amarela ficaria preto sobre
+   preto. */
+.pagina--app .faixa--preto,
+.pagina--app .faixa--preto-2,
+.pagina--app .faixa--amarelo,
+.pagina--app .faixa--vermelho,
+.pagina--app .faixa--claro {
+  background: transparent;
+  color: inherit;
+}
+
+/* Nenhuma faixa redefine token de componente dentro da pagina-ferramenta. */
+.pagina--app .faixa--preto,
+.pagina--app .faixa--preto-2,
+.pagina--app .faixa--amarelo,
+.pagina--app .faixa--vermelho,
+.pagina--app .faixa--claro,
+.pagina--app .faixa--amarelo .card,
+.pagina--app .faixa--vermelho .card {
+  --card-fundo: var(--superficie);
+  --card-borda: var(--linha);
+  --card-tinta: var(--tinta);
+  --tinta-titulo: var(--amarelo);
+  --tinta-link: var(--amarelo);
+  --acento: var(--vermelho);
+}
+
+/* As guardas de botao eram medidas contra a cor da faixa: botao vermelho sobre
+   faixa vermelha virava preto, botao preto sobre faixa preta virava amarelo.
+   Sem faixa pintada essas guardas passam a mentir — o botao vermelho virava
+   preto sobre uma pagina preta e sumia de vez. Entao a guarda da faixa cai
+   inteira e no lugar dela vale uma so: contra o preto da pagina, o unico botao
+   que precisa trocar e o preto. */
+.pagina--app .faixa--preto .botao--preto,
+.pagina--app .faixa--preto-2 .botao--preto,
+.pagina--app .faixa--amarelo .botao--amarelo,
+.pagina--app .faixa--claro .botao--amarelo,
+.pagina--app .botao--preto,
+.pagina--app .botao--amarelo { background: var(--amarelo); color: var(--preto); }
+
+/* O vermelho preenchido volta a valer sobre a pagina preta. A tinta do rotulo
+   vai a preto, nao off-white: off-white sobre vermelho da 3,67:1 e reprova em
+   corpo pequeno — e a mesma razao que ja levava o botao pequeno a preto. */
+.pagina--app .faixa--vermelho .botao--vermelho,
+.pagina--app .botao--vermelho { background: var(--vermelho); color: var(--preto); }
+
+/* Cartaz e card continuam sendo superficie propria: ali a guarda volta a ser
+   medida contra o fundo do bloco, e nao contra o da pagina. */
+.pagina--app .cartaz .botao--preto,
+.pagina--app .card .botao--preto { background: var(--preto); color: var(--tinta); }
+.pagina--app .cartaz--preto .botao--preto { background: var(--amarelo); color: var(--preto); }
+.pagina--app .cartaz--vermelho .botao--vermelho { background: var(--preto); color: var(--tinta); }
+
+/* Mesma historia fora dos botoes: tudo que era "sobre faixa escura" passa a
+   valer na pagina inteira, porque a pagina inteira agora e escura. Sem isto o
+   chip de opcao dentro de um formulario — que morava numa faixa clara — fica
+   com borda preta sobre fundo preto e some como controle. */
+.pagina--app .opcao span { border-color: var(--tinta); }
+.pagina--app .opcao input:checked + span { background: var(--amarelo); color: var(--preto); }
+.pagina--app .comentario { border-left-color: var(--amarelo); }
+
+/* O anel de foco era vermelho por padrao e virava amarelo nas faixas escuras.
+   Com um fundo so, ele fica amarelo em toda a pagina — menos dentro das ilhas
+   de cor que ainda existem, onde amarelo sobre amarelo sumiria. */
+.pagina--app :focus-visible { outline-color: var(--amarelo); }
+.pagina--app .cartaz:not(.cartaz--preto) :focus-visible,
+.pagina--app .correspondencia :focus-visible { outline-color: var(--preto); }
 
 .conteudo { flex: 1; }
 
