@@ -127,9 +127,20 @@ perfil, tema de projeto e tema de discussão leem os **mesmos arrays** de
 funcionar e a página de tema deixa de existir. No banco elas viram `DOMAIN` do
 Postgres, então o servidor também recusa um valor fora da lista.
 
-`RN-004` (todo assunto nasce de um projeto), `RN-005` (um tema por assunto),
-`RN-007` (seis obrigatórios para publicar) e `RN-008` (um interesse por par
-pessoa/projeto) estão como *constraint* na migração, não só no formulário.
+`RN-005` (um tema por assunto), `RN-007` (seis obrigatórios para publicar) e
+`RN-008` (um interesse por par pessoa/projeto) estão como *constraint* na
+migração, não só no formulário.
+
+**`RN-004` foi revertida.** A spec dizia que todo assunto nasce de um projeto,
+para dar contexto à conversa e evitar fórum genérico. Hoje o vínculo é
+**opcional**: dá para puxar assunto solto por `/assuntos/novo`, e quem tem
+projeto publicado pode ligar o assunto a um deles. A migração `0002` só removeu
+o `NOT NULL` — as linhas antigas seguem com o projeto que tinham.
+
+Uma consequência que vale saber: um assunto ligado a um projeto **não
+publicado** não aparece nas listas. Sem essa regra ele apareceria com a origem
+em branco, disfarçado de solto. A regra vive na política de RLS da migração
+`0002`, e não em cada adaptador, para os dois concordarem.
 
 ---
 

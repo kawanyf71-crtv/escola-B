@@ -113,7 +113,8 @@ export interface Repositorio {
   discussoesDoProjeto(projetoId: string): Promise<DiscussaoCompleta[]>;
   discussoesDoParticipante(participanteId: string): Promise<DiscussaoCompleta[]>;
   obterDiscussao(id: string): Promise<DiscussaoCompleta | null>;
-  criarDiscussao(projetoId: string, dados: NovaDiscussao): Promise<Discussao>;
+  /** `projetoId` nulo cria um assunto solto, sem projeto de origem. */
+  criarDiscussao(dados: NovaDiscussao, projetoId: string | null): Promise<Discussao>;
   excluirDiscussao(id: string): Promise<void>;
   participantesDaDiscussao(discussaoId: string): Promise<ParticipanteResumo[]>;
   entrarNaDiscussao(discussaoId: string): Promise<void>;

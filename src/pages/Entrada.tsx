@@ -14,7 +14,7 @@ const BLOCOS = [
   {
     titulo: 'Assuntos',
     texto: 'O que a gente pensa junto rende mais do que o que a gente pensa sozinho. ' +
-      'Toda conversa nasce de um projeto e fica aberta pra quem quiser entrar.',
+      'Qualquer pessoa puxa um assunto, e a conversa fica aberta pra quem quiser entrar.',
   },
 ];
 

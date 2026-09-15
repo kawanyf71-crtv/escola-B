@@ -105,7 +105,9 @@ export class RepositorioLocal implements Repositorio {
   }
 
   private completarDiscussao(b: Banco, d: Discussao): DiscussaoCompleta {
-    const projeto = b.projetos.find((p) => p.id === d.projeto_origem_id);
+    const projeto = d.projeto_origem_id
+      ? b.projetos.find((p) => p.id === d.projeto_origem_id)
+      : undefined;
     return {
       ...d,
       autor: resumo(b.participantes.find((x) => x.id === d.autor_id)),
@@ -159,7 +161,8 @@ export class RepositorioLocal implements Repositorio {
     );
     const minhasDiscussoes = new Set(
       b.discussoes
-        .filter((d) => d.autor_id === s.usuario_id || meusProjetos.has(d.projeto_origem_id))
+        .filter((d) => d.autor_id === s.usuario_id
+          || (d.projeto_origem_id !== null && meusProjetos.has(d.projeto_origem_id)))
         .map((d) => d.id),
     );
     b.comentarios = b.comentarios.filter(
@@ -373,8 +376,12 @@ export class RepositorioLocal implements Repositorio {
     const publicados = new Set(
       b.projetos.filter((p) => p.estado === 'publicado').map((p) => p.id),
     );
+    // Assunto solto sempre aparece. Assunto ligado a um projeto so aparece se o
+    // projeto estiver publicado — senao o link levaria a uma pagina invisivel.
+    const visivel = (d: Discussao) =>
+      d.projeto_origem_id === null || publicados.has(d.projeto_origem_id);
     const encontradas = b.discussoes.filter(
-      (d) => publicados.has(d.projeto_origem_id) && (!tema || d.tema === tema),
+      (d) => visivel(d) && (!tema || d.tema === tema),
     );
     return maisRecentePrimeiro(encontradas).map((d) => this.completarDiscussao(b, d));
   }
@@ -402,13 +409,17 @@ export class RepositorioLocal implements Repositorio {
     return d ? this.completarDiscussao(b, d) : null;
   }
 
-  async criarDiscussao(projetoId: string, dados: NovaDiscussao): Promise<Discussao> {
+  async criarDiscussao(dados: NovaDiscussao, projetoId: string | null): Promise<Discussao> {
     const b = ler();
     const s = this.exigirSessao(b);
-    const projeto = b.projetos.find((p) => p.id === projetoId);
-    if (!projeto) throw new Error('Esse projeto não existe mais.'); // RN-004
-    if (projeto.autor_id !== s.usuario_id) {
-      throw new Error('Só quem publicou pode puxar assunto no projeto.');
+    // Ligar a um projeto e opcional; quando acontece, so vale se o projeto for
+    // de quem esta puxando o assunto.
+    if (projetoId !== null) {
+      const projeto = b.projetos.find((p) => p.id === projetoId);
+      if (!projeto) throw new Error('Esse projeto não existe mais.');
+      if (projeto.autor_id !== s.usuario_id) {
+        throw new Error('Só dá pra ligar o assunto a um projeto seu.');
+      }
     }
     const nova: Discussao = {
       id: id(), ...dados, projeto_origem_id: projetoId,

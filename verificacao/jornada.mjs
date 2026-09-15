@@ -185,6 +185,60 @@ await p.getByRole('button', { name: /^mandar$/i }).click();
 await checar('H6 o comentário entra na conversa', () =>
   p.getByText(/preserva se der crédito/i).waitFor({ timeout: 4000 }));
 
+// ------------------------------------------- assunto solto, sem projeto
+await ir(p, '/assuntos');
+await p.getByRole('link', { name: /puxar um assunto/i }).first().click();
+await p.waitForURL(/\/assuntos\/novo$/);
+
+await checar('Assunto solto: sem projeto publicado, o campo de projeto nem aparece', async () => {
+  // Rafa não publicou projeto nenhum, então não há o que ligar.
+  if (await p.locator('#projeto').count() !== 0) {
+    throw new Error('o campo de projeto apareceu sem projeto pra ligar');
+  }
+});
+
+await p.locator('#titulo').fill('Cachê justo em coletivo é possível?');
+await marcarChip(p, 'Tema da conversa', 'Periferias');
+await p.locator('#descricao').fill('Quero conversar sobre como dividir grana sem furar ninguém.');
+await p.getByRole('button', { name: /^puxar assunto$/i }).click();
+
+await checar('Assunto solto é criado sem projeto de origem', async () => {
+  await p.waitForURL(/\/assuntos\/[0-9a-f-]{36}$/, { timeout: 5000 });
+  await p.getByRole('heading', { name: /Cachê justo em coletivo/i }).waitFor({ timeout: 3000 });
+});
+const urlAssuntoSolto = p.url();
+
+await checar('Assunto solto não mostra nada no lugar da origem', async () => {
+  if (await p.getByText(/a partir de/i).count() !== 0) {
+    throw new Error('mostrou origem num assunto sem projeto');
+  }
+});
+
+await ir(p, '/assuntos');
+await checar('Área geral mostra o assunto solto e o ligado', async () => {
+  await p.getByRole('link', { name: /Cachê justo em coletivo/i }).waitFor({ timeout: 3000 });
+  await p.getByRole('link', { name: /Baile é política de memória/i }).waitFor({ timeout: 3000 });
+});
+
+await checar('Assunto ligado mostra "a partir de" com link para o projeto', async () => {
+  const card = p.locator('.card', { hasText: 'Baile é política de memória' }).first();
+  await card.getByText(/a partir de/i).waitFor({ timeout: 3000 });
+  await card.getByRole('link', { name: 'Baile da Ancestralidade' }).waitFor({ timeout: 3000 });
+});
+
+await ir(p, '/temas/periferias');
+await checar('Página de tema mostra o assunto solto', () =>
+  p.getByRole('link', { name: /Cachê justo em coletivo/i }).waitFor({ timeout: 3000 }));
+
+await p.goto(urlProjeto);
+await checar('Página do projeto mostra só os assuntos ligados a ele', async () => {
+  await p.getByRole('link', { name: /Baile é política de memória/i }).waitFor({ timeout: 3000 });
+  const secao = p.locator('.faixa--preto-2', { hasText: 'Assuntos deste projeto' });
+  if (await secao.getByRole('link', { name: /Cachê justo em coletivo/i }).count() !== 0) {
+    throw new Error('o assunto solto vazou para a página do projeto');
+  }
+});
+
 // ----------------------------------------------------- RF-010 interessados
 await sair(p);
 await ir(p, '/entrar');
@@ -198,6 +252,21 @@ await checar('RF-010 a autora vê perfil completo e mensagem de quem chegou', as
   await p.getByRole('link', { name: 'Rafa Lima' }).first().waitFor({ timeout: 4000 });
   await p.getByText(/Faço o registro fotográfico de graça/i).waitFor({ timeout: 3000 });
   await p.getByText(/Bate com quem você procura/i).waitFor({ timeout: 3000 });
+});
+
+await ir(p, '/assuntos/novo');
+await checar('Com projeto publicado, o campo "Ligar a um projeto meu" aparece', async () => {
+  await p.locator('#projeto').waitFor({ timeout: 3000 });
+  const opcoes = await p.locator('#projeto option').allInnerTexts();
+  if (!opcoes.some((o) => /nenhum/i.test(o))) throw new Error('faltou a opção "nenhum"');
+  if (!opcoes.includes('Baile da Ancestralidade')) throw new Error('faltou o projeto dela');
+});
+
+await checar('RF-017 quem abriu o assunto pode apagá-lo', async () => {
+  await p.goto(urlProjeto);
+  await p.getByRole('link', { name: /Baile é política de memória/i }).click();
+  await p.waitForURL(/\/assuntos\/[0-9a-f-]{36}$/);
+  await p.getByRole('button', { name: /apagar este assunto/i }).waitFor({ timeout: 3000 });
 });
 
 // -------------------------------------------------- responsividade 390px

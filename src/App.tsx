@@ -11,6 +11,7 @@ import { FormularioProjeto } from './pages/FormularioProjeto';
 import { Interessados } from './pages/Interessados';
 import { MeuEspaco } from './pages/MeuEspaco';
 import { MeuPerfil } from './pages/MeuPerfil';
+import { NovoAssunto } from './pages/NovoAssunto';
 import { Perfil } from './pages/Perfil';
 import { Pessoas } from './pages/Pessoas';
 import { Projeto } from './pages/Projeto';
@@ -90,6 +91,7 @@ function Rotas() {
         />
 
         <Route path="/assuntos" element={<Protegida><Discussoes /></Protegida>} />
+        <Route path="/assuntos/novo" element={<Protegida><NovoAssunto /></Protegida>} />
         <Route path="/assuntos/:id" element={<Protegida><Discussao /></Protegida>} />
 
         <Route path="/temas" element={<Protegida><Temas /></Protegida>} />

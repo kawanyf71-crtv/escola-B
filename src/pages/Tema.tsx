@@ -68,12 +68,12 @@ export function Tema() {
                 <span className="seta seta--amarela" aria-hidden="true" />Ninguém puxou isso ainda
               </h3>
               <p className="miudo">
-                Abre uma conversa e chama quem pensa nisso. Toda conversa aqui nasce
-                de um projeto — publica o seu e puxa a primeira.
+                Abre uma conversa e chama quem pensa nisso. Não precisa de projeto
+                pra puxar assunto.
               </p>
               <div className="acoes">
-                <Link className="botao botao--amarelo botao--pequeno" to="/projetos/novo">
-                  <span className="seta" aria-hidden="true" />Publicar meu projeto
+                <Link className="botao botao--amarelo botao--pequeno" to="/assuntos/novo">
+                  <span className="seta" aria-hidden="true" />Puxar um assunto
                 </Link>
               </div>
             </div>

@@ -110,8 +110,9 @@ create index projetos_conhecimentos_idx on projetos using gin (conhecimentos_pro
 -- ---------------------------------------------------------------- discussoes
 
 create table discussoes (
-  -- RN-004: projeto_origem_id NOT NULL. Nao existe discussao avulsa.
   -- RN-005: `tema` e coluna unica, nao array. Um tema por discussao.
+  -- projeto_origem_id nasceu NOT NULL; a migracao 0002 tornou o vinculo
+  -- opcional. Um banco novo aplica as duas em ordem e chega no mesmo lugar.
   id                uuid primary key default gen_random_uuid(),
   titulo            text not null check (length(btrim(titulo)) > 0),
   tema              tema_valido not null,

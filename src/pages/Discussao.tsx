@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Campo } from '../components/Campos';
 import { Carregando, Erro } from '../components/Estados';
 import { CardPessoaCompacto } from '../components/Cards';
@@ -18,6 +18,7 @@ function quando(iso: string): string {
 export function Discussao() {
   const { id = '' } = useParams();
   const { perfil } = useSessao();
+  const navegar = useNavigate();
 
   const discussao = useConsulta(() => repo.obterDiscussao(id), [id]);
   const participantes = useConsulta(() => repo.participantesDaDiscussao(id), [id]);
@@ -27,6 +28,7 @@ export function Discussao() {
   const [erroCampo, setErroCampo] = useState<string | undefined>();
   const [falha, setFalha] = useState<string | null>(null);
   const [enviando, setEnviando] = useState(false);
+  const [confirmandoApagar, setConfirmandoApagar] = useState(false);
 
   if (discussao.carregando) {
     return (
@@ -63,6 +65,7 @@ export function Discussao() {
     );
   }
 
+  const souAutora = perfil?.id === d.autor_id;
   const listaParticipantes = participantes.dados ?? [];
   const jaEstou = perfil ? listaParticipantes.some((p) => p.id === perfil.id) : false;
   const listaComentarios = comentarios.dados ?? [];
@@ -78,6 +81,19 @@ export function Discussao() {
     } catch (e) {
       setFalha(e instanceof Error ? e.message : 'Não deu pra entrar na conversa.');
     } finally {
+      setEnviando(false);
+    }
+  }
+
+  /** RF-017: quem abriu apaga o proprio assunto, tenha ele projeto ou nao. */
+  async function apagar() {
+    setEnviando(true);
+    setFalha(null);
+    try {
+      await repo.excluirDiscussao(id);
+      navegar('/assuntos');
+    } catch (e) {
+      setFalha(e instanceof Error ? e.message : 'Não deu pra apagar.');
       setEnviando(false);
     }
   }
@@ -122,7 +138,7 @@ export function Discussao() {
           <p className="miudo" style={{ marginTop: '1rem' }}>
             {d.autor && <>Puxado por <Link to={`/pessoas/${d.autor.id}`}>{d.autor.nome}</Link></>}
             {d.projeto && (
-              <> · nasceu do projeto{' '}
+              <> · a partir de{' '}
                 <Link to={`/projetos/${d.projeto.id}`}>{d.projeto.nome}</Link>
               </>
             )}
@@ -141,6 +157,31 @@ export function Discussao() {
               <span className="seta" aria-hidden="true" />Você tá nessa
             </p>
           )}
+          {souAutora && !confirmandoApagar && (
+            <div className="acoes">
+              <button type="button" className="botao botao--contorno"
+                      onClick={() => setConfirmandoApagar(true)}>
+                Apagar este assunto
+              </button>
+            </div>
+          )}
+          {souAutora && confirmandoApagar && (
+            <div className="cartaz cartaz--vermelho" style={{ marginTop: '1.25rem' }}>
+              <h3>Apagar o assunto?</h3>
+              <p>A conversa inteira some junto. Não dá pra desfazer.</p>
+              <div className="acoes">
+                <button type="button" className="botao botao--preto"
+                        onClick={apagar} disabled={enviando}>
+                  {enviando ? 'Apagando…' : 'Sim, apaga'}
+                </button>
+                <button type="button" className="botao botao--claro"
+                        onClick={() => setConfirmandoApagar(false)} disabled={enviando}>
+                  Não, voltar
+                </button>
+              </div>
+            </div>
+          )}
+
           {falha && <p className="aviso" role="alert" style={{ marginTop: '1rem' }}>{falha}</p>}
         </div>
       </section>

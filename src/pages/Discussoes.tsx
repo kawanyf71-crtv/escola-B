@@ -17,9 +17,14 @@ export function Discussoes() {
         <div className="faixa__interno">
           <h1>Assuntos</h1>
           <p className="miudo" style={{ maxWidth: '34rem' }}>
-            O que a gente pensa junto rende mais. Toda conversa aqui sai de um projeto
-            e fica aberta pra qualquer pessoa da turma entrar.
+            O que a gente pensa junto rende mais. Toda conversa aqui fica aberta pra
+            qualquer pessoa da turma entrar.
           </p>
+          <div className="acoes">
+            <Link className="botao botao--amarelo" to="/assuntos/novo">
+              <span className="seta" aria-hidden="true" />Puxar um assunto
+            </Link>
+          </div>
         </div>
       </section>
 
@@ -65,11 +70,11 @@ export function Discussoes() {
           {!discussoes.carregando && !discussoes.erro && total === 0 && !tema && (
             <Cartaz
               titulo="Ainda ninguém puxou conversa"
-              acao={{ texto: 'Publicar projeto e puxar um assunto', para: '/projetos/novo' }}
+              acao={{ texto: 'Puxar um assunto', para: '/assuntos/novo' }}
             >
               <p>
-                Toda conversa aqui nasce de um projeto. Publica o seu e abre a
-                primeira: tem gente pensando nisso e ainda não sabe que você existe.
+                Puxa o primeiro assunto. Tem gente aqui pensando nisso e ainda não
+                sabe que você existe.
               </p>
               <p className="miudo">
                 Dá pra <Link to="/temas">olhar os temas</Link> antes de decidir.

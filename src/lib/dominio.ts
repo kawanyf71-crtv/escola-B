@@ -90,7 +90,9 @@ export interface Discussao {
   titulo: string;
   tema: Tema;          // RN-005: exatamente um tema.
   descricao: string;
-  projeto_origem_id: string; // RN-004: toda discussao nasce de um projeto.
+  // Opcional: um assunto pode nascer de um projeto ou solto. Quando ha projeto,
+  // ele da contexto; quando nao ha, o tema sozinho ja agrupa.
+  projeto_origem_id: string | null;
   autor_id: string;
   criado_em: string;
 }

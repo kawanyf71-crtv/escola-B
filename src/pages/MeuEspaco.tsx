@@ -59,9 +59,8 @@ export function MeuEspaco() {
             <div className="cartaz cartaz--vermelho">
               <h3>Você ainda<br />não publicou nada</h3>
               <p>
-                Sem projeto, ninguém sabe o que falta pra você — e não dá pra puxar
-                assunto, porque toda conversa aqui nasce de um projeto. Começa por
-                uma ideia.
+                Sem projeto, ninguém sabe o que falta pra você. Começa por uma ideia —
+                nem que seja uma linha.
               </p>
               <div className="acoes">
                 <Link className="botao botao--preto" to="/projetos/novo">

@@ -113,7 +113,7 @@ await p.waitForURL(/\/projetos\/[0-9a-f-]{36}$/);
 const projeto = p.url();
 
 for (const r of ['/pessoas', '/projetos', '/assuntos', '/temas', '/temas/ancestralidade',
-                 '/meu-espaco', '/meu-perfil', '/projetos/novo',
+                 '/meu-espaco', '/meu-perfil', '/projetos/novo', '/assuntos/novo',
                  projeto, `${projeto}/quem-chegou-junto`]) {
   await (r.startsWith('http') ? p.goto(r) : ir(p, r));
   await auditar(r);

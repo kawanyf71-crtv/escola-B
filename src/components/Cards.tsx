@@ -106,9 +106,12 @@ export function CardDiscussao({ discussao }: { discussao: DiscussaoCompleta }) {
       </h3>
       <p className="card__meta">
         {discussao.autor ? `Puxado por ${discussao.autor.nome}` : 'Puxado na rede'}
-        {discussao.projeto ? ' · nasceu de ' : ''}
+        {/* Assunto solto nao mostra nada no lugar da origem. */}
         {discussao.projeto && (
-          <Link to={`/projetos/${discussao.projeto.id}`}>{discussao.projeto.nome}</Link>
+          <>
+            {' · a partir de '}
+            <Link to={`/projetos/${discussao.projeto.id}`}>{discussao.projeto.nome}</Link>
+          </>
         )}
       </p>
       <p className="miudo">

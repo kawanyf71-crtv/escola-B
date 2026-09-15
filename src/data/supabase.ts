@@ -174,8 +174,7 @@ export class RepositorioSupabase implements Repositorio {
     erro(error, 'Não deu pra publicar');
     const projeto = data as Projeto;
     if (discussao) {
-      // RN-004: a discussao so existe amarrada ao projeto recem-criado.
-      await this.criarDiscussao(projeto.id, discussao);
+      await this.criarDiscussao(discussao, projeto.id);
     }
     return projeto;
   }
@@ -297,7 +296,7 @@ export class RepositorioSupabase implements Repositorio {
     return data ? this.mapear(data as unknown as Record<string, unknown>) : null;
   }
 
-  async criarDiscussao(projetoId: string, dados: NovaDiscussao): Promise<Discussao> {
+  async criarDiscussao(dados: NovaDiscussao, projetoId: string | null): Promise<Discussao> {
     const usuario = await this.exigirUsuario();
     const { data, error } = await this.cliente.from('discussoes')
       .insert({ ...dados, projeto_origem_id: projetoId, autor_id: usuario })

@@ -406,9 +406,10 @@ function NovaDiscussaoNoProjeto({
     if (Object.keys(novos).length > 0) return;
     setEnviando(true);
     try {
-      await repo.criarDiscussao(projetoId, {
-        titulo: titulo.trim(), tema: tema as Tema, descricao: descricao.trim(),
-      });
+      await repo.criarDiscussao(
+        { titulo: titulo.trim(), tema: tema as Tema, descricao: descricao.trim() },
+        projetoId,
+      );
       aoCriar();
     } catch (e2) {
       setFalha(e2 instanceof Error ? e2.message : 'Não deu pra puxar o assunto.');
