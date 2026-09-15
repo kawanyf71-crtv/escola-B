@@ -237,6 +237,31 @@ zero (exceção de 3px em botão), zero sombra, zero gradiente, zero blur, títu
 em Archivo Black caixa alta com entrelinha 1.0, corpo em Inter a 16px, setas
 triangulares maciças como pontuação, chips de canto reto.
 
+### Tipografia: quem grita e quem fala
+
+Archivo Black é fonte de peso máximo, feita para título. Estava em título,
+rótulo, chip, botão, contagem, opção, navegação e mensagem de erro — e quando
+está em tudo, cada elemento grita no mesmo volume. Uma página onde tudo grita lê
+como cartaz, não como ferramenta.
+
+Hoje ela vale em seis lugares, e só neles: `h1`, `h2`, `h3`, `.contagem`,
+`.marca`, `.botao`, `.selo-exemplo` e `.card__titulo`. Todo o resto da interface
+— rótulo de campo, chip, opção, migalha, navegação, erro, sucesso — é Inter 600,
+caixa alta onde já era, com `letter-spacing` para a caixa alta respirar no peso
+menor. A assinatura da marca (entrelinha 1.0, `letter-spacing` normal) fica
+intacta onde a Archivo Black ficou.
+
+O tamanho dos títulos também muda por tipo de página. Na página-cartaz o `h1`
+continua em `clamp(1.875rem, 8.6vw, 4.5rem)` — é a medida que faz ANCESTRALIDADE
+caber em uma linha a 390px e é o que dá o soco na entrada. Na página-ferramenta
+ele cai para `clamp(1.5rem, 4vw, 2.25rem)`: um `h1` de 8,6vw numa tela interna
+toma a viewport inteira e faz o conteúdo abaixo dele parecer legenda.
+
+O aviso de erro deixou de ser retângulo vermelho cheio em caixa alta. A borda
+vermelha do campo já diz onde foi; o texto, na cor do acento, diz o que houve.
+Num formulário com quatro erros, quatro retângulos vermelhos davam a impressão
+de que a tela inteira tinha dado errado.
+
 **As fontes são servidas pelo próprio site** (`src/fontes/`, 172 KB nos
 subconjuntos latin e latin-ext), não pelo CDN do Google. Tira uma dependência
 de terceiro, economiza conexões no 4G e garante que a assinatura tipográfica
@@ -305,15 +330,18 @@ Os dois que a spec já previu, mais um que apareceu na conferência:
 3. **Título de seção em faixa amarela fica preto, não vermelho.** O vermelho
    sobre o amarelo dá **2,90:1** — reprova até no limiar de texto grande (3:1).
    Vermelho como cor de título funciona sobre preto (4,56:1) e sobre off-white
-   (3,67:1, válido porque todo `h2` tem no mínimo 28px), e é onde ele está. Na
-   faixa amarela, a marca de destaque antes do título é que fica vermelha — ela
-   é decorativa e não responde por contraste de texto.
-4. **Sobre vermelho, texto pequeno leva tinta preta.** `#F1F1F1` sobre `#ED3124`
-   dá 3,67:1 e reprova em AA para texto normal. Só passa quando o rótulo conta
-   como "texto grande" — o que vale para o botão padrão (19px em Archivo Black),
-   mas não para botão pequeno, aviso de erro ou texto corrido dentro de uma
-   faixa vermelha. Nesses, a tinta é preta (4,59:1). É a mesma lógica do desvio
-   nº 1, aplicada onde a spec não tinha chegado.
+   (3,67:1, válido na página-cartaz porque lá todo `h2` tem no mínimo 28px), e é
+   onde ele está. Na faixa amarela, a marca de destaque antes do título é que
+   fica vermelha — ela é decorativa e não responde por contraste de texto. Na
+   página-ferramenta o `h2` encolheu e saiu da faixa de texto grande, mas lá o
+   título é amarelo sobre preto (15,7:1) e a conta não aperta.
+4. **Sobre vermelho, a tinta é preta.** `#F1F1F1` sobre `#ED3124` dá 3,67:1 e
+   reprova em AA para texto normal. O botão já foi a exceção — a 19px em Archivo
+   Black ele contava como "texto grande" e o off-white passava no limiar de 3:1.
+   Quando o botão caiu para 16px essa folga acabou, então a regra virou uma só:
+   sobre vermelho, tinta preta (4,56:1), em botão, botão pequeno, aviso de erro
+   e texto corrido. É a mesma lógica do desvio nº 1, aplicada onde a spec não
+   tinha chegado.
 
 ---
 

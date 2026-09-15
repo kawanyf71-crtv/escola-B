@@ -102,7 +102,8 @@ a:not(:where(.botao, .chip)) {
   z-index: 100;
   background: var(--amarelo);
   color: var(--preto);
-  font-family: var(--titulo);
+  font-family: var(--corpo);
+  font-weight: 600;
   text-transform: uppercase;
   padding: 0.75rem 1rem;
 }
@@ -113,7 +114,6 @@ a:not(:where(.botao, .chip)) {
 /* --------------------------------------------------------------- tipografia */
 
 h1, h2, h3, h4 {
-  font-family: var(--titulo);
   font-weight: 900; /* peso real da Archivo Black; sem bold sintetico */
   text-transform: uppercase;
   line-height: 1;   /* assinatura tipografica do BATEKOO */
@@ -126,25 +126,37 @@ h1, h2, h3, h4 {
 
 /* 8.6vw faz caber ANCESTRALIDADE (o termo mais longo das listas fixas) em
    uma linha a 390px; acima disso a palavra partia com uma letra orfa. */
-/* Titulo de secao leva a cor de acento da superficie. Todo h2 tem no minimo
-   28px, entao conta como texto grande e o vermelho passa em AA sobre preto
-   (4,56:1) e sobre off-white (3,67:1). Sobre amarelo o token vira preto. */
+/* Titulo de secao leva a cor de acento da superficie. Na pagina-cartaz todo h2
+   tem no minimo 28px, entao conta como texto grande e o vermelho passa em AA
+   sobre preto (4,56:1) e sobre off-white (3,67:1). Sobre amarelo o token vira
+   preto. Na pagina-ferramenta o h2 encolhe e sai da faixa de texto grande, mas
+   la o token e amarelo sobre preto (15,7:1) e a conta nao aperta. */
 .faixa h2 { color: var(--tinta-titulo); }
 
+h1, h2, h3 { font-family: var(--titulo); }
 h1 { font-size: clamp(1.875rem, 8.6vw, 4.5rem); }
 h2 { font-size: clamp(1.75rem, 7.5vw, 3rem); }
 h3 { font-size: clamp(1.25rem, 5vw, 1.75rem); }
-h4 { font-size: 1.0625rem; }
+
+/* O h4 e o primeiro degrau que ja nao e titulo de tela: e rotulo de bloco
+   dentro do conteudo. Sai da Archivo Black pra parar de disputar volume com o
+   h3 logo acima dele. */
+h4 {
+  font-family: var(--corpo);
+  font-weight: 600;
+  font-size: 1.0625rem;
+}
 
 p { margin: 0 0 1rem; }
 p:last-child { margin-bottom: 0; }
 
 .rotulo {
-  font-weight: 900;
-  font-family: var(--titulo);
+  font-weight: 600;
+  font-family: var(--corpo);
   text-transform: uppercase;
+  letter-spacing: 0.06em;
   line-height: 1;
-  font-size: 0.8125rem;
+  font-size: 0.75rem;
   display: block;
   margin-bottom: 0.375rem;
 }
@@ -284,7 +296,7 @@ p:last-child { margin-bottom: 0; }
   border: 0;
   border-radius: 3px;
   font-family: var(--titulo);
-  font-size: 1.1875rem;
+  font-size: 1rem;
   line-height: 1.15;
   text-transform: uppercase;
   text-decoration: none;
@@ -310,7 +322,7 @@ p:last-child { margin-bottom: 0; }
 .botao--bloco { width: 100%; }
 
 .botao--pequeno {
-  font-size: 0.9375rem;
+  font-size: 0.875rem;
   min-height: var(--alvo);
   padding: 0.875rem;
 }
@@ -366,12 +378,13 @@ p:last-child { margin-bottom: 0; }
 }
 
 .chip {
-  font-weight: 900;
+  font-weight: 600;
   display: inline-block;
   background: var(--amarelo);
   color: var(--preto);
-  font-family: var(--titulo);
+  font-family: var(--corpo);
   font-size: 0.75rem;
+  letter-spacing: 0.04em;
   line-height: 1;
   text-transform: uppercase;
   padding: 0.4375rem 0.5rem;
@@ -461,7 +474,7 @@ a.chip:hover, a.chip:focus-visible { text-decoration: underline; }
   font-family: var(--titulo);
   text-transform: uppercase;
   line-height: 1;
-  font-size: 1.25rem;
+  font-size: 1.0625rem;
   margin: 0 0 0.5rem;
   overflow-wrap: anywhere;
 }
@@ -532,7 +545,8 @@ a.chip:hover, a.chip:focus-visible { text-decoration: underline; }
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: var(--titulo);
+  font-family: var(--corpo);
+  font-weight: 600;
   font-size: 1.5rem;
   color: var(--preto);
   text-transform: uppercase;
@@ -586,17 +600,20 @@ select {
 .campo--erro select,
 .campo--erro textarea { border-color: var(--vermelho); }
 
+/* O erro era um retangulo vermelho cheio, em caixa alta e Archivo Black: no
+   formulario inteiro davam a impressao de que a tela toda deu errado. A borda
+   vermelha do campo ja sinaliza onde foi — aqui basta a frase, na cor do
+   acento, dizendo o que houve. */
 .erro-campo {
-  font-weight: 900;
+  font-weight: 600;
   display: block;
   margin-top: 0.375rem;
-  background: var(--vermelho);
-  color: var(--preto);
-  font-family: var(--titulo);
+  background: transparent;
+  color: var(--vermelho);
+  font-family: var(--corpo);
   font-size: 0.8125rem;
-  text-transform: uppercase;
-  line-height: 1.15;
-  padding: 0.375rem 0.5rem;
+  line-height: 1.3;
+  padding: 0;
 }
 
 /* ------------------------------------------------------------ campo de imagem */
@@ -643,8 +660,8 @@ select {
   display: inline-flex;
   align-items: center;
   gap: 0.25rem;
-  font-family: var(--titulo);
-  font-weight: 900;
+  font-family: var(--corpo);
+  font-weight: 600;
   font-size: 1rem;
   line-height: 1;
   text-transform: uppercase;
@@ -691,14 +708,14 @@ select {
 }
 
 .opcao span {
-  font-weight: 900;
+  font-weight: 600;
   display: inline-flex;
   align-items: center;
   min-height: var(--alvo);
   padding: 0.5rem 0.75rem;
   border: 4px solid var(--preto);
   background: transparent;
-  font-family: var(--titulo);
+  font-family: var(--corpo);
   font-size: 0.8125rem;
   line-height: 1;
   text-transform: uppercase;
@@ -825,7 +842,7 @@ select {
 }
 
 .menu-botao {
-  font-weight: 900;
+  font-weight: 600;
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
@@ -835,7 +852,7 @@ select {
   color: var(--preto);
   border: 0;
   border-radius: 3px;
-  font-family: var(--titulo);
+  font-family: var(--corpo);
   font-size: 0.9375rem;
   text-transform: uppercase;
   line-height: 1;
@@ -847,7 +864,7 @@ select {
 .nav-desktop { display: none; }
 
 .nav-sair {
-  font-weight: 900;
+  font-weight: 600;
   display: inline-flex;
   align-items: center;
   min-height: var(--alvo);
@@ -856,7 +873,7 @@ select {
   color: var(--preto);
   border: 0;
   border-radius: 3px;
-  font-family: var(--titulo);
+  font-family: var(--corpo);
   font-size: 0.9375rem;
   text-transform: uppercase;
   line-height: 1;
@@ -872,7 +889,8 @@ select {
     flex-wrap: wrap;
   }
   .nav-desktop a {
-    font-family: var(--titulo);
+    font-family: var(--corpo);
+    font-weight: 600;
     text-transform: uppercase;
     font-size: 0.875rem;
     line-height: 1;
@@ -910,7 +928,8 @@ select {
 .menu-cheio nav a {
   display: flex;
   align-items: center;
-  font-family: var(--titulo);
+  font-family: var(--corpo);
+  font-weight: 600;
   text-transform: uppercase;
   line-height: 1;
   font-size: clamp(2rem, 10vw, 3rem);
@@ -1043,6 +1062,15 @@ select {
 .pagina--app .cartaz:not(.cartaz--preto) :focus-visible,
 .pagina--app .correspondencia :focus-visible { outline-color: var(--preto); }
 
+/* Escala de titulo da pagina-ferramenta. O h1 de 8.6vw e medida de cartaz: numa
+   tela interna ele toma a viewport inteira e faz o conteudo parecer legenda.
+   Aqui o titulo volta a ser titulo de tela, e a Archivo Black continua sendo a
+   assinatura — o que muda e o tamanho, nao a fonte. Na .pagina--cartaz a escala
+   grande fica como esta. */
+.pagina--app h1 { font-size: clamp(1.5rem, 4vw, 2.25rem); }
+.pagina--app h2 { font-size: clamp(1.25rem, 3vw, 1.625rem); }
+.pagina--app h3 { font-size: 1.125rem; }
+
 .conteudo { flex: 1; }
 
 /* ------------------------------------------------------------------- listas */
@@ -1053,8 +1081,8 @@ select {
 .empilhado-curto > * + * { margin-top: 0.5rem; }
 
 .migalha {
-  font-weight: 900;
-  font-family: var(--titulo);
+  font-weight: 600;
+  font-family: var(--corpo);
   text-transform: uppercase;
   font-size: 0.8125rem;
   line-height: 1;
@@ -1094,10 +1122,10 @@ select {
 }
 
 .sucesso {
-  font-weight: 900;
+  font-weight: 600;
   background: var(--preto);
   color: var(--amarelo);
-  font-family: var(--titulo);
+  font-family: var(--corpo);
   text-transform: uppercase;
   line-height: 1.15;
   padding: 0.75rem 1rem;
