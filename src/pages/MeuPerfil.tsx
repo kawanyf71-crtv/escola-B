@@ -67,13 +67,13 @@ export function MeuPerfil() {
   function validar(): Record<string, string> {
     const e: Record<string, string> = {};
     if (!form.nome.trim()) e.nome = 'Como a turma vai te chamar?';
-    if (!form.ocupacao.trim()) e.ocupacao = 'Diga o que você faz.';
-    if (!form.cidade.trim()) e.cidade = 'Informe sua cidade e estado.';
-    if (!form.mini_bio.trim()) e.mini_bio = 'Escreva uma a três frases sobre você.';
-    if (form.areas.length === 0) e.areas = 'Escolha ao menos uma área.';
+    if (!form.ocupacao.trim()) e.ocupacao = 'Conta o que você faz.';
+    if (!form.cidade.trim()) e.cidade = 'Faltou a cidade.';
+    if (!form.mini_bio.trim()) e.mini_bio = 'Escreve umas linhas sobre você.';
+    if (form.areas.length === 0) e.areas = 'Marca ao menos uma área.';
     if (form.habilidades_oferecidas.length === 0) {
       e.habilidades_oferecidas =
-        'Escolha ao menos uma. É por aqui que um projeto descobre que você serve para ele — ' +
+        'Marca ao menos uma. É por aqui que os projetos vão te encontrar — ' +
         'sem isso, seu perfil não cruza com nada.';
     }
     return e;
@@ -108,7 +108,7 @@ export function MeuPerfil() {
       await recarregarPerfil();
       navegar('/pessoas');
     } catch (e) {
-      setFalha(e instanceof Error ? e.message : 'Não foi possível salvar o perfil.');
+      setFalha(e instanceof Error ? e.message : 'Não deu pra salvar.');
     } finally {
       setEnviando(false);
     }
@@ -118,13 +118,11 @@ export function MeuPerfil() {
     <>
       <section className="faixa faixa--amarelo">
         <div className="faixa__interno">
-          <h1>{editando ? 'Editar\nmeu perfil' : 'Meu\nperfil'}</h1>
-          {!editando && (
-            <p style={{ maxWidth: '32rem' }}>
-              Quatro minutos e você entra no diretório. O que é obrigatório está
-              marcado; o resto dá para completar depois.
-            </p>
-          )}
+          <h1>{editando ? 'Editar\nmeu perfil' : 'Quem é você\nnessa turma'}</h1>
+          <p style={{ maxWidth: '32rem' }}>
+            Ninguém aqui é currículo. Conta o que você faz, o que sabe fazer e o que
+            te move — é por aí que a turma vai te achar.
+          </p>
         </div>
       </section>
 
@@ -144,13 +142,14 @@ export function MeuPerfil() {
                      onChange={(e) => campo('ocupacao', e.target.value)} />
             </Campo>
 
-            <Campo id="cidade" rotulo="Cidade / estado" erro={erros.cidade} obrigatorio>
+            <Campo id="cidade" rotulo="De onde você é" erro={erros.cidade} obrigatorio>
               <input id="cidade" type="text" value={form.cidade} placeholder="Salvador, BA"
                      onChange={(e) => campo('cidade', e.target.value)} />
             </Campo>
 
-            <Campo id="mini_bio" rotulo="Mini-bio" erro={erros.mini_bio} obrigatorio
-                   dica="Uma a três frases.">
+            <Campo id="mini_bio" rotulo="Em poucas linhas, quem é você"
+                   erro={erros.mini_bio} obrigatorio
+                   dica="Escreve do seu jeito. Ninguém aqui tá julgando português.">
               <textarea id="mini_bio" value={form.mini_bio} maxLength={400}
                         onChange={(e) => campo('mini_bio', e.target.value)} />
             </Campo>
@@ -161,26 +160,29 @@ export function MeuPerfil() {
             />
 
             <GrupoOpcoes
-              nome="habilidades" legenda="Habilidades que ofereço" opcoes={HABILIDADES}
+              nome="habilidades" legenda="O que você sabe fazer" opcoes={HABILIDADES}
               valor={form.habilidades_oferecidas}
               aoMudar={(v) => campo('habilidades_oferecidas', v)}
               erro={erros.habilidades_oferecidas} obrigatorio
-              dica="Esta é a lista que os projetos usam para dizer o que procuram."
+              dica={'É por aqui que os projetos vão te encontrar. Marca tudo que você ' +
+                    'entrega de verdade — inclusive o que você aprendeu fora da escola.'}
             />
 
             <GrupoOpcoes
-              nome="temas" legenda="Temas que me interessam" opcoes={TEMAS}
+              nome="temas" legenda="O que te move" opcoes={TEMAS}
               valor={form.temas_interesse} aoMudar={(v) => campo('temas_interesse', v)}
-              dica="Aparece na página de cada tema e leva gente até você."
+              dica="Assunto também aproxima. Quem se interessa pelo mesmo que você vai chegar por aqui."
             />
 
             <GrupoOpcoes
-              nome="disponibilidade" legenda="Disponibilidade" opcoes={DISPONIBILIDADES}
+              nome="disponibilidade" legenda="Como você topa participar"
+              opcoes={DISPONIBILIDADES}
               valor={form.disponibilidade} aoMudar={(v) => campo('disponibilidade', v)}
+              dica="Dá pra marcar mais de um. Muda de ideia quando quiser."
             />
 
-            <Campo id="foto" rotulo="Link da sua foto"
-                   dica="Cole o endereço de uma imagem sua. Dá para deixar em branco.">
+            <Campo id="foto" rotulo="Sua foto"
+                   dica="Cola o endereço de uma imagem. Dá pra deixar em branco.">
               <input id="foto" type="url" value={form.foto} inputMode="url"
                      placeholder="https://…"
                      onChange={(e) => campo('foto', e.target.value)} />
@@ -203,7 +205,7 @@ export function MeuPerfil() {
 
             <button className="botao botao--vermelho botao--bloco" type="submit" disabled={enviando}>
               <span className="seta" aria-hidden="true" />
-              {enviando ? 'Publicando…' : editando ? 'Salvar perfil' : 'Publicar meu perfil'}
+              {enviando ? 'Publicando…' : editando ? 'Salvar perfil' : 'Me apresentar pra turma'}
             </button>
           </form>
         </div>

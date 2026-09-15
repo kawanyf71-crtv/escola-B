@@ -24,7 +24,7 @@ export function Perfil() {
   if (pessoa.carregando) {
     return (
       <section className="faixa faixa--claro">
-        <div className="faixa__interno"><Carregando quantidade={1} rotulo="Carregando o perfil" /></div>
+        <div className="faixa__interno"><Carregando quantidade={1} rotulo="Buscando o perfil" /></div>
       </section>
     );
   }
@@ -45,11 +45,10 @@ export function Perfil() {
       <section className="faixa faixa--claro">
         <div className="faixa__interno">
           <div className="cartaz cartaz--vermelho">
-            <h2>Perfil não encontrado</h2>
-            <p>Esta pessoa pode ter saído da rede.</p>
+            <h2>Esse perfil<br />não existe mais</h2>
             <div className="acoes">
               <Link className="botao botao--preto" to="/pessoas">
-                <span className="seta" aria-hidden="true" />Voltar ao diretório
+                <span className="seta" aria-hidden="true" />Voltar pra turma
               </Link>
             </div>
           </div>
@@ -70,7 +69,7 @@ export function Perfil() {
           <Link className="migalha" to="/pessoas">
             <span className="seta" aria-hidden="true"
                   style={{ transform: 'scaleX(-1)' }} />
-            Diretório
+            Voltar pra turma
           </Link>
           <div className="pessoa-linha" style={{ marginTop: '0.5rem' }}>
             <Foto pessoa={p} grande />
@@ -95,7 +94,7 @@ export function Perfil() {
       <section className="faixa faixa--amarelo">
         <div className="faixa__interno empilhado">
           <div>
-            <h2>Oferece</h2>
+            <h2>Sabe fazer</h2>
             <ul className="chips">
               {p.habilidades_oferecidas.map((h) => (
                 <li key={h}><span className="chip chip--inverso">{h}</span></li>
@@ -110,7 +109,7 @@ export function Perfil() {
           </div>
           {p.temas_interesse.length > 0 && (
             <div>
-              <span className="rotulo">Temas de interesse</span>
+              <span className="rotulo">O que te move</span>
               <ul className="chips">
                 {p.temas_interesse.map((t) => (
                   <li key={t}>
@@ -137,7 +136,9 @@ export function Perfil() {
         <section className="faixa faixa--vermelho faixa--fina">
           <div className="faixa__interno">
             <h2>Chamar</h2>
-            <p className="miudo">A conversa acontece fora daqui. Estes são os canais que {p.nome.split(' ')[0]} deixou.</p>
+            <p className="miudo">
+              A conversa acontece fora daqui. Estes são os canais que ficaram abertos.
+            </p>
             <div className="acoes">
               {p.instagram && (
                 <a className="botao botao--preto" href={linkInstagram(p.instagram)}
@@ -165,14 +166,14 @@ export function Perfil() {
       <section className="faixa faixa--claro">
         <div className="faixa__interno">
           <h2>Projetos</h2>
-          {projetos.carregando && <Carregando quantidade={2} rotulo="Carregando projetos" />}
+          {projetos.carregando && <Carregando quantidade={2} rotulo="Buscando os projetos" />}
           {projetos.erro && <Erro mensagem={projetos.erro} aoTentarDeNovo={projetos.recarregar} />}
           {!projetos.carregando && !projetos.erro && projetosVisiveis.length === 0 && (
             <div className="cartaz">
               <h3>Nenhum projeto publicado ainda</h3>
               <p>
                 {souEu
-                  ? 'Publica o seu — nem que seja uma ideia. É o projeto que diz o que você precisa.'
+                  ? 'Publica o seu — nem que seja uma ideia. É o projeto que diz o que falta.'
                   : 'Ainda não publicou nenhum projeto.'}
               </p>
               {souEu && (
@@ -194,13 +195,13 @@ export function Perfil() {
 
       <section className="faixa faixa--preto-2">
         <div className="faixa__interno">
-          <h2>Discussões</h2>
-          {discussoes.carregando && <Carregando quantidade={2} rotulo="Carregando discussões" />}
+          <h2>Assuntos</h2>
+          {discussoes.carregando && <Carregando quantidade={2} rotulo="Buscando os assuntos" />}
           {discussoes.erro && (
             <Erro mensagem={discussoes.erro} aoTentarDeNovo={discussoes.recarregar} />
           )}
           {!discussoes.carregando && !discussoes.erro && (discussoes.dados ?? []).length === 0 && (
-            <p>Ainda não participa de nenhuma conversa por aqui.</p>
+            <p>Ainda não entrou em nenhuma conversa por aqui.</p>
           )}
           {(discussoes.dados ?? []).length > 0 && (
             <div className="grade">
