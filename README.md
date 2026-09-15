@@ -79,6 +79,7 @@ Três suítes, todas contra o navegador de verdade em 390px:
 | `npm run verificar:jornada` | Os critérios de aceite das histórias H1–H6 e os requisitos funcionais que dependem de interação: validações, correspondência de habilidade, interesse único, assunto que atravessa projeto. |
 | `npm run verificar:contraste` | Contraste AA (WCAG 1.4.3) em todo texto visível, incluindo estados vazio, de erro e sem sessão. |
 | `npm run verificar:acessibilidade` | Alvos de toque de 44px, rótulo em todo controle, `alt` em toda imagem, um `h1` por página, link de pulo no primeiro Tab. |
+| `npm run verificar:exemplo` | O lote de demonstração: quantos registros de cada tipo, quais páginas de tema ficaram com conteúdo, se algum card estoura em 390px, se o selo EXEMPLO aparece em todo card do lote, se um perfil de exemplo consegue entrar (não pode) e se apagar o lote deixa intacto o que é de verdade. |
 | `npm run verificar:ritmo` | As regras de proporção e ritmo da identidade: nunca duas faixas da mesma cor coladas, no máximo uma faixa amarela por tela, preto como base da maior parte da área pintada, e nenhum botão que suma na superfície atrás dele. |
 
 Variáveis que as suítes aceitam:
@@ -142,6 +143,38 @@ Uma consequência que vale saber: um assunto ligado a um projeto **não
 publicado** não aparece nas listas. Sem essa regra ele apareceria com a origem
 em branco, disfarçado de solto. A regra vive na política de RLS da migração
 `0002`, e não em cada adaptador, para os dois concordarem.
+
+---
+
+## Dados de exemplo
+
+`Meu espaço` traz, numa área discreta no fim da página, os botões **Carregar
+dados de exemplo** e **Apagar dados de exemplo**. O lote tem 4 pessoas, 4
+projetos, 4 assuntos, 6 comentários, 4 interesses e 10 participações em
+conversa, todos fictícios e marcados com `demo: true`. Cada card deles mostra o
+selo **EXEMPLO**.
+
+Três coisas que o lote garante:
+
+- **Os perfis não fazem login.** O lote não cria conta nenhuma — são registros
+  de leitura.
+- **Apagar só apaga o que é de exemplo.** O filtro é o campo `demo`, e o que
+  você criou de verdade não é tocado.
+- **As imagens são SVG em data URI** (`src/data/imagensExemplo.ts`), geradas com
+  as cores e os elementos da marca. Nenhuma URL externa, nenhuma foto de pessoa
+  real. Um SVG dentro de `<img>` não alcança o `@font-face` da página, então as
+  iniciais dos avatares caem numa pilha de fontes pesadas do sistema em vez da
+  Archivo Black.
+
+**Só funciona no modo local.** No Supabase, `participantes.id` referencia
+`auth.users`, então cada perfil fictício exigiria um usuário de autenticação de
+verdade. Os botões nem aparecem quando o Supabase está ligado.
+
+Uma brecha deliberada, e só no adaptador local: **a lista de quem chegou junto
+de um projeto do lote é visitável por qualquer pessoa logada**. Os projetos do
+lote pertencem a perfis fictícios que ninguém acessa, e sem isso essa tela
+ficaria impossível de avaliar. No Supabase a política de RLS continua exigindo
+que quem lê seja a autora do projeto.
 
 ---
 

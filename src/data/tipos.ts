@@ -77,6 +77,17 @@ export interface NovaDiscussao {
 export interface Repositorio {
   readonly nome: 'local' | 'supabase';
 
+  /**
+   * O lote de demonstração cria pessoas sem conta. No Supabase isso não é
+   * possível: `participantes.id` referencia `auth.users`, então cada perfil
+   * exigiria um usuário de autenticação de verdade. Por isso o lote só existe
+   * no adaptador local, e a interface esconde os botões quando isto é falso.
+   */
+  readonly suportaExemplo: boolean;
+  carregarDadosDeExemplo(): Promise<void>;
+  apagarDadosDeExemplo(): Promise<void>;
+  temDadosDeExemplo(): Promise<boolean>;
+
   // --- Autenticacao (RF-001) ---
   sessaoAtual(): Promise<Sessao | null>;
   criarConta(email: string, senha: string): Promise<Sessao>;

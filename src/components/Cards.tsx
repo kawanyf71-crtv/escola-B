@@ -3,6 +3,12 @@ import type { Participante } from '../lib/dominio';
 import { slugTema } from '../lib/dominio';
 import type { DiscussaoCompleta, ParticipanteResumo, ProjetoComAutor } from '../data/tipos';
 
+/** Marca visível de que o registro veio do lote de demonstração. */
+export function SeloExemplo({ mostrar }: { mostrar?: boolean }) {
+  if (!mostrar) return null;
+  return <span className="selo-exemplo">Exemplo</span>;
+}
+
 export function Foto({ pessoa, grande = false }: {
   pessoa: { nome: string; foto: string | null };
   grande?: boolean;
@@ -21,6 +27,7 @@ export function Foto({ pessoa, grande = false }: {
 export function CardPessoa({ pessoa }: { pessoa: Participante }) {
   return (
     <article className="card">
+      <SeloExemplo mostrar={pessoa.demo} />
       <div className="pessoa-linha">
         <Foto pessoa={pessoa} />
         <div style={{ minWidth: 0 }}>
@@ -63,6 +70,7 @@ export function CardPessoaCompacto({ pessoa }: { pessoa: ParticipanteResumo }) {
 export function CardProjeto({ projeto }: { projeto: ProjetoComAutor }) {
   return (
     <article className="card">
+      <SeloExemplo mostrar={projeto.demo} />
       {projeto.imagem && (
         <img className="card__capa" src={projeto.imagem} alt={`Capa de ${projeto.nome}`} />
       )}
@@ -97,6 +105,7 @@ export function CardProjeto({ projeto }: { projeto: ProjetoComAutor }) {
 export function CardDiscussao({ discussao }: { discussao: DiscussaoCompleta }) {
   return (
     <article className="card">
+      <SeloExemplo mostrar={discussao.demo} />
       <p style={{ margin: '0 0 0.5rem' }}>
         <Link className="chip" to={`/temas/${slugTema(discussao.tema)}`}>{discussao.tema}</Link>
       </p>

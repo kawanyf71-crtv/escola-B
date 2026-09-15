@@ -58,6 +58,9 @@ export function Projeto() {
   const souAutora = perfil?.id === p.autor_id;
   const encaixe = correspondencia(perfil?.habilidades_oferecidas, p.conhecimentos_procurados);
   const mostraCorrespondencia = encaixe.length > 0 && !souAutora;
+  // Num projeto do lote a porta fica aberta pra que a tela de quem chegou junto
+  // possa ser avaliada — a autora dele é um perfil fictício, sem acesso.
+  const podeVerQuemChegou = souAutora || p.demo === true;
   // Sem a faixa amarela no meio, a capa encostaria no "Sobre", que é claro.
   const faixaDaCapa = mostraCorrespondencia ? 'faixa--claro' : 'faixa--vermelho';
 
@@ -94,6 +97,14 @@ export function Projeto() {
               Por <Link to={`/pessoas/${p.autor.id}`}>{p.autor.nome}</Link>, {p.autor.ocupacao}
             </p>
           )}
+          {!souAutora && podeVerQuemChegou && p.busca_pessoas && (
+            <div className="acoes">
+              <Link className="botao botao--contorno" to={`/projetos/${p.id}/quem-chegou-junto`}>
+                Ver quem chegou junto
+              </Link>
+            </div>
+          )}
+
           {souAutora && (
             <div className="acoes">
               <Link className="botao botao--amarelo" to={`/projetos/${p.id}/editar`}>
@@ -177,7 +188,7 @@ export function Projeto() {
       </section>
 
       <BlocoProcura
-        projeto={p} souAutora={souAutora}
+        projeto={p} souAutora={souAutora} podeVer={podeVerQuemChegou}
         interesse={meuInteresse}
         aoRegistrar={() => { meuInteresse.recarregar(); }}
         navegar={navegar}
@@ -225,10 +236,11 @@ export function Projeto() {
 }
 
 function BlocoProcura({
-  projeto, souAutora, interesse, aoRegistrar, navegar,
+  projeto, souAutora, podeVer, interesse, aoRegistrar, navegar,
 }: {
   projeto: NonNullable<Awaited<ReturnType<typeof repo.obterProjeto>>>;
   souAutora: boolean;
+  podeVer: boolean;
   interesse: ReturnType<typeof useConsulta<Awaited<ReturnType<typeof repo.meuInteresseNoProjeto>>>>;
   aoRegistrar: () => void;
   navegar: ReturnType<typeof useNavigate>;
@@ -316,7 +328,7 @@ function BlocoProcura({
           <p style={{ marginTop: '1.25rem', maxWidth: '34rem' }}>{projeto.o_que_precisa}</p>
         )}
 
-        {souAutora && (
+        {podeVer && (
           <div className="acoes">
             <Link className="botao botao--preto" to={`/projetos/${projeto.id}/quem-chegou-junto`}>
               <span className="seta" aria-hidden="true" />Ver quem chegou junto

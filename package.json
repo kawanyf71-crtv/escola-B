@@ -8,11 +8,12 @@
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "typecheck": "tsc -b --noEmit",
-    "verificar": "node verificacao/jornada.mjs && node verificacao/contraste.mjs && node verificacao/acessibilidade.mjs && node verificacao/ritmo.mjs",
+    "verificar": "node verificacao/jornada.mjs && node verificacao/contraste.mjs && node verificacao/acessibilidade.mjs && node verificacao/ritmo.mjs && node verificacao/exemplo.mjs",
     "verificar:jornada": "node verificacao/jornada.mjs",
     "verificar:contraste": "node verificacao/contraste.mjs",
     "verificar:acessibilidade": "node verificacao/acessibilidade.mjs",
-    "verificar:ritmo": "node verificacao/ritmo.mjs"
+    "verificar:ritmo": "node verificacao/ritmo.mjs",
+    "verificar:exemplo": "node verificacao/exemplo.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.45.4",

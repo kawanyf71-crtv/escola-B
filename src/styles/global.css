@@ -303,6 +303,14 @@ p:last-child { margin-bottom: 0; }
    faixas vermelhas: sobre vermelho, texto pequeno leva tinta preta (4,59:1). */
 .botao--pequeno.botao--vermelho { color: var(--preto); }
 
+/* Mesma razao no botao de contorno pequeno: o acento vermelho como TINTA da
+   3,67:1 e reprova a 15px. O rotulo herda a tinta da faixa (preta no claro,
+   off-white no escuro) e o vermelho fica so na borda, que e grafismo. */
+.botao--pequeno.botao--contorno {
+  color: inherit;
+  border-color: var(--acento);
+}
+
 /* Um botao preenchido precisa se destacar da superficie atras dele — a WCAG
    pede 3:1 entre componente e fundo (1.4.11). Quando a variante coincide com a
    cor da faixa, o botao continua legivel e some como objeto: e o caso do botao
@@ -359,6 +367,25 @@ p:last-child { margin-bottom: 0; }
 .chip--alerta  { background: var(--vermelho); color: var(--preto); }
 
 a.chip:hover, a.chip:focus-visible { text-decoration: underline; }
+
+/* Selo do lote de demonstracao. Retangulo de canto reto, vermelho, no topo do
+   card. A tinta e preta e nao off-white: a 11px o rotulo nao conta como texto
+   grande, e o #F1F1F1 sobre vermelho daria 3,67:1, abaixo dos 4,5:1 exigidos.
+   Mesma regra ja aplicada aos botoes pequenos e aos avisos de erro. */
+.selo-exemplo {
+  display: inline-block;
+  background: var(--vermelho);
+  color: var(--preto);
+  font-family: var(--titulo);
+  font-weight: 900;
+  font-size: 0.6875rem;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 0.3125rem 0.4375rem;
+  border-radius: 0;
+  margin-bottom: 0.625rem;
+}
 
 /* -------------------------------------------------------------------- cards */
 

@@ -26,8 +26,17 @@ function erro(e: { message: string } | null, contexto: string): void {
   if (e) throw new Error(`${contexto}: ${e.message}`);
 }
 
+const SEM_EXEMPLO =
+  'O lote de demonstração só existe no modo local. No Supabase cada perfil ' +
+  'precisa de um usuário de autenticação de verdade, e perfis fictícios não têm.';
+
 export class RepositorioSupabase implements Repositorio {
   readonly nome = 'supabase' as const;
+  readonly suportaExemplo = false;
+
+  async temDadosDeExemplo(): Promise<boolean> { return false; }
+  async carregarDadosDeExemplo(): Promise<void> { throw new Error(SEM_EXEMPLO); }
+  async apagarDadosDeExemplo(): Promise<void> { throw new Error(SEM_EXEMPLO); }
 
   constructor(private readonly cliente: SupabaseClient) {}
 

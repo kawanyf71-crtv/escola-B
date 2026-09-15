@@ -6,6 +6,10 @@ import type {
   FiltrosProjetos, InteresseComParticipante, InteresseComProjeto, NovaDiscussao,
   ParticipanteResumo, ProjetoComAutor, Repositorio, Sessao,
 } from './tipos';
+import {
+  COMENTARIOS_EXEMPLO, DISCUSSOES_EXEMPLO, INTERESSES_EXEMPLO,
+  PARTICIPACOES_EXEMPLO, PARTICIPANTES_EXEMPLO, PROJETOS_EXEMPLO,
+} from './exemplo';
 
 // Nao renomear junto com o produto: e a chave onde os dados ja gravados moram.
 // Trocar aqui faria todo mundo perder perfil, projeto e conversa.
@@ -19,7 +23,9 @@ interface Banco {
   projetos: Projeto[];
   discussoes: Discussao[];
   comentarios: Comentario[];
-  participacoes: { discussao_id: string; participante_id: string; criado_em: string }[];
+  participacoes: {
+    discussao_id: string; participante_id: string; criado_em: string; demo?: boolean;
+  }[];
   interesses: Interesse[];
   sessao: Sessao | null;
 }
@@ -94,6 +100,57 @@ function maisRecentePrimeiro<T extends { criado_em: string }>(itens: T[]): T[] {
 
 export class RepositorioLocal implements Repositorio {
   readonly nome = 'local' as const;
+  readonly suportaExemplo = true;
+
+  // --- Lote de demonstracao ---
+
+  async temDadosDeExemplo(): Promise<boolean> {
+    return ler().participantes.some((p) => p.demo);
+  }
+
+  /** Recarregavel: apaga o lote anterior antes de gravar o novo. */
+  async carregarDadosDeExemplo(): Promise<void> {
+    await this.apagarDadosDeExemplo();
+    const b = ler();
+    b.participantes.push(...PARTICIPANTES_EXEMPLO);
+    b.projetos.push(...PROJETOS_EXEMPLO);
+    b.discussoes.push(...DISCUSSOES_EXEMPLO);
+    b.comentarios.push(...COMENTARIOS_EXEMPLO);
+    b.interesses.push(...INTERESSES_EXEMPLO);
+    b.participacoes.push(...PARTICIPACOES_EXEMPLO);
+    // Nenhuma conta e criada: as pessoas do lote nao conseguem entrar.
+    gravar(b);
+  }
+
+  /**
+   * Remove tudo que tem `demo: true` e mais nada. O que a pessoa criou de
+   * verdade fica intacto, inclusive um interesse dela num projeto do lote ou um
+   * comentario dela numa conversa do lote — esses caem junto porque o registro
+   * pai some, e nao porque foram marcados.
+   */
+  async apagarDadosDeExemplo(): Promise<void> {
+    const b = ler();
+    const pessoas = new Set(b.participantes.filter((p) => p.demo).map((p) => p.id));
+    const projetos = new Set(b.projetos.filter((p) => p.demo).map((p) => p.id));
+    const discussoes = new Set(b.discussoes.filter((d) => d.demo).map((d) => d.id));
+
+    b.comentarios = b.comentarios.filter(
+      (c) => !c.demo && !discussoes.has(c.discussao_id) && !pessoas.has(c.autor_id),
+    );
+    b.participacoes = b.participacoes.filter(
+      (x) => !x.demo && !discussoes.has(x.discussao_id) && !pessoas.has(x.participante_id),
+    );
+    b.interesses = b.interesses.filter(
+      (i) => !i.demo && !projetos.has(i.projeto_id) && !pessoas.has(i.participante_id),
+    );
+    b.discussoes = b.discussoes.filter(
+      (d) => !d.demo && !pessoas.has(d.autor_id)
+        && !(d.projeto_origem_id !== null && projetos.has(d.projeto_origem_id)),
+    );
+    b.projetos = b.projetos.filter((p) => !p.demo && !pessoas.has(p.autor_id));
+    b.participantes = b.participantes.filter((p) => !p.demo);
+    gravar(b);
+  }
 
   private exigirSessao(b: Banco): Sessao {
     if (!b.sessao) throw new Error('Entra na sua conta pra fazer isso.');
@@ -350,7 +407,13 @@ export class RepositorioLocal implements Repositorio {
     const b = ler();
     const s = this.exigirSessao(b);
     const projeto = b.projetos.find((p) => p.id === projetoId);
-    if (!projeto || projeto.autor_id !== s.usuario_id) {
+    // Projeto do lote de demonstracao e visitavel por quem estiver logado: ele
+    // pertence a um perfil ficticio que ninguem consegue acessar, e sem esta
+    // brecha a tela de quem chegou junto ficaria impossivel de avaliar. Vale so
+    // no adaptador local — no Supabase a politica de RLS continua exigindo que
+    // quem le seja a autora do projeto, e o lote nem existe la.
+    const podeVer = projeto?.demo === true || projeto?.autor_id === s.usuario_id;
+    if (!projeto || !podeVer) {
       throw new Error('Só quem publicou vê quem chegou junto.');
     }
     return maisRecentePrimeiro(b.interesses.filter((i) => i.projeto_id === projetoId)).map((i) => ({

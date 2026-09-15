@@ -19,6 +19,30 @@ export function MeuEspaco() {
 
   const [confirmando, setConfirmando] = useState(false);
   const [excluindo, setExcluindo] = useState(false);
+  const [mexendoNoExemplo, setMexendoNoExemplo] = useState(false);
+  const [falhaExemplo, setFalhaExemplo] = useState<string | null>(null);
+
+  const temExemplo = useConsulta(() => repo.temDadosDeExemplo(), []);
+
+  /**
+   * Carrega ou apaga o lote de demonstração. Só mexe em registros com
+   * `demo: true` — nada do que a pessoa criou de verdade é tocado.
+   */
+  async function mexerNoExemplo(acao: 'carregar' | 'apagar') {
+    setMexendoNoExemplo(true);
+    setFalhaExemplo(null);
+    try {
+      if (acao === 'carregar') await repo.carregarDadosDeExemplo();
+      else await repo.apagarDadosDeExemplo();
+      temExemplo.recarregar();
+      projetos.recarregar();
+      interesses.recarregar();
+    } catch (e) {
+      setFalhaExemplo(e instanceof Error ? e.message : 'Não deu pra fazer isso.');
+    } finally {
+      setMexendoNoExemplo(false);
+    }
+  }
 
   async function apagar() {
     setExcluindo(true);
@@ -174,6 +198,36 @@ export function MeuEspaco() {
           )}
         </div>
       </section>
+
+      {/* Área discreta: o lote de demonstração serve pra avaliar o visual da
+          plataforma cheia, não faz parte do produto. */}
+      {repo.suportaExemplo && (
+        <section className="faixa faixa--claro faixa--fina">
+          <div className="faixa__interno" style={{ maxWidth: '36rem' }}>
+            <span className="rotulo">Dados de exemplo</span>
+            <p className="miudo">
+              Um lote de perfis, projetos e assuntos fictícios, marcados com o selo
+              EXEMPLO. Serve pra ver como a plataforma fica cheia. Apagar o lote não
+              mexe em nada que você tenha criado.
+            </p>
+            {falhaExemplo && <p className="aviso" role="alert">{falhaExemplo}</p>}
+            <div className="acoes">
+              <button type="button" className="botao botao--contorno botao--pequeno"
+                      onClick={() => mexerNoExemplo('carregar')}
+                      disabled={mexendoNoExemplo}>
+                {mexendoNoExemplo ? 'Um segundo…' : 'Carregar dados de exemplo'}
+              </button>
+              {temExemplo.dados === true && (
+                <button type="button" className="botao botao--contorno botao--pequeno"
+                        onClick={() => mexerNoExemplo('apagar')}
+                        disabled={mexendoNoExemplo}>
+                  Apagar dados de exemplo
+                </button>
+              )}
+            </div>
+          </div>
+        </section>
+      )}
     </>
   );
 }

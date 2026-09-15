@@ -58,6 +58,8 @@ export interface Participante {
   linkedin: string | null;
   site: string | null;
   criado_em: string;
+  /** Registro do lote de demonstração. Ausente nos registros de verdade. */
+  demo?: boolean;
 }
 
 export type EstadoProjeto = 'rascunho' | 'publicado' | 'despublicado';
@@ -83,6 +85,8 @@ export interface Projeto {
   o_que_precisa: string | null;
   estado: EstadoProjeto;
   criado_em: string;
+  /** Registro do lote de demonstração. Ausente nos registros de verdade. */
+  demo?: boolean;
 }
 
 export interface Discussao {
@@ -95,6 +99,8 @@ export interface Discussao {
   projeto_origem_id: string | null;
   autor_id: string;
   criado_em: string;
+  /** Registro do lote de demonstração. Ausente nos registros de verdade. */
+  demo?: boolean;
 }
 
 export interface Comentario {
@@ -103,12 +109,16 @@ export interface Comentario {
   autor_id: string;
   texto: string;
   criado_em: string;
+  /** Registro do lote de demonstração. Ausente nos registros de verdade. */
+  demo?: boolean;
 }
 
 export interface ParticipacaoDiscussao {
   discussao_id: string;
   participante_id: string;
   criado_em: string;
+  /** Registro do lote de demonstração. Ausente nos registros de verdade. */
+  demo?: boolean;
 }
 
 export type EstadoInteresse = 'enviado' | 'visto';
@@ -121,6 +131,8 @@ export interface Interesse {
   mensagem: string;
   estado: EstadoInteresse;
   criado_em: string;
+  /** Registro do lote de demonstração. Ausente nos registros de verdade. */
+  demo?: boolean;
 }
 
 /** RF-008: intersecao entre o que ofereco e o que o projeto procura. */

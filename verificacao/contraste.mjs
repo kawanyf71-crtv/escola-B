@@ -112,6 +112,18 @@ await p.getByRole('button', { name: /publicar pra turma ver/i }).click();
 await p.waitForURL(/\/projetos\/[0-9a-f-]{36}$/);
 const projeto = p.url();
 
+// Com o lote de demonstração carregado a auditoria vê conteúdo de verdade —
+// cards cheios, selo EXEMPLO, capas — e não só estado vazio.
+await ir(p, '/meu-espaco');
+await p.getByRole('button', { name: /carregar dados de exemplo/i }).click();
+await p.waitForTimeout(900);
+await auditar('/meu-espaco (com o lote de exemplo)');
+
+for (const r of ['/temas/memoria', '/temas/periferias', '/temas/outro']) {
+  await ir(p, r);
+  await auditar(r);
+}
+
 for (const r of ['/pessoas', '/projetos', '/assuntos', '/temas', '/temas/ancestralidade',
                  '/meu-espaco', '/meu-perfil', '/projetos/novo', '/assuntos/novo',
                  projeto, `${projeto}/quem-chegou-junto`]) {
