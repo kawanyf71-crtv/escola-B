@@ -1,0 +1,176 @@
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Carregando, Erro } from '../components/Estados';
+import { CardProjeto } from '../components/Cards';
+import { repo } from '../data';
+import { useConsulta } from '../lib/useConsulta';
+import { useSessao } from '../lib/sessao';
+
+export function MeuEspaco() {
+  const { perfil, excluirConta } = useSessao();
+  const navegar = useNavigate();
+  const meuId = perfil?.id ?? '';
+
+  const projetos = useConsulta(
+    () => (meuId ? repo.projetosDoParticipante(meuId) : Promise.resolve([])),
+    [meuId],
+  );
+  const interesses = useConsulta(() => repo.meusInteresses(), []);
+
+  const [confirmando, setConfirmando] = useState(false);
+  const [excluindo, setExcluindo] = useState(false);
+
+  async function apagar() {
+    setExcluindo(true);
+    try {
+      await excluirConta();
+      navegar('/');
+    } finally {
+      setExcluindo(false);
+    }
+  }
+
+  return (
+    <>
+      <section className="faixa faixa--amarelo faixa--fina">
+        <div className="faixa__interno">
+          <h1>Meu<br />espaço</h1>
+          <p className="miudo">Seus projetos, quem chegou até eles e onde você se candidatou.</p>
+          <div className="acoes">
+            <Link className="botao botao--preto" to="/meu-perfil">
+              <span className="seta" aria-hidden="true" />Editar meu perfil
+            </Link>
+            {perfil && (
+              <Link className="botao botao--contorno" to={`/pessoas/${perfil.id}`}>
+                Ver como a turma me vê
+              </Link>
+            )}
+          </div>
+        </div>
+      </section>
+
+      <section className="faixa faixa--claro">
+        <div className="faixa__interno">
+          <h2>Meus projetos</h2>
+          {projetos.carregando && <Carregando quantidade={2} rotulo="Carregando seus projetos" />}
+          {projetos.erro && <Erro mensagem={projetos.erro} aoTentarDeNovo={projetos.recarregar} />}
+
+          {!projetos.carregando && !projetos.erro && (projetos.dados ?? []).length === 0 && (
+            <div className="cartaz cartaz--vermelho">
+              <h3>Você ainda não publicou nada</h3>
+              <p>
+                Sem projeto, ninguém sabe o que você precisa — e você não pode abrir
+                discussão, porque toda discussão nasce de um projeto. Comece por uma ideia.
+              </p>
+              <div className="acoes">
+                <Link className="botao botao--preto" to="/projetos/novo">
+                  <span className="seta" aria-hidden="true" />Publicar meu projeto
+                </Link>
+              </div>
+            </div>
+          )}
+
+          {(projetos.dados ?? []).length > 0 && (
+            <>
+              <div className="grade">
+                {projetos.dados!.map((p) => (
+                  <div key={p.id}>
+                    <CardProjeto projeto={p} />
+                    <div className="acoes" style={{ marginTop: '0.5rem' }}>
+                      <Link className="botao botao--preto botao--pequeno"
+                            to={`/projetos/${p.id}/editar`}>Editar</Link>
+                      {p.busca_pessoas && (
+                        <Link className="botao botao--vermelho botao--pequeno"
+                              to={`/projetos/${p.id}/interessados`}>Interessados</Link>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="acoes">
+                <Link className="botao botao--vermelho" to="/projetos/novo">
+                  <span className="seta" aria-hidden="true" />Publicar outro projeto
+                </Link>
+              </div>
+            </>
+          )}
+        </div>
+      </section>
+
+      <section className="faixa faixa--preto-2">
+        <div className="faixa__interno">
+          <h2>Onde me<br />candidatei</h2>
+          {interesses.carregando && (
+            <Carregando quantidade={2} rotulo="Carregando seus interesses" />
+          )}
+          {interesses.erro && (
+            <Erro mensagem={interesses.erro} aoTentarDeNovo={interesses.recarregar} />
+          )}
+
+          {!interesses.carregando && !interesses.erro && (interesses.dados ?? []).length === 0 && (
+            <p>
+              Nenhum interesse enviado ainda.{' '}
+              <Link to="/projetos">Veja o mural</Link> e filtre por uma habilidade que
+              você oferece.
+            </p>
+          )}
+
+          <div className="empilhado">
+            {(interesses.dados ?? []).map((i) => (
+              <article className="card card--escuro" key={i.id}>
+                <h3 className="card__titulo">
+                  <span className="seta" aria-hidden="true" />
+                  {i.projeto
+                    ? <Link to={`/projetos/${i.projeto.id}`}>{i.projeto.nome}</Link>
+                    : 'Projeto removido'}
+                </h3>
+                {i.projeto?.autor && (
+                  <p className="card__meta">
+                    de <Link to={`/pessoas/${i.projeto.autor.id}`}>{i.projeto.autor.nome}</Link>
+                  </p>
+                )}
+                <p style={{ margin: '0 0 0.75rem' }}>
+                  <span className="chip">{i.tipo_participacao}</span>
+                </p>
+                <p className="miudo">{i.mensagem}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="faixa faixa--claro">
+        <div className="faixa__interno" style={{ maxWidth: '36rem' }}>
+          <h2>Sair da rede</h2>
+          <p className="miudo">
+            Excluir a conta apaga seu perfil, seus projetos, suas discussões e os
+            interesses que você enviou. Não dá para desfazer.
+          </p>
+          {!confirmando ? (
+            <div className="acoes">
+              <button type="button" className="botao botao--contorno"
+                      onClick={() => setConfirmando(true)}>
+                Excluir minha conta
+              </button>
+            </div>
+          ) : (
+            <div className="cartaz cartaz--vermelho">
+              <h3>Tem certeza?</h3>
+              <p>Tudo que você publicou some junto.</p>
+              <div className="acoes">
+                <button type="button" className="botao botao--preto"
+                        onClick={apagar} disabled={excluindo}>
+                  {excluindo ? 'Excluindo…' : 'Sim, excluir tudo'}
+                </button>
+                <button type="button" className="botao botao--claro"
+                        onClick={() => setConfirmando(false)} disabled={excluindo}>
+                  Não, voltar
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      </section>
+    </>
+  );
+}

@@ -1,0 +1,764 @@
+/* ==========================================================================
+   Rede Escola B — identidade visual (spec secao 15)
+   Regras duras da marca: border-radius 0 (excecao de 3px em botao), zero
+   sombra, zero gradiente, zero blur, zero elevacao. Faixas de cor chapada
+   ocupando a largura inteira. Titulo em Archivo Black, CAIXA ALTA,
+   line-height 1.0. Corpo em Inter, 16px base. Desenhado a partir de 390px.
+   ========================================================================== */
+
+:root {
+  --amarelo: #ffd400;
+  --vermelho: #ed3124;
+  --preto: #111111;
+  --preto-2: #222222;
+  --off-white: #f1f1f1;
+  --branco: #ffffff;
+
+  --titulo: 'Archivo Black', 'Arial Black', Impact, Haettenschweiler, sans-serif;
+  --corpo: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  --gutter: 1rem;
+  --largura: 68rem;
+  --alvo: 2.75rem; /* 44px: alvo minimo de toque */
+  --tinta-link: var(--preto);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--off-white); /* NUNCA #FFFFFF como fundo de pagina */
+  color: var(--preto);
+  font-family: var(--corpo);
+  font-size: 1rem; /* 16px */
+  line-height: 1.5;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+/* Cor de link por superficie: --tinta-link e redefinida por cada fundo e o
+   valor herdado mais proximo vence, entao um card claro dentro de uma faixa
+   escura acerta sozinho.
+   O :where() zera a especificidade do :not(), deixando a regra em (0,0,1) —
+   assim QUALQUER classe de controle que declare a propria `color` ganha sem
+   precisar entrar numa lista de excecoes. Um link estilizado como botao que
+   nao declarasse cor propria e que ficaria amarelo sobre amarelo. */
+a:not(:where(.botao, .chip)) {
+  color: var(--tinta-link);
+}
+
+:focus-visible {
+  outline: 4px solid var(--vermelho);
+  outline-offset: 2px;
+}
+
+.faixa--preto :focus-visible,
+.faixa--vermelho :focus-visible {
+  outline-color: var(--amarelo);
+}
+
+/* Link de pulo para teclado (acessibilidade). */
+.pular {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 100;
+  background: var(--amarelo);
+  color: var(--preto);
+  font-family: var(--titulo);
+  text-transform: uppercase;
+  padding: 0.75rem 1rem;
+}
+.pular:focus {
+  left: 0;
+}
+
+/* --------------------------------------------------------------- tipografia */
+
+h1, h2, h3, h4 {
+  font-family: var(--titulo);
+  font-weight: 900; /* peso real da Archivo Black; sem bold sintetico */
+  text-transform: uppercase;
+  line-height: 1;   /* assinatura tipografica do BATEKOO */
+  letter-spacing: normal;
+  margin: 0 0 0.75rem;
+  text-wrap: balance;      /* distribui melhor titulo de duas ou tres linhas */
+  hyphens: auto;           /* corta com hifen antes de partir a palavra seca */
+  overflow-wrap: anywhere; /* ultimo recurso: nome de projeto pode ser enorme */
+}
+
+/* 8.6vw faz caber ANCESTRALIDADE (o termo mais longo das listas fixas) em
+   uma linha a 390px; acima disso a palavra partia com uma letra orfa. */
+h1 { font-size: clamp(1.875rem, 8.6vw, 4.5rem); }
+h2 { font-size: clamp(1.75rem, 7.5vw, 3rem); }
+h3 { font-size: clamp(1.25rem, 5vw, 1.75rem); }
+h4 { font-size: 1.0625rem; }
+
+p { margin: 0 0 1rem; }
+p:last-child { margin-bottom: 0; }
+
+.rotulo {
+  font-weight: 900;
+  font-family: var(--titulo);
+  text-transform: uppercase;
+  line-height: 1;
+  font-size: 0.8125rem;
+  display: block;
+  margin-bottom: 0.375rem;
+}
+
+.miudo {
+  font-size: 0.875rem;
+}
+
+.destaque { font-weight: 600; }
+
+/* ------------------------------------------------------------------- faixas */
+
+.faixa {
+  width: 100%;
+  padding: 2rem 0;
+}
+
+.faixa__interno {
+  max-width: var(--largura);
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+}
+
+/* Cada faixa e um retangulo de UMA cor so. A tinta de cada uma foi escolhida
+   para passar em contraste AA: sobre vermelho e sobre amarelo a tinta e preta. */
+.faixa--preto      { background: var(--preto);     color: var(--off-white); }
+.faixa--preto-2    { background: var(--preto-2);   color: var(--off-white); }
+.faixa--amarelo    { background: var(--amarelo);   color: var(--preto); }
+.faixa--vermelho   { background: var(--vermelho);  color: var(--preto); }
+.faixa--claro      { background: var(--off-white); color: var(--preto); }
+
+/* Superficies claras pedem link preto; as escuras, amarelo. Botao e chip ficam
+   de fora porque ja trazem a propria tinta.
+   A ordem importa: `.card` e `.card--escuro` tem a mesma especificidade, entao
+   as escuras vem DEPOIS — senao a variante escura de um bloco claro herda
+   tinta preta sobre fundo preto. */
+.faixa--amarelo, .faixa--vermelho, .faixa--claro, .menu-cheio,
+.cartaz, .cartaz--vermelho, .card, .correspondencia,
+.esqueleto { --tinta-link: var(--preto); }
+
+.faixa--preto, .faixa--preto-2, .cabecalho, .rodape,
+.cartaz--preto, .card--escuro { --tinta-link: var(--amarelo); }
+
+.faixa--preto .botao--contorno,
+.faixa--preto-2 .botao--contorno { color: var(--amarelo); }
+
+.faixa--fina { padding: 1.25rem 0; }
+
+/* --------------------------------------------------------------------- seta */
+/* Seta triangular macica, sem contorno: pontuacao grafica da marca. */
+
+.seta {
+  display: inline-block;
+  width: 0.7em;
+  height: 0.7em;
+  margin-right: 0.4em;
+  background: currentColor;
+  clip-path: polygon(0 0, 100% 50%, 0 100%);
+  flex: none;
+}
+
+.seta--baixo  { clip-path: polygon(0 0, 100% 0, 50% 100%); }
+.seta--grande { width: 1.4rem; height: 1.4rem; }
+.seta--amarela { background: var(--amarelo); }
+
+/* Divisor: fileira de setas. */
+.divisor {
+  display: flex;
+  gap: 0.25rem;
+  padding: 0.75rem 0;
+}
+.divisor .seta { margin: 0; }
+
+/* ------------------------------------------------------------------- botoes */
+/* Excecao unica de raio na marca: 3px. Tamanho 19px em Archivo Black — acima
+   do limiar de "texto grande", o que faz o #F1F1F1 sobre vermelho passar em AA. */
+
+.botao {
+  font-weight: 900;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.15rem;
+  min-height: var(--alvo);
+  padding: 0.625rem 1.125rem;
+  border: 0;
+  border-radius: 3px;
+  font-family: var(--titulo);
+  font-size: 1.1875rem;
+  line-height: 1;
+  text-transform: uppercase;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.botao[disabled] { cursor: not-allowed; opacity: 0.55; }
+
+.botao--amarelo  { background: var(--amarelo);  color: var(--preto); }
+.botao--vermelho { background: var(--vermelho); color: var(--off-white); }
+.botao--preto    { background: var(--preto);    color: var(--off-white); }
+.botao--claro    { background: var(--off-white); color: var(--preto); }
+
+.botao--contorno {
+  background: transparent;
+  color: currentColor;
+  border: 4px solid currentColor;
+  border-radius: 0;
+}
+
+.botao--bloco { width: 100%; }
+
+.botao--pequeno {
+  font-size: 0.9375rem;
+  min-height: var(--alvo);
+  padding: 0.5rem 0.875rem;
+}
+
+/* A 15px o rotulo deixa de contar como "texto grande" na WCAG e passa a exigir
+   4,5:1 — o #F1F1F1 sobre vermelho so da 3,67:1. Mesma regra ja aplicada as
+   faixas vermelhas: sobre vermelho, texto pequeno leva tinta preta (4,59:1). */
+.botao--pequeno.botao--vermelho { color: var(--preto); }
+
+.acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+}
+
+/* -------------------------------------------------------------------- chips */
+/* Retangulos chapados de canto reto. Nunca pilulas. */
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.chip {
+  font-weight: 900;
+  display: inline-block;
+  background: var(--amarelo);
+  color: var(--preto);
+  font-family: var(--titulo);
+  font-size: 0.75rem;
+  line-height: 1;
+  text-transform: uppercase;
+  padding: 0.4375rem 0.5rem;
+  border-radius: 0;
+  text-decoration: none;
+}
+
+.chip--inverso { background: var(--preto); color: var(--amarelo); }
+.chip--claro   { background: var(--off-white); color: var(--preto); }
+.chip--alerta  { background: var(--vermelho); color: var(--preto); }
+
+a.chip:hover, a.chip:focus-visible { text-decoration: underline; }
+
+/* -------------------------------------------------------------------- cards */
+
+.grade {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 40rem) {
+  .grade { grid-template-columns: repeat(2, 1fr); }
+}
+@media (min-width: 60rem) {
+  .grade--3 { grid-template-columns: repeat(3, 1fr); }
+}
+
+.card {
+  display: block;
+  background: var(--off-white);
+  color: var(--preto);
+  border: 4px solid var(--preto);
+  border-radius: 0;
+  padding: 1rem;
+  text-decoration: none;
+}
+
+.card--contorno {
+  background: transparent;
+  border-color: var(--amarelo);
+  color: inherit;
+}
+
+.card--escuro { background: var(--preto); color: var(--off-white); border-color: var(--amarelo); }
+
+.card:hover, .card:focus-visible { border-color: var(--vermelho); }
+
+/* O titulo do card e o alvo principal para abrir pessoa, projeto ou discussao:
+   precisa dos 44px de toque, nao so da altura da linha do texto. */
+.card__titulo a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--alvo);
+}
+
+.card__titulo {
+  font-weight: 900;
+  display: flex;
+  align-items: baseline;
+  font-family: var(--titulo);
+  text-transform: uppercase;
+  line-height: 1;
+  font-size: 1.25rem;
+  margin: 0 0 0.5rem;
+  overflow-wrap: anywhere;
+}
+
+.card__meta {
+  font-size: 0.875rem;
+  margin: 0 0 0.75rem;
+}
+
+.card__capa {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border: 7px solid var(--preto);
+  margin-bottom: 0.75rem;
+}
+
+/* ----------------------------------------------------------------- molduras */
+/* Foto emoldurada com borda preta de 7px. */
+
+.moldura {
+  border: 7px solid var(--preto);
+  background: var(--amarelo);
+  width: 4.5rem;
+  height: 4.5rem;
+  object-fit: cover;
+  flex: none;
+}
+
+.moldura--grande { width: 8rem; height: 8rem; }
+
+.moldura--vazia {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--titulo);
+  font-size: 1.5rem;
+  color: var(--preto);
+  text-transform: uppercase;
+}
+
+.moldura--grande.moldura--vazia { font-size: 2.75rem; }
+
+.pessoa-linha {
+  display: flex;
+  gap: 0.875rem;
+  align-items: flex-start;
+}
+
+/* --------------------------------------------------------------- formulario */
+
+.campo { margin-bottom: 1.25rem; }
+
+.campo__dica {
+  font-size: 0.8125rem;
+  margin: 0 0 0.375rem;
+  opacity: 0.85;
+}
+
+input[type='text'],
+input[type='email'],
+input[type='password'],
+input[type='url'],
+select,
+textarea {
+  width: 100%;
+  min-height: var(--alvo);
+  padding: 0.625rem 0.75rem;
+  border: 4px solid var(--preto);
+  border-radius: 0;
+  background: var(--branco);
+  color: var(--preto);
+  font-family: var(--corpo);
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+textarea { min-height: 6rem; resize: vertical; }
+
+select {
+  appearance: none;
+  background-image: linear-gradient(var(--preto), var(--preto));
+  background-size: 0; /* a seta vem do markup, nao de gradiente */
+}
+
+.campo--erro input,
+.campo--erro select,
+.campo--erro textarea { border-color: var(--vermelho); }
+
+.erro-campo {
+  font-weight: 900;
+  display: block;
+  margin-top: 0.375rem;
+  background: var(--vermelho);
+  color: var(--preto);
+  font-family: var(--titulo);
+  font-size: 0.8125rem;
+  text-transform: uppercase;
+  line-height: 1.15;
+  padding: 0.375rem 0.5rem;
+}
+
+/* Grupo de caixas de selecao como grade de chips clicaveis. */
+.opcoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+
+.opcao {
+  position: relative;
+  display: inline-flex;
+}
+
+.opcao input {
+  position: absolute;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  cursor: pointer;
+}
+
+.opcao span {
+  font-weight: 900;
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--alvo);
+  padding: 0.5rem 0.75rem;
+  border: 4px solid var(--preto);
+  background: transparent;
+  font-family: var(--titulo);
+  font-size: 0.8125rem;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.opcao input:checked + span { background: var(--preto); color: var(--amarelo); }
+.opcao input:focus-visible + span { outline: 4px solid var(--vermelho); outline-offset: 2px; }
+
+.faixa--preto .opcao span,
+.faixa--preto-2 .opcao span { border-color: var(--off-white); }
+.faixa--preto .opcao input:checked + span,
+.faixa--preto-2 .opcao input:checked + span { background: var(--amarelo); color: var(--preto); }
+
+.interruptor {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+/* ------------------------------------------------------------------ filtros */
+
+.filtros {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+}
+
+@media (min-width: 40rem) {
+  .filtros { grid-template-columns: repeat(2, 1fr); }
+}
+@media (min-width: 60rem) {
+  .filtros { grid-template-columns: repeat(4, 1fr); }
+}
+
+.filtros__rodape {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.contagem {
+  font-weight: 900;
+  font-family: var(--titulo);
+  text-transform: uppercase;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+/* ------------------------------------------------- estados: vazio/erro/load */
+/* Linguagem de cartaz: cor chapada no bloco inteiro, tipografia empilhada. */
+
+.cartaz {
+  background: var(--amarelo);
+  color: var(--preto);
+  padding: 2rem 1.25rem;
+  border-radius: 0;
+}
+
+.cartaz--vermelho { background: var(--vermelho); color: var(--preto); }
+.cartaz--preto    { background: var(--preto);    color: var(--off-white); }
+
+.cartaz h2, .cartaz h3 { margin-bottom: 0.75rem; }
+.cartaz p { max-width: 34rem; }
+
+.esqueleto {
+  border: 4px solid var(--preto);
+  padding: 1rem;
+}
+
+.esqueleto__barra {
+  background: var(--preto);
+  height: 1rem;
+  margin-bottom: 0.625rem;
+  opacity: 0.18;
+}
+
+.esqueleto__barra--titulo { height: 1.75rem; width: 70%; opacity: 0.3; }
+.esqueleto__barra--curta  { width: 45%; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .esqueleto__barra { animation: pulsar 1.2s ease-in-out infinite; }
+  @keyframes pulsar { 50% { opacity: 0.08; } }
+}
+
+/* ------------------------------------------------------------------ cabecalho */
+
+.cabecalho {
+  background: var(--preto);
+  color: var(--off-white);
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+.cabecalho__barra {
+  max-width: var(--largura);
+  margin: 0 auto;
+  padding: 0.75rem var(--gutter);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: var(--alvo);
+}
+
+.marca {
+  font-weight: 900;
+  font-family: var(--titulo);
+  text-transform: uppercase;
+  line-height: 1;
+  font-size: 1.125rem;
+  color: var(--amarelo);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--alvo);
+}
+
+.menu-botao {
+  font-weight: 900;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: var(--alvo);
+  padding: 0.5rem 0.75rem;
+  background: var(--amarelo);
+  color: var(--preto);
+  border: 0;
+  border-radius: 3px;
+  font-family: var(--titulo);
+  font-size: 0.9375rem;
+  text-transform: uppercase;
+  line-height: 1;
+  cursor: pointer;
+}
+
+/* A navegacao horizontal so existe no desktop; no celular tudo vive no menu
+   de tela cheia, inclusive o Sair. */
+.nav-desktop { display: none; }
+
+.nav-sair {
+  font-weight: 900;
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--alvo);
+  padding: 0.5rem 0.75rem;
+  background: var(--amarelo);
+  color: var(--preto);
+  border: 0;
+  border-radius: 3px;
+  font-family: var(--titulo);
+  font-size: 0.9375rem;
+  text-transform: uppercase;
+  line-height: 1;
+  cursor: pointer;
+}
+
+@media (min-width: 55rem) {
+  .menu-botao { display: none; }
+  .nav-desktop {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    flex-wrap: wrap;
+  }
+  .nav-desktop a {
+    font-family: var(--titulo);
+    text-transform: uppercase;
+    font-size: 0.875rem;
+    line-height: 1;
+    color: var(--off-white);
+    text-decoration: none;
+    padding: 0.5rem 0;
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--alvo);
+  }
+  .nav-desktop a:hover { color: var(--amarelo); }
+  .nav-desktop a[aria-current='page'] { color: var(--amarelo); text-decoration: underline; }
+}
+
+/* Menu de tela cheia no celular: cartaz de cor chapada. */
+.menu-cheio {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  background: var(--amarelo);
+  color: var(--preto);
+  overflow-y: auto;
+  padding: calc(1rem + env(safe-area-inset-top, 0px)) var(--gutter)
+           calc(2rem + env(safe-area-inset-bottom, 0px));
+}
+
+.menu-cheio__topo {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1.5rem;
+}
+
+.menu-cheio nav { display: flex; flex-direction: column; }
+
+.menu-cheio nav a {
+  display: flex;
+  align-items: center;
+  font-family: var(--titulo);
+  text-transform: uppercase;
+  line-height: 1;
+  font-size: clamp(2rem, 10vw, 3rem);
+  color: var(--preto);
+  text-decoration: none;
+  padding: 0.5rem 0;
+  min-height: var(--alvo);
+  border-bottom: 4px solid var(--preto);
+}
+
+.menu-cheio nav a[aria-current='page'] { background: var(--preto); color: var(--amarelo); }
+
+/* ------------------------------------------------------------------- rodape */
+
+.rodape {
+  background: var(--preto);
+  color: var(--off-white);
+  padding: 2rem 0 calc(2rem + env(safe-area-inset-bottom, 0px));
+  margin-top: auto;
+}
+
+.pagina {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.conteudo { flex: 1; }
+
+/* ------------------------------------------------------------------- listas */
+
+.lista-limpa { list-style: none; padding: 0; margin: 0; }
+
+.empilhado > * + * { margin-top: 1rem; }
+.empilhado-curto > * + * { margin-top: 0.5rem; }
+
+.migalha {
+  font-weight: 900;
+  font-family: var(--titulo);
+  text-transform: uppercase;
+  font-size: 0.8125rem;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--alvo);
+  text-decoration: none;
+}
+.migalha:hover { text-decoration: underline; }
+
+/* Bloco de correspondencia (RF-008): o destaque mais importante do produto. */
+.correspondencia {
+  background: var(--amarelo);
+  color: var(--preto);
+  padding: 1rem;
+  border-radius: 0;
+}
+
+.aviso {
+  background: var(--vermelho);
+  color: var(--preto);
+  font-family: var(--corpo);
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+}
+
+.sucesso {
+  font-weight: 900;
+  background: var(--preto);
+  color: var(--amarelo);
+  font-family: var(--titulo);
+  text-transform: uppercase;
+  line-height: 1.15;
+  padding: 0.75rem 1rem;
+}
+
+.comentario {
+  border-left: 7px solid var(--preto);
+  padding-left: 0.875rem;
+}
+
+.faixa--preto .comentario, .faixa--preto-2 .comentario { border-left-color: var(--amarelo); }
+
+.visualmente-oculto {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}

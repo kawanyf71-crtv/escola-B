@@ -1,0 +1,213 @@
+import { useState, type FormEvent } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Campo, GrupoOpcoes } from '../components/Campos';
+import { Erro } from '../components/Estados';
+import {
+  AREAS, DISPONIBILIDADES, HABILIDADES, TEMAS,
+  type Area, type Disponibilidade, type Habilidade, type Tema,
+} from '../lib/dominio';
+import { repo } from '../data';
+import { useRascunho } from '../lib/useRascunho';
+import { useSessao } from '../lib/sessao';
+
+interface Formulario {
+  nome: string;
+  ocupacao: string;
+  cidade: string;
+  mini_bio: string;
+  foto: string;
+  areas: Area[];
+  habilidades_oferecidas: Habilidade[];
+  temas_interesse: Tema[];
+  disponibilidade: Disponibilidade[];
+  instagram: string;
+  linkedin: string;
+  site: string;
+}
+
+const VAZIO: Formulario = {
+  nome: '', ocupacao: '', cidade: '', mini_bio: '', foto: '',
+  areas: [], habilidades_oferecidas: [], temas_interesse: [], disponibilidade: [],
+  instagram: '', linkedin: '', site: '',
+};
+
+function limparLink(valor: string): string | null {
+  const v = valor.trim();
+  return v.length > 0 ? v : null;
+}
+
+export function MeuPerfil() {
+  const { perfil, recarregarPerfil, sessao } = useSessao();
+  const navegar = useNavigate();
+  const editando = perfil !== null;
+
+  const [form, setForm, descartarRascunho] = useRascunho<Formulario>(
+    `perfil/${sessao?.usuario_id ?? 'anon'}`,
+    perfil
+      ? {
+          nome: perfil.nome, ocupacao: perfil.ocupacao, cidade: perfil.cidade,
+          mini_bio: perfil.mini_bio, foto: perfil.foto ?? '',
+          areas: perfil.areas, habilidades_oferecidas: perfil.habilidades_oferecidas,
+          temas_interesse: perfil.temas_interesse, disponibilidade: perfil.disponibilidade,
+          instagram: perfil.instagram ?? '', linkedin: perfil.linkedin ?? '',
+          site: perfil.site ?? '',
+        }
+      : VAZIO,
+  );
+
+  const [erros, setErros] = useState<Record<string, string>>({});
+  const [falha, setFalha] = useState<string | null>(null);
+  const [enviando, setEnviando] = useState(false);
+
+  function campo<K extends keyof Formulario>(chave: K, valor: Formulario[K]) {
+    setForm((anterior) => ({ ...anterior, [chave]: valor }));
+  }
+
+  /** RF-003: sem estes campos o perfil não é publicado, e a tela diz por quê. */
+  function validar(): Record<string, string> {
+    const e: Record<string, string> = {};
+    if (!form.nome.trim()) e.nome = 'Como a turma vai te chamar?';
+    if (!form.ocupacao.trim()) e.ocupacao = 'Diga o que você faz.';
+    if (!form.cidade.trim()) e.cidade = 'Informe sua cidade e estado.';
+    if (!form.mini_bio.trim()) e.mini_bio = 'Escreva uma a três frases sobre você.';
+    if (form.areas.length === 0) e.areas = 'Escolha ao menos uma área.';
+    if (form.habilidades_oferecidas.length === 0) {
+      e.habilidades_oferecidas =
+        'Escolha ao menos uma. É por aqui que um projeto descobre que você serve para ele — ' +
+        'sem isso, seu perfil não cruza com nada.';
+    }
+    return e;
+  }
+
+  async function enviar(evento: FormEvent) {
+    evento.preventDefault();
+    const novos = validar();
+    setErros(novos);
+    setFalha(null);
+    if (Object.keys(novos).length > 0) {
+      document.querySelector('.campo--erro')?.scrollIntoView({ block: 'center' });
+      return;
+    }
+    setEnviando(true);
+    try {
+      await repo.salvarPerfil({
+        nome: form.nome.trim(),
+        ocupacao: form.ocupacao.trim(),
+        cidade: form.cidade.trim(),
+        mini_bio: form.mini_bio.trim(),
+        foto: limparLink(form.foto),
+        areas: form.areas,
+        habilidades_oferecidas: form.habilidades_oferecidas,
+        temas_interesse: form.temas_interesse,
+        disponibilidade: form.disponibilidade,
+        instagram: limparLink(form.instagram),
+        linkedin: limparLink(form.linkedin),
+        site: limparLink(form.site),
+      });
+      descartarRascunho();
+      await recarregarPerfil();
+      navegar('/pessoas');
+    } catch (e) {
+      setFalha(e instanceof Error ? e.message : 'Não foi possível salvar o perfil.');
+    } finally {
+      setEnviando(false);
+    }
+  }
+
+  return (
+    <>
+      <section className="faixa faixa--amarelo">
+        <div className="faixa__interno">
+          <h1>{editando ? 'Editar\nmeu perfil' : 'Meu\nperfil'}</h1>
+          {!editando && (
+            <p style={{ maxWidth: '32rem' }}>
+              Quatro minutos e você entra no diretório. O que é obrigatório está
+              marcado; o resto dá para completar depois.
+            </p>
+          )}
+        </div>
+      </section>
+
+      <section className="faixa faixa--claro">
+        <div className="faixa__interno" style={{ maxWidth: '40rem' }}>
+          <form onSubmit={enviar} noValidate>
+            {falha && <Erro mensagem={falha} />}
+
+            <Campo id="nome" rotulo="Nome" erro={erros.nome} obrigatorio>
+              <input id="nome" type="text" value={form.nome} autoComplete="name"
+                     onChange={(e) => campo('nome', e.target.value)} />
+            </Campo>
+
+            <Campo id="ocupacao" rotulo="O que você faz" erro={erros.ocupacao} obrigatorio
+                   dica="Ex.: produtora cultural, fotógrafo, professora de dança.">
+              <input id="ocupacao" type="text" value={form.ocupacao}
+                     onChange={(e) => campo('ocupacao', e.target.value)} />
+            </Campo>
+
+            <Campo id="cidade" rotulo="Cidade / estado" erro={erros.cidade} obrigatorio>
+              <input id="cidade" type="text" value={form.cidade} placeholder="Salvador, BA"
+                     onChange={(e) => campo('cidade', e.target.value)} />
+            </Campo>
+
+            <Campo id="mini_bio" rotulo="Mini-bio" erro={erros.mini_bio} obrigatorio
+                   dica="Uma a três frases.">
+              <textarea id="mini_bio" value={form.mini_bio} maxLength={400}
+                        onChange={(e) => campo('mini_bio', e.target.value)} />
+            </Campo>
+
+            <GrupoOpcoes
+              nome="areas" legenda="Áreas" opcoes={AREAS} valor={form.areas}
+              aoMudar={(v) => campo('areas', v)} erro={erros.areas} obrigatorio
+            />
+
+            <GrupoOpcoes
+              nome="habilidades" legenda="Habilidades que ofereço" opcoes={HABILIDADES}
+              valor={form.habilidades_oferecidas}
+              aoMudar={(v) => campo('habilidades_oferecidas', v)}
+              erro={erros.habilidades_oferecidas} obrigatorio
+              dica="Esta é a lista que os projetos usam para dizer o que procuram."
+            />
+
+            <GrupoOpcoes
+              nome="temas" legenda="Temas que me interessam" opcoes={TEMAS}
+              valor={form.temas_interesse} aoMudar={(v) => campo('temas_interesse', v)}
+              dica="Aparece na página de cada tema e leva gente até você."
+            />
+
+            <GrupoOpcoes
+              nome="disponibilidade" legenda="Disponibilidade" opcoes={DISPONIBILIDADES}
+              valor={form.disponibilidade} aoMudar={(v) => campo('disponibilidade', v)}
+            />
+
+            <Campo id="foto" rotulo="Link da sua foto"
+                   dica="Cole o endereço de uma imagem sua. Dá para deixar em branco.">
+              <input id="foto" type="url" value={form.foto} inputMode="url"
+                     placeholder="https://…"
+                     onChange={(e) => campo('foto', e.target.value)} />
+            </Campo>
+
+            <Campo id="instagram" rotulo="Instagram">
+              <input id="instagram" type="text" value={form.instagram} placeholder="@seuperfil"
+                     onChange={(e) => campo('instagram', e.target.value)} />
+            </Campo>
+
+            <Campo id="linkedin" rotulo="LinkedIn">
+              <input id="linkedin" type="url" value={form.linkedin} inputMode="url"
+                     onChange={(e) => campo('linkedin', e.target.value)} />
+            </Campo>
+
+            <Campo id="site" rotulo="Site ou portfólio">
+              <input id="site" type="url" value={form.site} inputMode="url"
+                     onChange={(e) => campo('site', e.target.value)} />
+            </Campo>
+
+            <button className="botao botao--vermelho botao--bloco" type="submit" disabled={enviando}>
+              <span className="seta" aria-hidden="true" />
+              {enviando ? 'Publicando…' : editando ? 'Salvar perfil' : 'Publicar meu perfil'}
+            </button>
+          </form>
+        </div>
+      </section>
+    </>
+  );
+}
