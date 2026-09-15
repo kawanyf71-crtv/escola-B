@@ -31,7 +31,7 @@ export function Discussao() {
   if (discussao.carregando) {
     return (
       <section className="faixa faixa--claro">
-        <div className="faixa__interno"><Carregando quantidade={1} rotulo="Carregando a discussão" /></div>
+        <div className="faixa__interno"><Carregando quantidade={1} rotulo="Buscando o assunto" /></div>
       </section>
     );
   }
@@ -51,10 +51,10 @@ export function Discussao() {
       <section className="faixa faixa--claro">
         <div className="faixa__interno">
           <div className="cartaz cartaz--vermelho">
-            <h2>Discussão não encontrada</h2>
+            <h2>Esse assunto<br />não existe mais</h2>
             <div className="acoes">
-              <Link className="botao botao--preto" to="/discussoes">
-                <span className="seta" aria-hidden="true" />Ver todas as discussões
+              <Link className="botao botao--preto" to="/assuntos">
+                <span className="seta" aria-hidden="true" />Ver todos os assuntos
               </Link>
             </div>
           </div>
@@ -76,7 +76,7 @@ export function Discussao() {
       participantes.recarregar();
       discussao.recarregar();
     } catch (e) {
-      setFalha(e instanceof Error ? e.message : 'Não foi possível entrar na discussão.');
+      setFalha(e instanceof Error ? e.message : 'Não deu pra entrar na conversa.');
     } finally {
       setEnviando(false);
     }
@@ -85,7 +85,7 @@ export function Discussao() {
   async function comentar(e: FormEvent) {
     e.preventDefault();
     if (!texto.trim()) {
-      setErroCampo('Escreva alguma coisa antes de enviar.');
+      setErroCampo('Escreve alguma coisa antes de mandar.');
       return;
     }
     setErroCampo(undefined);
@@ -98,7 +98,7 @@ export function Discussao() {
       participantes.recarregar();
       discussao.recarregar();
     } catch (e2) {
-      setFalha(e2 instanceof Error ? e2.message : 'Não foi possível enviar o comentário.');
+      setFalha(e2 instanceof Error ? e2.message : 'Não deu pra mandar.');
     } finally {
       setEnviando(false);
     }
@@ -108,9 +108,9 @@ export function Discussao() {
     <>
       <section className="faixa faixa--preto">
         <div className="faixa__interno">
-          <Link className="migalha" to="/discussoes">
+          <Link className="migalha" to="/assuntos">
             <span className="seta" aria-hidden="true" style={{ transform: 'scaleX(-1)' }} />
-            Discussões
+            Ver todos os assuntos
           </Link>
           <p style={{ margin: '0.5rem 0' }}>
             <Link className="chip" to={`/temas/${slugTema(d.tema)}`}>{d.tema}</Link>
@@ -120,7 +120,7 @@ export function Discussao() {
             {d.descricao}
           </p>
           <p className="miudo" style={{ marginTop: '1rem' }}>
-            {d.autor && <>Aberta por <Link to={`/pessoas/${d.autor.id}`}>{d.autor.nome}</Link></>}
+            {d.autor && <>Puxado por <Link to={`/pessoas/${d.autor.id}`}>{d.autor.nome}</Link></>}
             {d.projeto && (
               <> · nasceu do projeto{' '}
                 <Link to={`/projetos/${d.projeto.id}`}>{d.projeto.nome}</Link>
@@ -138,7 +138,7 @@ export function Discussao() {
           )}
           {jaEstou && (
             <p className="sucesso" style={{ marginTop: '1.25rem', display: 'inline-block' }}>
-              <span className="seta" aria-hidden="true" />Você está nesta conversa
+              <span className="seta" aria-hidden="true" />Você tá nessa
             </p>
           )}
           {falha && <p className="aviso" role="alert" style={{ marginTop: '1rem' }}>{falha}</p>}
@@ -149,7 +149,7 @@ export function Discussao() {
         <div className="faixa__interno">
           <h2>Conversa</h2>
 
-          {comentarios.carregando && <Carregando quantidade={2} rotulo="Carregando a conversa" />}
+          {comentarios.carregando && <Carregando quantidade={2} rotulo="Buscando a conversa" />}
           {comentarios.erro && (
             <Erro mensagem={comentarios.erro} aoTentarDeNovo={comentarios.recarregar} />
           )}
@@ -159,8 +159,8 @@ export function Discussao() {
             <div className="cartaz">
               <h3>Seja a<br />primeira voz</h3>
               <p>
-                Ninguém respondeu ainda. Uma frase já basta para a conversa existir —
-                e quem chegar depois entra num assunto vivo, não numa página parada.
+                Ninguém respondeu ainda. Uma frase já basta pra conversa existir — e
+                quem chegar depois entra num assunto vivo, não numa página parada.
               </p>
             </div>
           )}
@@ -186,12 +186,12 @@ export function Discussao() {
           <form onSubmit={comentar} noValidate style={{ marginTop: '2rem', maxWidth: '34rem' }}>
             <Campo id="comentario" rotulo="Escrever" erro={erroCampo}>
               <textarea id="comentario" value={texto} maxLength={2000}
-                        placeholder="O que você pensa sobre isso?"
+                        placeholder="Escreve o que você pensa. Aqui ninguém precisa ter resposta pronta."
                         onChange={(e) => setTexto(e.target.value)} />
             </Campo>
             <button className="botao botao--vermelho" type="submit" disabled={enviando}>
               <span className="seta" aria-hidden="true" />
-              {enviando ? 'Enviando…' : 'Enviar'}
+              {enviando ? 'Enviando…' : 'Mandar'}
             </button>
             {!jaEstou && (
               <p className="miudo" style={{ marginTop: '0.75rem' }}>
@@ -206,13 +206,13 @@ export function Discussao() {
         <div className="faixa__interno">
           <h2>Quem está aqui</h2>
           {participantes.carregando && (
-            <Carregando quantidade={2} rotulo="Carregando participantes" />
+            <Carregando quantidade={2} rotulo="Buscando quem tá na conversa" />
           )}
           {participantes.erro && (
             <Erro mensagem={participantes.erro} aoTentarDeNovo={participantes.recarregar} />
           )}
           {!participantes.carregando && listaParticipantes.length === 0 && (
-            <p>Ninguém entrou ainda. Você pode ser a primeira.</p>
+            <p>Ninguém entrou ainda. Pode ser você.</p>
           )}
           {listaParticipantes.length > 0 && (
             <div className="grade">

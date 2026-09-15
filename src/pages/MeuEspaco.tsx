@@ -144,14 +144,14 @@ export function MeuEspaco() {
         <div className="faixa__interno" style={{ maxWidth: '36rem' }}>
           <h2>Sair da rede</h2>
           <p className="miudo">
-            Excluir a conta apaga seu perfil, seus projetos, suas discussões e os
-            interesses que você enviou. Não dá para desfazer.
+            Apagar a conta apaga seu perfil, seus projetos, seus assuntos e os
+            lugares onde você chegou junto. Não dá pra desfazer.
           </p>
           {!confirmando ? (
             <div className="acoes">
               <button type="button" className="botao botao--contorno"
                       onClick={() => setConfirmando(true)}>
-                Excluir minha conta
+                Apagar minha conta
               </button>
             </div>
           ) : (
@@ -161,7 +161,7 @@ export function MeuEspaco() {
               <div className="acoes">
                 <button type="button" className="botao botao--preto"
                         onClick={apagar} disabled={excluindo}>
-                  {excluindo ? 'Excluindo…' : 'Sim, excluir tudo'}
+                  {excluindo ? 'Apagando…' : 'Sim, apaga tudo'}
                 </button>
                 <button type="button" className="botao botao--claro"
                         onClick={() => setConfirmando(false)} disabled={excluindo}>

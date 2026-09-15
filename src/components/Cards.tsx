@@ -102,7 +102,7 @@ export function CardDiscussao({ discussao }: { discussao: DiscussaoCompleta }) {
       </p>
       <h3 className="card__titulo">
         <span className="seta" aria-hidden="true" />
-        <Link to={`/discussoes/${discussao.id}`}>{discussao.titulo}</Link>
+        <Link to={`/assuntos/${discussao.id}`}>{discussao.titulo}</Link>
       </h3>
       <p className="card__meta">
         {discussao.autor ? `Aberta por ${discussao.autor.nome}` : 'Aberta na rede'}

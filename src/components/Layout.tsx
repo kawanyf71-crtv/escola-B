@@ -3,9 +3,9 @@ import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useSessao } from '../lib/sessao';
 
 const LINKS = [
-  { para: '/pessoas', texto: 'Pessoas' },
+  { para: '/pessoas', texto: 'Gente' },
   { para: '/projetos', texto: 'Projetos' },
-  { para: '/discussoes', texto: 'Discussões' },
+  { para: '/assuntos', texto: 'Assuntos' },
   { para: '/temas', texto: 'Temas' },
   { para: '/meu-espaco', texto: 'Meu espaço' },
 ];

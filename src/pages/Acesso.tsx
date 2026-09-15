@@ -61,10 +61,9 @@ function FormularioAcesso({ modo }: { modo: 'entrar' | 'criar' }) {
             <div className="cartaz" style={{ marginBottom: '1.5rem' }}>
               <h3>Antes de começar</h3>
               <p className="miudo">
-                Seu perfil, seus projetos e suas discussões ficam visíveis para todos
-                os participantes logados. Nada aqui vem de fonte externa — tudo é o que
-                você mesma escreve. Você pode excluir sua conta a qualquer momento,
-                pelo Meu espaço.
+                Seu perfil, seus projetos e seus assuntos ficam visíveis pra toda a
+                turma que entrar. Nada aqui vem de fora — tudo é o que você mesma
+                escreve. Dá pra apagar a conta quando quiser, pelo Meu espaço.
               </p>
             </div>
           )}

@@ -15,11 +15,10 @@ export function Discussoes() {
     <>
       <section className="faixa faixa--preto faixa--fina">
         <div className="faixa__interno">
-          <h1>Discussões</h1>
+          <h1>Assuntos</h1>
           <p className="miudo" style={{ maxWidth: '34rem' }}>
-            Encontrar gente pelo assunto, não pela vaga. Toda discussão nasce de um
-            projeto, mas qualquer participante pode entrar — tenha ou não relação
-            com ele.
+            O que a gente pensa junto rende mais. Toda conversa aqui sai de um projeto
+            e fica aberta pra qualquer pessoa da turma entrar.
           </p>
         </div>
       </section>
@@ -39,8 +38,8 @@ export function Discussoes() {
           <div className="filtros__rodape">
             <p className="contagem" aria-live="polite">
               {discussoes.carregando
-                ? 'Procurando…'
-                : total === 1 ? '1 discussão' : `${total} discussões`}
+                ? 'Buscando os assuntos…'
+                : total === 1 ? '1 assunto aberto' : `${total} assuntos abertos`}
             </p>
             {tema && (
               <button type="button" className="botao botao--preto botao--pequeno"
@@ -54,7 +53,7 @@ export function Discussoes() {
 
       <section className="faixa faixa--claro">
         <div className="faixa__interno">
-          {discussoes.carregando && <Carregando rotulo="Carregando discussões" />}
+          {discussoes.carregando && <Carregando rotulo="Buscando os assuntos" />}
           {!discussoes.carregando && discussoes.erro && (
             <Erro mensagem={discussoes.erro} aoTentarDeNovo={discussoes.recarregar} />
           )}

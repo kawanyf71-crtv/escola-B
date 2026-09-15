@@ -89,8 +89,8 @@ function Rotas() {
           element={<Protegida><Interessados /></Protegida>}
         />
 
-        <Route path="/discussoes" element={<Protegida><Discussoes /></Protegida>} />
-        <Route path="/discussoes/:id" element={<Protegida><Discussao /></Protegida>} />
+        <Route path="/assuntos" element={<Protegida><Discussoes /></Protegida>} />
+        <Route path="/assuntos/:id" element={<Protegida><Discussao /></Protegida>} />
 
         <Route path="/temas" element={<Protegida><Temas /></Protegida>} />
         <Route path="/temas/:slug" element={<Protegida><Tema /></Protegida>} />

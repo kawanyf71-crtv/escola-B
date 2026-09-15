@@ -30,7 +30,7 @@ export function Tema() {
         <div className="faixa__interno">
           <div className="cartaz cartaz--vermelho">
             <h2>Tema não existe</h2>
-            <p>A lista de temas é fixa. Veja quais são.</p>
+            <p>A lista de temas é fixa. Dá uma olhada nos que existem.</p>
             <div className="acoes">
               <Link className="botao botao--preto" to="/temas">
                 <span className="seta" aria-hidden="true" />Ver os temas
@@ -57,8 +57,8 @@ export function Tema() {
 
       <section className="faixa faixa--amarelo">
         <div className="faixa__interno">
-          <h2>Discussões<br />abertas</h2>
-          {discussoes.carregando && <Carregando quantidade={2} rotulo="Carregando discussões" />}
+          <h2>Assuntos<br />abertos</h2>
+          {discussoes.carregando && <Carregando quantidade={2} rotulo="Buscando os assuntos" />}
           {discussoes.erro && (
             <Erro mensagem={discussoes.erro} aoTentarDeNovo={discussoes.recarregar} />
           )}
@@ -73,7 +73,7 @@ export function Tema() {
               </p>
               <div className="acoes">
                 <Link className="botao botao--amarelo botao--pequeno" to="/projetos/novo">
-                  <span className="seta" aria-hidden="true" />Publicar projeto
+                  <span className="seta" aria-hidden="true" />Publicar meu projeto
                 </Link>
               </div>
             </div>
@@ -89,7 +89,7 @@ export function Tema() {
       <section className="faixa faixa--claro">
         <div className="faixa__interno">
           <h2>Projetos<br />neste tema</h2>
-          {projetos.carregando && <Carregando quantidade={2} rotulo="Carregando projetos" />}
+          {projetos.carregando && <Carregando quantidade={2} rotulo="Buscando os projetos" />}
           {projetos.erro && <Erro mensagem={projetos.erro} aoTentarDeNovo={projetos.recarregar} />}
           {!projetos.carregando && !projetos.erro && (projetos.dados ?? []).length === 0 && (
             <div className="cartaz">
@@ -111,7 +111,7 @@ export function Tema() {
       <section className="faixa faixa--vermelho">
         <div className="faixa__interno">
           <h2>Quem se<br />interessa</h2>
-          {pessoas.carregando && <Carregando quantidade={2} rotulo="Carregando pessoas" />}
+          {pessoas.carregando && <Carregando quantidade={2} rotulo="Buscando a turma" />}
           {pessoas.erro && <Erro mensagem={pessoas.erro} aoTentarDeNovo={pessoas.recarregar} />}
           {!pessoas.carregando && !pessoas.erro && (pessoas.dados ?? []).length === 0 && (
             <div className="card">

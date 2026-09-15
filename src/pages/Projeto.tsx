@@ -183,15 +183,15 @@ export function Projeto() {
       {/* RF-012: todas as discussões vinculadas ao projeto. */}
       <section className="faixa faixa--preto-2">
         <div className="faixa__interno">
-          <h2>Discussões<br />deste projeto</h2>
+          <h2>Assuntos<br />deste projeto</h2>
           {discussoes.carregando && <Carregando quantidade={1} rotulo="Buscando os assuntos" />}
           {discussoes.erro && (
             <Erro mensagem={discussoes.erro} aoTentarDeNovo={discussoes.recarregar} />
           )}
           {!discussoes.carregando && !discussoes.erro && (discussoes.dados ?? []).length === 0 && (
             <p>
-              Nenhuma discussão aberta a partir deste projeto ainda.
-              {souAutora && ' Abra uma e traga gente que pensa sobre o assunto.'}
+              Ninguém puxou assunto a partir deste projeto ainda.
+              {souAutora && ' Puxa um e chama quem pensa nisso.'}
             </p>
           )}
           {(discussoes.dados ?? []).length > 0 && (
@@ -204,7 +204,7 @@ export function Projeto() {
             <div className="acoes">
               <button type="button" className="botao botao--amarelo"
                       onClick={() => setAbrindoDiscussao(true)}>
-                <span className="seta" aria-hidden="true" />Abrir uma discussão
+                <span className="seta" aria-hidden="true" />Puxar um assunto
               </button>
             </div>
           )}
@@ -398,9 +398,9 @@ function NovaDiscussaoNoProjeto({
   async function enviar(e: FormEvent) {
     e.preventDefault();
     const novos: Record<string, string> = {};
-    if (!titulo.trim()) novos.titulo = 'Dê um título à discussão.';
-    if (!tema) novos.tema = 'Escolha um tema — só um.';
-    if (!descricao.trim()) novos.descricao = 'Escreva o que você quer discutir.';
+    if (!titulo.trim()) novos.titulo = 'Dá um título ao assunto.';
+    if (!tema) novos.tema = 'Marca um tema — só um.';
+    if (!descricao.trim()) novos.descricao = 'Escreve o que você quer conversar.';
     setErros(novos);
     setFalha(null);
     if (Object.keys(novos).length > 0) return;
@@ -411,7 +411,7 @@ function NovaDiscussaoNoProjeto({
       });
       aoCriar();
     } catch (e2) {
-      setFalha(e2 instanceof Error ? e2.message : 'Não foi possível abrir a discussão.');
+      setFalha(e2 instanceof Error ? e2.message : 'Não deu pra puxar o assunto.');
     } finally {
       setEnviando(false);
     }
@@ -419,15 +419,16 @@ function NovaDiscussaoNoProjeto({
 
   return (
     <form onSubmit={enviar} noValidate style={{ marginTop: '1.5rem', maxWidth: '34rem' }}>
-      <h3>Nova discussão</h3>
+      <h3>Puxar um assunto</h3>
       {falha && <p className="aviso" role="alert">{falha}</p>}
-      <Campo id="nd-titulo" rotulo="Título" erro={erros.titulo} obrigatorio>
+      <Campo id="nd-titulo" rotulo="Título do assunto" erro={erros.titulo} obrigatorio>
         <input id="nd-titulo" type="text" value={titulo}
                onChange={(e) => setTitulo(e.target.value)} />
       </Campo>
-      <EscolhaUnica nome="nd-tema" legenda="Tema da discussão" opcoes={TEMAS} valor={tema}
-                    aoMudar={(v) => setTema(v)} erro={erros.tema} obrigatorio />
-      <Campo id="nd-descricao" rotulo="O que você quer discutir"
+      <EscolhaUnica nome="nd-tema" legenda="Tema da conversa" opcoes={TEMAS} valor={tema}
+                    aoMudar={(v) => setTema(v)} erro={erros.tema} obrigatorio
+                    dica="Um só. É ele que junta seu assunto com os outros." />
+      <Campo id="nd-descricao" rotulo="O que você quer conversar"
              erro={erros.descricao} obrigatorio>
         <textarea id="nd-descricao" value={descricao}
                   onChange={(e) => setDescricao(e.target.value)} />
@@ -435,7 +436,7 @@ function NovaDiscussaoNoProjeto({
       <div className="acoes">
         <button className="botao botao--amarelo" type="submit" disabled={enviando}>
           <span className="seta" aria-hidden="true" />
-          {enviando ? 'Abrindo…' : 'Abrir discussão'}
+          {enviando ? 'Puxando…' : 'Puxar assunto'}
         </button>
         <button className="botao botao--contorno" type="button" onClick={aoCancelar}>
           Cancelar
