@@ -133,6 +133,58 @@ const BOTOES_SUMIDOS = () => {
   return achados;
 };
 
+/**
+ * Campo de formulario que se confunde com o fundo. Mesmo criterio 1.4.11 do
+ * botao, do outro lado: um campo de texto precisa ser identificavel como campo
+ * antes de receber foco. O que o identifica e o preenchimento OU a borda — basta
+ * um dos dois chegar a 3:1 contra a superficie atras.
+ */
+const CONTROLES_SUMIDOS = () => {
+  const lum = ([r, g, b]) => {
+    const f = (v) => { v /= 255; return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4; };
+    return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b);
+  };
+  const cor = (s) => {
+    const m = s.match(/[\d.]+/g);
+    if (!m) return null;
+    const a = m.length > 3 ? Number(m[3]) : 1;
+    return a === 0 ? null : m.slice(0, 3).map(Number);
+  };
+  const razao = (a, b) => {
+    const [x, y] = [lum(a), lum(b)].sort((m, n) => n - m);
+    return (x + 0.05) / (y + 0.05);
+  };
+  const fundoAtras = (el) => {
+    let no = el.parentElement;
+    while (no) {
+      const c = cor(getComputedStyle(no).backgroundColor);
+      if (c) return c;
+      no = no.parentElement;
+    }
+    return [255, 255, 255];
+  };
+  const ALVO = "input[type='text'], input[type='email'], input[type='password']," +
+    " input[type='url'], select, textarea, .opcao span";
+  const achados = [];
+  for (const c of document.querySelectorAll(ALVO)) {
+    const e = getComputedStyle(c);
+    const atras = fundoAtras(c);
+    const opcoes = [];
+    const preenchimento = cor(e.backgroundColor);
+    if (preenchimento) opcoes.push(['preenchimento', razao(preenchimento, atras)]);
+    const borda = cor(e.borderTopColor);
+    if (borda && parseFloat(e.borderTopWidth) > 0) opcoes.push(['borda', razao(borda, atras)]);
+    if (opcoes.length === 0) continue;
+    const melhor = opcoes.sort((a, b) => b[1] - a[1])[0];
+    if (melhor[1] < 3) {
+      const nome = c.id || c.textContent.trim().slice(0, 24) || c.tagName.toLowerCase();
+      achados.push(`"${nome}" — ${melhor[1].toFixed(2)}:1 no ${melhor[0]}, ` +
+        `o melhor dos dois, contra a superficie atras`);
+    }
+  }
+  return achados;
+};
+
 const { navegador, pagina: p } = await abrirNavegador();
 const problemas = [];
 const relatorio = [];
@@ -219,6 +271,9 @@ async function conferir(rota) {
 
   for (const aviso of await p.evaluate(BOTOES_SUMIDOS)) {
     problemas.push(`${rota}: botão ${aviso}`);
+  }
+  for (const aviso of await p.evaluate(CONTROLES_SUMIDOS)) {
+    problemas.push(`${rota}: campo ${aviso}`);
   }
 }
 

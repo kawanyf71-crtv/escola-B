@@ -28,6 +28,7 @@
   --superficie-2: #202020;  /* campo de formulario, hover */
   --linha:        #2e2e2e;  /* borda sutil */
   --linha-forte:  #454545;  /* borda de card em destaque */
+  --linha-campo:  #6a6a6a;  /* borda de controle: precisa de 3:1 por norma */
   --tinta:        #f1f1f1;  /* texto principal */
   --tinta-fraca:  #a8a8a8;  /* texto secundario, dica de campo */
 
@@ -991,6 +992,15 @@ select {
   --tinta-titulo: var(--amarelo);
   --tinta-link: var(--amarelo);
   --acento: var(--vermelho);
+
+  /* Escala de espacamento unica. Parte da sensacao de bloco vem de espaco igual
+     entre tudo: quando o vao dentro e fora dos elementos e o mesmo, nada se
+     agrupa e a tela vira uma lista de retangulos soltos. */
+  --e1: 0.5rem;
+  --e2: 1rem;
+  --e3: 1.5rem;
+  --e4: 2.5rem;
+  --e5: 4rem;
 }
 
 /* A faixa deixa de pintar e vira so ritmo vertical. A tinta precisa cair
@@ -1051,16 +1061,13 @@ select {
    valer na pagina inteira, porque a pagina inteira agora e escura. Sem isto o
    chip de opcao dentro de um formulario — que morava numa faixa clara — fica
    com borda preta sobre fundo preto e some como controle. */
-.pagina--app .opcao span { border-color: var(--tinta); }
-.pagina--app .opcao input:checked + span { background: var(--amarelo); color: var(--preto); }
 .pagina--app .comentario { border-left-color: var(--amarelo); }
 
 /* O anel de foco era vermelho por padrao e virava amarelo nas faixas escuras.
    Com um fundo so, ele fica amarelo em toda a pagina — menos dentro das ilhas
    de cor que ainda existem, onde amarelo sobre amarelo sumiria. */
 .pagina--app :focus-visible { outline-color: var(--amarelo); }
-.pagina--app .cartaz:not(.cartaz--preto) :focus-visible,
-.pagina--app .correspondencia :focus-visible { outline-color: var(--preto); }
+.pagina--app .cartaz:not(.cartaz--preto) :focus-visible { outline-color: var(--preto); }
 
 /* Escala de titulo da pagina-ferramenta. O h1 de 8.6vw e medida de cartaz: numa
    tela interna ele toma a viewport inteira e faz o conteudo parecer legenda.
@@ -1070,6 +1077,139 @@ select {
 .pagina--app h1 { font-size: clamp(1.5rem, 4vw, 2.25rem); }
 .pagina--app h2 { font-size: clamp(1.25rem, 3vw, 1.625rem); }
 .pagina--app h3 { font-size: 1.125rem; }
+
+/* ======================================================================
+   SUPERFICIE, BORDA E RESPIRO NA PAGINA-FERRAMENTA
+
+   A borda de 4px foi desenhada pra faixa de cor chapada, onde ela e o que
+   separa o card do campo atras. Sobre um fundo continuo ela faz o contrario:
+   cada elemento vira uma caixa fechada, e a tela lê como uma pilha de caixas.
+   Aqui a borda afina e quem separa passa a ser a superficie.
+   ====================================================================== */
+
+/* -- card ------------------------------------------------------------- */
+.pagina--app .card {
+  border-width: 1px;
+  padding: 1.25rem;
+}
+.pagina--app .card > * + * { margin-top: var(--e2); }
+.pagina--app .card:hover,
+.pagina--app .card:focus-visible { border-color: var(--amarelo); }
+
+/* O bloco de correspondencia e o unico que pode pesar: e o momento mais
+   importante do produto, quando a pessoa descobre que tem o que o projeto
+   procura. Deixa de ser retangulo amarelo e vira card de borda amarela grossa
+   — o destaque continua, sem tomar a tela. */
+.pagina--app .correspondencia {
+  background: var(--superficie);
+  color: var(--tinta);
+  border: 4px solid var(--amarelo);
+  padding: var(--e2);
+  --tinta-link: var(--amarelo);
+  --tinta-titulo: var(--amarelo);
+  --acento: var(--vermelho);
+}
+
+/* -- campos de formulario --------------------------------------------- */
+/* A borda do campo e --linha-campo, nao --linha. Um campo de texto e um
+   componente de interface e a WCAG pede 3:1 entre o que o identifica e a
+   superficie atras (1.4.11): --linha da 1,39:1 sobre o preto da pagina, e o
+   preenchimento --superficie-2 da 1,16:1 — nenhum dos dois identifica o campo
+   como campo. --linha-campo da 3,49:1. O verificar:ritmo cobra isso. */
+.pagina--app input[type='text'],
+.pagina--app input[type='email'],
+.pagina--app input[type='password'],
+.pagina--app input[type='url'],
+.pagina--app select,
+.pagina--app textarea {
+  background: var(--superficie-2);
+  border: 2px solid var(--linha-campo);
+  color: var(--tinta);
+}
+
+.pagina--app input[type='text']:focus,
+.pagina--app input[type='email']:focus,
+.pagina--app input[type='password']:focus,
+.pagina--app input[type='url']:focus,
+.pagina--app select:focus,
+.pagina--app textarea:focus { border-color: var(--amarelo); }
+
+.pagina--app .campo--erro input,
+.pagina--app .campo--erro select,
+.pagina--app .campo--erro textarea { border-color: var(--vermelho); }
+
+/* Opacidade desbota a cor inteira e tira o controle do contraste. A dica ganha
+   tinta propria. */
+.pagina--app .campo__dica {
+  color: var(--tinta-fraca);
+  opacity: 1;
+}
+
+/* A zona de imagem e campo de formulario tambem: era o ultimo retangulo branco
+   da tela. O que ela mantem e a moldura de 7px, que e assinatura da marca. */
+.pagina--app .zona-imagem {
+  background: var(--superficie-2);
+  border-color: var(--preto);
+}
+.pagina--app .zona-imagem__convite { color: var(--tinta); }
+.pagina--app .zona-imagem__dica { color: var(--tinta-fraca); }
+
+/* -- chip de opcao ---------------------------------------------------- */
+.pagina--app .opcao span { border: 2px solid var(--linha-campo); }
+.pagina--app .opcao input:checked + span {
+  background: var(--amarelo);
+  color: var(--preto);
+  border-color: var(--amarelo);
+}
+
+/* Nas ilhas de cor que ainda existem, o chip marcado inverte: amarelo marcado
+   sobre cartaz amarelo da 1,00:1 — o estado deixa de existir como informacao
+   visual, que e o que o criterio 1.4.11 cobra. */
+.pagina--app .cartaz:not(.cartaz--preto) .opcao span { border-color: var(--preto); }
+.pagina--app .cartaz:not(.cartaz--preto) .opcao input:checked + span {
+  background: var(--preto);
+  color: var(--amarelo);
+  border-color: var(--preto);
+}
+
+/* -- moldura ---------------------------------------------------------- */
+/* Os 7px pretos ficam: e a assinatura da marca e e o que da textura. Sobre o
+   fundo escuro eles sumiriam no fundo, entao ganham um contorno externo de 1px
+   — contorno, nao moldura clara: a borda clara em volta do rosto ja foi
+   tentada e chamava mais atencao que o rosto. */
+.pagina--app .moldura,
+.pagina--app .card__capa,
+.pagina--app .zona-imagem { outline: 1px solid var(--linha); }
+
+/* -- respiro ---------------------------------------------------------- */
+.pagina--app .grade { gap: var(--e2); }
+.pagina--app .empilhado > * + * { margin-top: var(--e3); }
+.pagina--app .acoes { gap: var(--e1); margin-top: var(--e3); }
+
+/* A separacao entre secoes era a troca de fundo. Sem ela, o vao e que separa —
+   e precisa ser maior que o vao de dentro dos blocos, senao nada se agrupa. */
+.pagina--app .faixa { padding: 0; }
+.pagina--app .conteudo > .faixa:first-child { margin-top: var(--e3); }
+.pagina--app .faixa + .faixa { margin-top: var(--e4); }
+.pagina--app .conteudo > .faixa:last-child { margin-bottom: var(--e4); }
+
+/* E no lugar do corte de cor, uma regua curta acima do titulo da secao. Curta
+   de proposito: regua da largura toda corta a pagina de novo, regua de 4rem
+   agrupa o que vem embaixo dela. */
+.pagina--app .faixa h2::before {
+  content: '';
+  display: block;
+  width: 4rem;
+  height: 3px;
+  background: var(--vermelho);
+  margin-bottom: var(--e2);
+}
+
+/* Dentro de um bloco que ja tem superficie propria, a regua seria ruido. */
+.pagina--app .card h2::before,
+.pagina--app .cartaz h2::before,
+.pagina--app .correspondencia h2::before,
+.pagina--app .esqueleto h2::before { content: none; }
 
 .conteudo { flex: 1; }
 

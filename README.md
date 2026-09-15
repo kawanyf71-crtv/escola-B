@@ -294,6 +294,33 @@ e companhia — que não são cinza de interface genérica: são níveis dentro 
 `#111111` da marca, o que permite um card existir sem precisar ser um retângulo
 amarelo.
 
+### Superfície, borda e respiro (página-ferramenta)
+
+A borda de 4px foi desenhada para faixa de cor chapada, onde ela é o que separa
+o card do campo atrás. Sobre fundo contínuo ela faz o contrário: cada elemento
+vira uma caixa fechada e a tela lê como uma pilha de caixas. Então a borda afina
+e quem separa passa a ser a superfície — card em `--superficie` com 1px, campo
+de formulário em `--superficie-2`, ambos sobre o `--preto` da página.
+
+O único bloco que continua pesando é o de correspondência de habilidade
+(RF-008): deixou de ser retângulo amarelo cheio e virou card de borda amarela
+de 4px. É o momento mais importante do produto — quando a pessoa descobre que
+tem o que o projeto procura — e é o único que pode gritar.
+
+A moldura de 7px preta fica: é assinatura da marca e é o que dá textura. Sobre
+fundo escuro ela ganharia contorno nenhum e sumiria, então recebe um contorno
+externo de 1px `--linha`. Contorno, não moldura clara — a borda clara em volta
+do rosto já foi testada e chamava mais atenção que o rosto.
+
+Espaçamento em escala única (`--e1` a `--e5`), porque parte da sensação de bloco
+vem de espaço igual entre tudo: quando o vão dentro e fora dos elementos é o
+mesmo, nada se agrupa. Dentro de card e entre cards, `--e2`; entre blocos de
+conteúdo, `--e3`; entre seções, `--e4`.
+
+E a separação entre seções, que era troca de fundo, passa a ser uma régua de 3px
+vermelha de 4rem acima do título amarelo da seção. Curta de propósito: régua da
+largura toda corta a página de novo; régua de 4rem agrupa o que vem embaixo.
+
 ### Proporção e ritmo (página-cartaz)
 
 Na entrada, o preto é a base e precisa ocupar mais área pintada que qualquer
@@ -342,6 +369,15 @@ Os dois que a spec já previu, mais um que apareceu na conferência:
    sobre vermelho, tinta preta (4,56:1), em botão, botão pequeno, aviso de erro
    e texto corrido. É a mesma lógica do desvio nº 1, aplicada onde a spec não
    tinha chegado.
+
+5. **A borda do campo de formulário é `#6A6A6A`, não `--linha`.** Um campo de
+   texto é componente de interface, e a WCAG pede 3:1 entre o que o identifica e
+   a superfície atrás (critério 1.4.11). Sobre o preto da página, `--linha`
+   (`#2E2E2E`) dá **1,39:1** e o preenchimento `--superficie-2` dá **1,16:1** —
+   nenhum dos dois identifica o campo como campo. `--linha-campo` (`#6A6A6A`) dá
+   3,49:1, e o amarelo do foco se distingue dele por 3,78:1. O
+   `verificar:ritmo` cobra isso em todo campo e todo chip de opção, do mesmo
+   jeito que já cobrava dos botões.
 
 ---
 
