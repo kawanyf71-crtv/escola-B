@@ -1,8 +1,13 @@
-# Rede Escola B
+# NÓIS
 
-Site responsivo onde os participantes do curso de produção cultural negra da
-Escola B declaram **o que oferecem**, publicam projetos declarando **o que
-precisam**, e puxam **assuntos por tema** que atravessam projetos diferentes.
+Site responsivo onde a turma do curso de produção cultural negra da Escola B
+declara **o que sabe fazer**, publica projetos declarando **o que precisa**, e
+puxa **assuntos por tema** que atravessam projetos diferentes.
+
+Feito por uma aluna da turma, pra turma. **A plataforma não é da Escola B** — a
+Escola B é o contexto de quem está aqui, não a dona disto. Em todo texto de
+interface, a menção à escola descreve a turma ("turma do curso da Escola B") e
+nunca a propriedade do produto.
 
 MVP construído a partir de `spec-rede-escola-b.md` (v3, 15/09/2026).
 

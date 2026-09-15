@@ -1,4 +1,4 @@
--- Rede Escola B — esquema inicial (MVP)
+-- NÓIS — esquema inicial (MVP)
 -- Regras da spec aplicadas como constraint sempre que o banco consegue
 -- garanti-las, para que nao dependam so do formulario.
 

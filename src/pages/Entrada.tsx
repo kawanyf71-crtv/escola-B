@@ -23,8 +23,11 @@ export function Entrada() {
     <>
       <section className="faixa faixa--preto">
         <div className="faixa__interno">
+          {/* A Escola B aparece descrevendo QUEM está aqui — a turma do curso —,
+              nunca como dona da plataforma. Quem a fez é uma aluna, e isso está
+              dito no rodapé. */}
           <p className="rotulo" style={{ color: 'var(--amarelo)' }}>
-            Curso de produção cultural negra · Escola B
+            Turma do curso de produção cultural negra da Escola B
           </p>
           <h1>
             A gente se vê<br />toda terça.<br />

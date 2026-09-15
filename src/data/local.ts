@@ -7,6 +7,8 @@ import type {
   ParticipanteResumo, ProjetoComAutor, Repositorio, Sessao,
 } from './tipos';
 
+// Nao renomear junto com o produto: e a chave onde os dados ja gravados moram.
+// Trocar aqui faria todo mundo perder perfil, projeto e conversa.
 const CHAVE = 'rede-escola-b/v1';
 
 interface Conta { id: string; email: string; senha_hash: string }
@@ -66,6 +68,7 @@ function agora(): string {
  * servidor. Em producao quem autentica e o Supabase (`src/data/supabase.ts`).
  */
 async function hash(senha: string): Promise<string> {
+  // O sal tambem fica: trocar invalidaria a senha de quem ja tem conta.
   const bytes = new TextEncoder().encode(`rede-escola-b:${senha}`);
   const digest = await crypto.subtle.digest('SHA-256', bytes);
   return [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, '0')).join('');

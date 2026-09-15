@@ -24,7 +24,7 @@ export const repo: Repositorio = escolher();
  */
 if (repo.nome === 'local') {
   console.info(
-    '[Rede Escola B] Rodando com o adaptador local: os dados ficam no navegador ' +
+    '[NÓIS] Rodando com o adaptador local: os dados ficam no navegador ' +
     'de quem abre e ninguém vê a rede de mais ninguém. Preencha VITE_SUPABASE_URL ' +
     'e VITE_SUPABASE_ANON_KEY para a turma inteira compartilhar a mesma rede.',
   );

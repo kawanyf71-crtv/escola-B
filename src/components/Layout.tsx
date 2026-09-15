@@ -39,7 +39,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <div className="cabecalho__barra">
           <Link className="marca" to={logado ? '/pessoas' : '/'}>
             <span className="seta seta--amarela" aria-hidden="true" />
-            Rede Escola B
+            Nóis
           </Link>
 
           {logado && (
@@ -107,7 +107,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
       <footer className="rodape">
         <div className="faixa__interno">
-          <p className="rotulo">Rede Escola B</p>
+          <p className="rotulo">Nóis</p>
           <p className="miudo" style={{ maxWidth: '34rem' }}>
             Feito por uma aluna da turma, pra turma. O curso acaba em novembro — o que
             a gente construir aqui não precisa acabar junto.
