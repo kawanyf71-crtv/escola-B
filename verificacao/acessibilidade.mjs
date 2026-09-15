@@ -3,7 +3,7 @@
  * imagem, um h1 por pagina e navegacao por teclado — os requisitos nao-funcionais
  * de acessibilidade da spec que dao para conferir sozinho.
  */
-import { BASE, abrirNavegador, criarParticipante } from './navegador.mjs';
+import { ir, abrirNavegador, criarParticipante } from './navegador.mjs';
 
 const AUDITOR = () => {
   const achados = [];
@@ -62,7 +62,7 @@ async function auditar(titulo) {
   }
 }
 
-for (const r of ['/', '/entrar', '/criar-conta']) { await p.goto(BASE + r); await auditar(r); }
+for (const r of ['/', '/entrar', '/criar-conta']) { await ir(p, r); await auditar(r); }
 
 await criarParticipante(p, {
   email: 'a@b.org', nome: 'Kawany Feliciano', ocupacao: 'Produtora cultural',
@@ -72,11 +72,15 @@ await criarParticipante(p, {
 
 for (const r of ['/pessoas', '/projetos', '/projetos/novo', '/discussoes',
                  '/temas', '/temas/ancestralidade', '/meu-espaco', '/meu-perfil']) {
-  await p.goto(BASE + r);
+  await ir(p, r);
   await auditar(r);
 }
 
-await p.goto(`${BASE}/pessoas`);
+// O link de pulo e o primeiro foco de uma carga nova. Em roteamento por hash
+// a navegacao entre rotas nao recarrega o documento, entao a recarga aqui e
+// explicita — senao o teste mediria a ordem de tabulacao da tela anterior.
+await ir(p, '/pessoas');
+await p.reload();
 await p.keyboard.press('Tab');
 const primeiro = await p.evaluate(() => document.activeElement?.textContent?.trim());
 if (!/pular para o conteúdo/i.test(primeiro || '')) {

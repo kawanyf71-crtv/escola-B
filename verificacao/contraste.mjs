@@ -4,7 +4,7 @@
  * paleta da marca tem combinacoes que reprovam — #F1F1F1 sobre #ED3124 da
  * 3,67:1 —, entao a conferencia precisa ser automatica.
  */
-import { BASE, abrirNavegador, marcarChip } from './navegador.mjs';
+import { ir, abrirNavegador, marcarChip } from './navegador.mjs';
 
 const AUDITOR = () => {
   const lum = ([r, g, b]) => {
@@ -76,9 +76,9 @@ async function auditar(titulo) {
   }
 }
 
-for (const r of ['/', '/entrar', '/criar-conta']) { await p.goto(BASE + r); await auditar(r); }
+for (const r of ['/', '/entrar', '/criar-conta']) { await ir(p, r); await auditar(r); }
 
-await p.goto(`${BASE}/criar-conta`);
+await ir(p, '/criar-conta');
 await p.locator('#email').fill('a@b.org');
 await p.locator('#senha').fill('senha123');
 await p.getByRole('button', { name: /criar conta/i }).click();
@@ -95,7 +95,7 @@ await marcarChip(p, 'Temas que me interessam', 'Ancestralidade');
 await p.getByRole('button', { name: /publicar meu perfil/i }).click();
 await p.waitForURL('**/pessoas');
 
-await p.goto(`${BASE}/projetos/novo`);
+await ir(p, '/projetos/novo');
 await p.locator('#nome').fill('Baile da Ancestralidade');
 await p.locator('#o_que_e').fill('Festa-ritual mensal que cruza baile negro e memória.');
 await p.locator('#sobre').fill('Ocupar praças com som, dança e roda de conversa.');
@@ -115,20 +115,20 @@ const projeto = p.url();
 for (const r of ['/pessoas', '/projetos', '/discussoes', '/temas', '/temas/ancestralidade',
                  '/meu-espaco', '/meu-perfil', '/projetos/novo',
                  projeto, `${projeto}/interessados`]) {
-  await p.goto(r.startsWith('http') ? r : BASE + r);
+  await (r.startsWith('http') ? p.goto(r) : ir(p, r));
   await auditar(r);
 }
 
-await p.goto(`${BASE}/discussoes`);
+await ir(p, '/discussoes');
 await p.getByRole('link', { name: /Baile é política de memória/i }).click();
 await p.waitForURL(/\/discussoes\/[0-9a-f-]{36}$/);
 await auditar('detalhe da discussão');
 
-await p.goto(`${BASE}/pessoas`);
+await ir(p, '/pessoas');
 await p.locator('#f-habilidade').selectOption('Fotografia');
 await auditar('estado de filtro vazio');
 
-await p.goto(`${BASE}/projetos/novo`);
+await ir(p, '/projetos/novo');
 await p.getByRole('button', { name: /^publicar projeto$/i }).click();
 await auditar('erros de validação do formulário');
 

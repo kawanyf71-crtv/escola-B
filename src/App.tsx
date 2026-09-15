@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import {
-  BrowserRouter, Navigate, Route, Routes, useLocation,
+  BrowserRouter, HashRouter, Link, Navigate, Route, Routes, useLocation,
 } from 'react-router-dom';
 import { Layout } from './components/Layout';
 import { CriarConta, Entrar } from './pages/Acesso';
@@ -109,21 +109,28 @@ function NaoEncontrada() {
       <div className="faixa__interno">
         <h1>Esta página<br />não existe</h1>
         <div className="acoes">
-          <a className="botao botao--preto" href="/">
+          <Link className="botao botao--preto" to="/">
             <span className="seta" aria-hidden="true" />Voltar ao começo
-          </a>
+          </Link>
         </div>
       </div>
     </section>
   );
 }
 
+/**
+ * Com VITE_ROTEADOR=hash as rotas viram /#/projetos e o site roda em qualquer
+ * hospedagem estatica sem configurar fallback de SPA. O padrao continua sendo
+ * URL limpa, para quem servir de um dominio proprio com o fallback ligado.
+ */
+const Roteador = import.meta.env.VITE_ROTEADOR === 'hash' ? HashRouter : BrowserRouter;
+
 export function App() {
   return (
-    <BrowserRouter>
+    <Roteador>
       <ProvedorSessao>
         <Rotas />
       </ProvedorSessao>
-    </BrowserRouter>
+    </Roteador>
   );
 }

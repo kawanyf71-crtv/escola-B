@@ -44,11 +44,18 @@ adaptador local. As telas não sabem qual dos dois está ativo.
 ## Publicar
 
 ```bash
-npm run build        # gera dist/
+npm run build                        # URLs limpas: /projetos/algo
+VITE_ROTEADOR=hash npm run build     # URLs com hash: /#/projetos/algo
 ```
 
-`dist/` é estático. Em qualquer hospedagem, configure o *fallback* de SPA
-(toda rota serve `index.html`), senão recarregar `/projetos/algo` dá 404.
+`dist/` é estático e usa caminhos relativos, então funciona servido da raiz de
+um domínio ou de uma subpasta.
+
+Qual dos dois builds usar depende da hospedagem. O padrão dá URLs limpas mas
+exige *fallback* de SPA (toda rota serve `index.html`), senão recarregar
+`/projetos/algo` dá 404. Com `VITE_ROTEADOR=hash` as rotas ficam depois do `#`
+e o site roda em qualquer hospedagem estática sem configurar nada — mais feio
+na barra de endereço, à prova de bala num link que circula no WhatsApp.
 
 ---
 
@@ -68,8 +75,19 @@ Três suítes, todas contra o navegador de verdade em 390px:
 | `npm run verificar:contraste` | Contraste AA (WCAG 1.4.3) em todo texto visível, incluindo estados vazio, de erro e sem sessão. |
 | `npm run verificar:acessibilidade` | Alvos de toque de 44px, rótulo em todo controle, `alt` em toda imagem, um `h1` por página, link de pulo no primeiro Tab. |
 
-Rodando com um Chromium já instalado:
-`PLAYWRIGHT_CHROMIUM=/caminho/para/chrome npm run verificar`.
+Variáveis que as suítes aceitam:
+
+- `PLAYWRIGHT_CHROMIUM` — caminho de um Chromium já instalado.
+- `BASE_URL` — onde o site está (padrão `http://localhost:5173`).
+- `ROTEADOR=hash` — confere o build estático, cujas rotas ficam depois do `#`.
+
+Para conferir o build antes de publicar:
+
+```bash
+VITE_ROTEADOR=hash npm run build
+npx serve dist                       # ou qualquer servidor estático
+BASE_URL=http://localhost:3000 ROTEADOR=hash npm run verificar
+```
 
 ---
 
@@ -86,6 +104,7 @@ src/
   pages/                uma por tela da seção 9 da spec
   styles/global.css     identidade visual
   styles/fontes.css     @font-face das fontes auto-hospedadas
+  fontes/               os .woff2, processados pelo Vite (nome com hash)
 supabase/migrations/    esquema + RLS
 verificacao/            as três suítes acima
 ```
@@ -115,7 +134,7 @@ zero (exceção de 3px em botão), zero sombra, zero gradiente, zero blur, títu
 em Archivo Black caixa alta com entrelinha 1.0, corpo em Inter a 16px, setas
 triangulares maciças como pontuação, chips de canto reto.
 
-**As fontes são servidas pelo próprio site** (`public/fontes/`, 172 KB nos
+**As fontes são servidas pelo próprio site** (`src/fontes/`, 172 KB nos
 subconjuntos latin e latin-ext), não pelo CDN do Google. Tira uma dependência
 de terceiro, economiza conexões no 4G e garante que a assinatura tipográfica
 apareça mesmo em rede que bloqueie o Google Fonts. Trocar pela Shapiro 95 Super,

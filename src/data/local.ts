@@ -38,7 +38,18 @@ function ler(): Banco {
 }
 
 function gravar(b: Banco): void {
-  localStorage.setItem(CHAVE, JSON.stringify(b));
+  try {
+    localStorage.setItem(CHAVE, JSON.stringify(b));
+  } catch {
+    // Navegacao privada no iOS, cota cheia ou armazenamento bloqueado. Sem
+    // localStorage este adaptador nao tem onde guardar nada, entao e melhor
+    // dizer isso do que deixar a tela falhar com um erro sem sentido.
+    throw new Error(
+      'Seu navegador está bloqueando o armazenamento local, e é nele que esta ' +
+      'demonstração guarda os dados. Saia da navegação privada ou libere os ' +
+      'dados do site e tente de novo.',
+    );
+  }
 }
 
 function id(): string {

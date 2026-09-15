@@ -3,7 +3,7 @@
  * P1 (H1 a H6) e os requisitos funcionais que dependem de interacao.
  * Roda contra o adaptador local, que e o modo padrao do `npm run dev`.
  */
-import { BASE, abrirNavegador, criarParticipante, marcarChip, sair } from './navegador.mjs';
+import { ir, abrirNavegador, criarParticipante, marcarChip, sair } from './navegador.mjs';
 
 const passos = [];
 const erros = [];
@@ -19,7 +19,7 @@ p.on('console', (m) => { if (m.type() === 'error') problemasDeConsole.push(m.tex
 p.on('pageerror', (e) => problemasDeConsole.push(`pageerror: ${e.message}`));
 
 // ---------------------------------------------------------------- entrada
-await p.goto(BASE);
+await ir(p, '/');
 await checar('Entrada apresenta os três caminhos', () =>
   p.getByRole('heading', { name: /três caminhos/i }).waitFor({ timeout: 5000 }));
 
@@ -68,7 +68,7 @@ await checar('H2 filtro sem resultado sugere afrouxar, não deixa tela em branco
 await p.getByRole('button', { name: /limpar filtros/i }).first().click();
 
 // ------------------------------------------------- H3 projeto e H5 discussão
-await p.goto(`${BASE}/projetos/novo`);
+await ir(p, '/projetos/novo');
 await p.locator('#nome').fill('Baile da Ancestralidade');
 await p.locator('#o_que_e').fill('Festa-ritual mensal que cruza baile negro e memória de terreiro.');
 await p.locator('#sobre').fill('Ocupar praças com som, dança e roda de conversa.');
@@ -113,7 +113,7 @@ await checar('RF-012 a discussão aparece na página do projeto de origem', () =
   p.getByRole('link', { name: /Baile é política de memória/i }).waitFor({ timeout: 3000 }));
 
 // ---------------------------------------------------- RF-013 área geral
-await p.goto(`${BASE}/discussoes`);
+await ir(p, '/discussoes');
 await checar('RF-013 a mesma discussão aparece na área geral', () =>
   p.getByRole('link', { name: /Baile é política de memória/i }).waitFor({ timeout: 3000 }));
 await p.locator('#d-tema').selectOption('Ancestralidade');
@@ -124,7 +124,7 @@ await checar('RF-013 tema sem discussão mostra estado de filtro vazio', () =>
   p.getByText(/Ninguém com essa combinação/i).waitFor({ timeout: 3000 }));
 
 // ------------------------------------------------------- RF-015 tema
-await p.goto(`${BASE}/temas/ancestralidade`);
+await ir(p, '/temas/ancestralidade');
 await checar('RF-015 a página de tema traz os três blocos', async () => {
   await p.getByRole('heading', { name: /Discussões abertas/i }).waitFor({ timeout: 3000 });
   await p.getByRole('heading', { name: /Projetos neste tema/i }).waitFor({ timeout: 3000 });
@@ -165,7 +165,7 @@ await checar('H4/RN-008 ao voltar, o botão diz que já se candidatou', async ()
 });
 
 // ------------------------------------------------ RN-006 e H6 discussão
-await p.goto(`${BASE}/discussoes`);
+await ir(p, '/discussoes');
 await p.getByRole('link', { name: /Baile é política de memória/i }).click();
 await p.waitForURL(/\/discussoes\/[0-9a-f-]{36}$/);
 await checar('H6 discussão sem respostas convida a ser a primeira voz', () =>
@@ -180,7 +180,7 @@ await checar('H6 o comentário entra na conversa', () =>
 
 // ----------------------------------------------------- RF-010 interessados
 await sair(p);
-await p.goto(`${BASE}/entrar`);
+await ir(p, '/entrar');
 await p.locator('#email').fill('kawany@exemplo.org');
 await p.locator('#senha').fill('senha123');
 await p.getByRole('button', { name: /^entrar$/i }).click();
@@ -197,7 +197,7 @@ await checar('RF-010 a autora vê perfil completo e mensagem de quem chegou', as
 await checar('Nenhuma tela rola na horizontal a 390px', async () => {
   for (const rota of ['/pessoas', '/projetos', '/discussoes', '/temas',
                       '/temas/ancestralidade', '/meu-espaco', '/meu-perfil', urlProjeto]) {
-    await p.goto(rota.startsWith('http') ? rota : BASE + rota);
+    await (rota.startsWith('http') ? p.goto(rota) : ir(p, rota));
     await p.waitForTimeout(250);
     const estoura = await p.evaluate(
       () => document.documentElement.scrollWidth > window.innerWidth + 1);
