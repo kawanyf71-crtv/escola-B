@@ -2,7 +2,7 @@
 
 Site responsivo onde os participantes do curso de produção cultural negra da
 Escola B declaram **o que oferecem**, publicam projetos declarando **o que
-precisam**, e abrem **discussões por tema** que atravessam projetos diferentes.
+precisam**, e puxam **assuntos por tema** que atravessam projetos diferentes.
 
 MVP construído a partir de `spec-rede-escola-b.md` (v3, 15/09/2026).
 
@@ -71,7 +71,7 @@ Três suítes, todas contra o navegador de verdade em 390px:
 
 | Comando | O que confere |
 |---|---|
-| `npm run verificar:jornada` | Os critérios de aceite das histórias H1–H6 e os requisitos funcionais que dependem de interação: validações, correspondência de habilidade, interesse único, discussão que atravessa projeto. |
+| `npm run verificar:jornada` | Os critérios de aceite das histórias H1–H6 e os requisitos funcionais que dependem de interação: validações, correspondência de habilidade, interesse único, assunto que atravessa projeto. |
 | `npm run verificar:contraste` | Contraste AA (WCAG 1.4.3) em todo texto visível, incluindo estados vazio, de erro e sem sessão. |
 | `npm run verificar:acessibilidade` | Alvos de toque de 44px, rótulo em todo controle, `alt` em toda imagem, um `h1` por página, link de pulo no primeiro Tab. |
 
@@ -102,6 +102,7 @@ src/
   data/index.ts         escolhe um dos dois pelas variáveis de ambiente
   components/           layout, estados (vazio/carregando/erro), campos, cards
   pages/                uma por tela da seção 9 da spec
+                        (o código fala "discussao"; a interface fala "assunto")
   styles/global.css     identidade visual
   styles/fontes.css     @font-face das fontes auto-hospedadas
   fontes/               os .woff2, processados pelo Vite (nome com hash)
@@ -121,9 +122,34 @@ perfil, tema de projeto e tema de discussão leem os **mesmos arrays** de
 funcionar e a página de tema deixa de existir. No banco elas viram `DOMAIN` do
 Postgres, então o servidor também recusa um valor fora da lista.
 
-`RN-004` (toda discussão nasce de um projeto), `RN-005` (um tema por discussão),
+`RN-004` (todo assunto nasce de um projeto), `RN-005` (um tema por assunto),
 `RN-007` (seis obrigatórios para publicar) e `RN-008` (um interesse por par
 pessoa/projeto) estão como *constraint* na migração, não só no formulário.
+
+---
+
+## Copy
+
+A copy segue `copy-rede-escola-b.md` (v2, 15/09/2026). Duas regras que não
+podem escorregar quando alguém mexer num texto:
+
+- **A pessoa gramatical é "a gente".** Quem escreve está dentro da turma, não é
+  uma marca falando com um usuário. "Você conhece quantas?" é campanha; "A gente
+  se vê toda terça" é alguém falando com um colega.
+- **Gênero neutro por reformulação** em 100% das strings: "quem publicou", "quem
+  abriu", "a gente", "você". Feminino genérico também seria defensável, mas aí
+  precisa ser em toda a interface — meia dúzia solta lê como descuido.
+
+Fora: gíria como tempero, emoji, exclamação e discurso motivacional de ONG
+("transformar vidas", "empoderar").
+
+A interface diz **assunto**; o código e o banco dizem **discussao**. Isso é
+deliberado: renomear tabela, tipo e métodos não mudaria nada para quem usa e
+invalidaria a migração já escrita.
+
+O teste da copy não é automatizável: abrir no celular e ler em voz alta. Se
+soar como alguém falando com um colega, está certo. Se soar como locução,
+voltou a ser publicidade.
 
 ---
 

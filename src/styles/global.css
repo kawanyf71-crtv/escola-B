@@ -191,21 +191,22 @@ p:last-child { margin-bottom: 0; }
 /* Excecao unica de raio na marca: 3px. Tamanho 19px em Archivo Black — acima
    do limiar de "texto grande", o que faz o #F1F1F1 sobre vermelho passar em AA. */
 
+/* inline-block, nao flex: com rotulo longo a seta precisa fluir junto com o
+   texto e quebrar com ele. Como irma de flex ela ficava centralizada ao lado
+   de um bloco de duas linhas, visualmente solta. O padding vertical sozinho ja
+   entrega os 44px de alvo, entao nao ha o que centralizar. */
 .botao {
   font-weight: 900;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.15rem;
+  display: inline-block;
+  text-align: center;
   min-height: var(--alvo);
-  padding: 0.625rem 1.125rem;
+  padding: 0.8rem 1.125rem;
   border: 0;
   border-radius: 3px;
   font-family: var(--titulo);
   font-size: 1.1875rem;
-  line-height: 1;
+  line-height: 1.15;
   text-transform: uppercase;
-  text-align: center;
   text-decoration: none;
   cursor: pointer;
 }
@@ -229,7 +230,7 @@ p:last-child { margin-bottom: 0; }
 .botao--pequeno {
   font-size: 0.9375rem;
   min-height: var(--alvo);
-  padding: 0.5rem 0.875rem;
+  padding: 0.875rem;
 }
 
 /* A 15px o rotulo deixa de contar como "texto grande" na WCAG e passa a exigir

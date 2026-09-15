@@ -57,9 +57,9 @@ export async function criarParticipante(pagina, { email, nome, ocupacao, cidade,
   await pagina.locator('#cidade').fill(cidade);
   await pagina.locator('#mini_bio').fill(bio);
   await marcarChip(pagina, 'Áreas', area);
-  for (const h of habilidades) await marcarChip(pagina, 'Habilidades que ofereço', h);
-  for (const t of temas) await marcarChip(pagina, 'Temas que me interessam', t);
-  await pagina.getByRole('button', { name: /publicar meu perfil/i }).click();
+  for (const h of habilidades) await marcarChip(pagina, 'O que você sabe fazer', h);
+  for (const t of temas) await marcarChip(pagina, 'O que te move', t);
+  await pagina.getByRole('button', { name: /me apresentar pra turma/i }).click();
   await pagina.waitForURL('**/pessoas');
   return email;
 }
@@ -70,6 +70,6 @@ export async function sair(pagina) {
   await pagina.locator('.menu-cheio').getByRole('button', { name: /^sair$/i }).click();
   // Esperar a entrada renderizar e mais firme do que casar a URL, que muda
   // de forma entre os dois modos de roteamento.
-  await pagina.getByRole('link', { name: /criar meu perfil/i }).first()
+  await pagina.getByRole('link', { name: /começar pelo meu perfil/i }).first()
     .waitFor({ timeout: 5000 });
 }

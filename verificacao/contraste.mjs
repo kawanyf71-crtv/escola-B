@@ -90,9 +90,9 @@ await p.locator('#ocupacao').fill('Produtora cultural');
 await p.locator('#cidade').fill('Salvador, BA');
 await p.locator('#mini_bio').fill('Produzo e escrevo sobre cultura negra.');
 await marcarChip(p, 'Áreas', 'Comunicação');
-await marcarChip(p, 'Habilidades que ofereço', 'Produção');
-await marcarChip(p, 'Temas que me interessam', 'Ancestralidade');
-await p.getByRole('button', { name: /publicar meu perfil/i }).click();
+await marcarChip(p, 'O que você sabe fazer', 'Produção');
+await marcarChip(p, 'O que te move', 'Ancestralidade');
+await p.getByRole('button', { name: /me apresentar pra turma/i }).click();
 await p.waitForURL('**/pessoas');
 
 await ir(p, '/projetos/novo');
@@ -100,36 +100,36 @@ await p.locator('#nome').fill('Baile da Ancestralidade');
 await p.locator('#o_que_e').fill('Festa-ritual mensal que cruza baile negro e memória.');
 await p.locator('#sobre').fill('Ocupar praças com som, dança e roda de conversa.');
 await marcarChip(p, 'Áreas', 'Eventos');
-await marcarChip(p, 'Estágio', 'Em desenvolvimento');
-await marcarChip(p, 'Tipo de participação', 'Trabalho voluntário');
-await marcarChip(p, 'Conhecimentos procurados', 'Produção');
+await marcarChip(p, 'Em que pé está', 'Em desenvolvimento');
+await marcarChip(p, 'Como seria participar', 'Trabalho voluntário');
+await marcarChip(p, 'Quem você procura', 'Produção');
 await marcarChip(p, 'Temas', 'Ancestralidade');
-await p.locator('label.opcao', { hasText: 'Quero abrir' }).click();
+await p.locator('label.opcao', { hasText: 'Quero puxar' }).click();
 await p.locator('#discussao_titulo').fill('Baile é política de memória?');
-await marcarChip(p, 'Tema da discussão', 'Ancestralidade');
+await marcarChip(p, 'Tema da conversa', 'Ancestralidade');
 await p.locator('#discussao_descricao').fill('Preserva memória ou consome?');
-await p.getByRole('button', { name: /^publicar projeto$/i }).click();
+await p.getByRole('button', { name: /publicar pra turma ver/i }).click();
 await p.waitForURL(/\/projetos\/[0-9a-f-]{36}$/);
 const projeto = p.url();
 
-for (const r of ['/pessoas', '/projetos', '/discussoes', '/temas', '/temas/ancestralidade',
+for (const r of ['/pessoas', '/projetos', '/assuntos', '/temas', '/temas/ancestralidade',
                  '/meu-espaco', '/meu-perfil', '/projetos/novo',
-                 projeto, `${projeto}/interessados`]) {
+                 projeto, `${projeto}/quem-chegou-junto`]) {
   await (r.startsWith('http') ? p.goto(r) : ir(p, r));
   await auditar(r);
 }
 
-await ir(p, '/discussoes');
+await ir(p, '/assuntos');
 await p.getByRole('link', { name: /Baile é política de memória/i }).click();
-await p.waitForURL(/\/discussoes\/[0-9a-f-]{36}$/);
-await auditar('detalhe da discussão');
+await p.waitForURL(/\/assuntos\/[0-9a-f-]{36}$/);
+await auditar('detalhe do assunto');
 
 await ir(p, '/pessoas');
 await p.locator('#f-habilidade').selectOption('Fotografia');
 await auditar('estado de filtro vazio');
 
 await ir(p, '/projetos/novo');
-await p.getByRole('button', { name: /^publicar projeto$/i }).click();
+await p.getByRole('button', { name: /publicar pra turma ver/i }).click();
 await auditar('erros de validação do formulário');
 
 await navegador.close();
