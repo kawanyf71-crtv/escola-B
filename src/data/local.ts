@@ -45,13 +45,28 @@ function ler(): Banco {
   }
 }
 
+/** A cota estourada tem nome proprio em cada navegador; todos caem aqui. */
+function ehCotaEstourada(e: unknown): boolean {
+  if (!(e instanceof DOMException)) return false;
+  return e.name === 'QuotaExceededError'
+    || e.name === 'NS_ERROR_DOM_QUOTA_REACHED'
+    || e.code === 22 || e.code === 1014;
+}
+
 function gravar(b: Banco): void {
   try {
     localStorage.setItem(CHAVE, JSON.stringify(b));
-  } catch {
-    // Navegacao privada no iOS, cota cheia ou armazenamento bloqueado. Sem
-    // localStorage este adaptador nao tem onde guardar nada, entao e melhor
-    // dizer isso do que deixar a tela falhar com um erro sem sentido.
+  } catch (e) {
+    // Cota estourada e quase sempre imagem: e o unico dado grande que entra
+    // aqui. Vale dizer isso em vez de falar de armazenamento bloqueado.
+    if (ehCotaEstourada(e)) {
+      throw new Error(
+        'Não deu pra guardar a imagem — ela ficou grande demais. Tenta uma foto menor.',
+      );
+    }
+    // Navegacao privada no iOS ou dados do site bloqueados. Sem localStorage
+    // este adaptador nao tem onde guardar nada, entao e melhor dizer isso do
+    // que deixar a tela falhar com um erro sem sentido.
     throw new Error(
       'Seu navegador tá bloqueando o armazenamento do site, e é ali que esta ' +
       'demonstração guarda tudo. Sai da aba anônima ou libera os dados do site ' +
@@ -101,6 +116,17 @@ function maisRecentePrimeiro<T extends { criado_em: string }>(itens: T[]): T[] {
 export class RepositorioLocal implements Repositorio {
   readonly nome = 'local' as const;
   readonly suportaExemplo = true;
+
+  // --- Imagens ---
+
+  /**
+   * Sem servidor, a imagem ja comprimida vira a propria data URL do registro.
+   * E o que a cota do localStorage aguenta — dai a compressao ser obrigatoria
+   * antes de chegar aqui.
+   */
+  async enviarImagem(_blob: Blob, dataUrl: string): Promise<string> {
+    return dataUrl;
+  }
 
   // --- Lote de demonstracao ---
 

@@ -95,6 +95,15 @@ export interface Repositorio {
   sair(): Promise<void>;
   excluirConta(): Promise<void>;
 
+  // --- Imagens ---
+
+  /**
+   * Guarda uma imagem já comprimida e devolve o que vai no registro. No
+   * Supabase sobe para o Storage e devolve a URL pública; no adaptador local
+   * devolve a própria data URL. A tela não sabe qual dos dois aconteceu.
+   */
+  enviarImagem(blob: Blob, dataUrl: string, pasta: 'perfis' | 'projetos'): Promise<string>;
+
   // --- Participantes (RF-002, RF-003, RF-004) ---
   meuPerfil(): Promise<Participante | null>;
   salvarPerfil(dados: DadosPerfil): Promise<Participante>;

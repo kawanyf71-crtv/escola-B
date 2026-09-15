@@ -79,6 +79,7 @@ Três suítes, todas contra o navegador de verdade em 390px:
 | `npm run verificar:jornada` | Os critérios de aceite das histórias H1–H6 e os requisitos funcionais que dependem de interação: validações, correspondência de habilidade, interesse único, assunto que atravessa projeto. |
 | `npm run verificar:contraste` | Contraste AA (WCAG 1.4.3) em todo texto visível, incluindo estados vazio, de erro e sem sessão. |
 | `npm run verificar:acessibilidade` | Alvos de toque de 44px, rótulo em todo controle, `alt` em toda imagem, um `h1` por página, link de pulo no primeiro Tab. |
+| `npm run verificar:imagem` | O upload: compressão de um PNG de 12 MB, limite de 512x512 na foto e 1280px na capa, pré-visualização, remoção, arrastar e soltar, tipo recusado, persistência e compatibilidade com URL antiga. |
 | `npm run verificar:exemplo` | O lote de demonstração: quantos registros de cada tipo, quais páginas de tema ficaram com conteúdo, se algum card estoura em 390px, se o selo EXEMPLO aparece em todo card do lote, se um perfil de exemplo consegue entrar (não pode) e se apagar o lote deixa intacto o que é de verdade. |
 | `npm run verificar:ritmo` | As regras de proporção e ritmo da identidade: nunca duas faixas da mesma cor coladas, no máximo uma faixa amarela por tela, preto como base da maior parte da área pintada, e nenhum botão que suma na superfície atrás dele. |
 
@@ -178,6 +179,32 @@ que quem lê seja a autora do projeto.
 
 ---
 
+## Imagens
+
+Foto de perfil e capa de projeto são **upload de arquivo** — clique ou arrastar
+e soltar, JPG, PNG ou WEBP, com pré-visualização antes de salvar. Um componente
+só (`src/components/CampoImagem.tsx`) serve os dois casos, mudando a proporção
+(1:1 e 16:9) e a regra de tamanho.
+
+**A compressão no navegador não é otimização, é o que impede a aplicação de
+quebrar.** No modo local tudo vive no localStorage, que tem poucos megabytes de
+cota: uma foto de celular sem comprimir estoura a cota e derruba a sessão
+inteira de quem subiu — perfil, projetos e conversas junto. `src/lib/imagem.ts`
+redimensiona em canvas (512x512 na foto, 1280px de largura na capa), exporta
+JPEG a 0,8 e desce a qualidade em degraus até caber em 400 KB. Se nem assim
+couber, a pessoa é avisada em vez de perder o trabalho. Na verificação, um PNG
+de 12,4 MB vira 37 KB.
+
+Onde a imagem mora é decisão do repositório, não da tela: com o Supabase
+ligado ela sobe para o bucket `imagens` (criado pela migração `0003`) e o
+registro guarda só a URL pública; sem ele, o registro guarda a data URL
+comprimida. Cada pessoa só escreve na pasta que leva o próprio id.
+
+Registros antigos que guardavam um endereço colado continuam funcionando — o
+campo é uma string, e uma URL `http` é exibida igual.
+
+---
+
 ## Copy
 
 A copy segue `copy-rede-escola-b.md` (v2, 15/09/2026). Duas regras que não
@@ -264,14 +291,7 @@ Fora de escopo por decisão da spec (seção 12): chat, feed/curtida/seguidor,
 discussão avulsa, grupo de estudo, acervo de aulas, painel da coordenação,
 métricas, moderação, notificação por e-mail, app nativo.
 
-Além desses, **uma coisa ficou de fora por limitação e vale registrar**:
-
-- **Upload de imagem.** Foto de perfil e capa de projeto entram como **link para
-  uma imagem**, não como arquivo enviado. Subir arquivo exige um bucket do
-  Supabase Storage, que não dá para provisionar junto com o código. Quando o
-  projeto Supabase existir, é criar um bucket público `imagens`, trocar os dois
-  campos de URL por um `<input type="file">` e chamar `storage.from('imagens')
-  .upload(...)`. Nada no modelo de dados muda: as colunas já guardam uma URL.
+Nada mais ficou de fora por limitação técnica.
 
 ## Em aberto na spec
 

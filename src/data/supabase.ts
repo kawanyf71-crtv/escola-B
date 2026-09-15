@@ -40,6 +40,30 @@ export class RepositorioSupabase implements Repositorio {
 
   constructor(private readonly cliente: SupabaseClient) {}
 
+  // --- Imagens ---
+
+  /**
+   * Sobe a imagem para o bucket publico `imagens` e devolve so a URL — o
+   * registro nunca carrega os bytes. O bucket e criado pela migracao 0003.
+   */
+  async enviarImagem(blob: Blob, _dataUrl: string, pasta: 'perfis' | 'projetos'): Promise<string> {
+    const usuario = await this.exigirUsuario();
+    // O caminho comeca pelo id de quem envia: e o que a politica do Storage usa
+    // pra deixar cada pessoa escrever so na propria pasta.
+    const caminho = `${pasta}/${usuario}/${crypto.randomUUID()}.jpg`;
+    const { error } = await this.cliente.storage
+      .from('imagens')
+      .upload(caminho, blob, { contentType: 'image/jpeg', upsert: false });
+    if (error) {
+      throw new Error(
+        `Não deu pra enviar a imagem: ${error.message}. ` +
+        'Confira se o bucket "imagens" existe — ele é criado pela migração 0003.',
+      );
+    }
+    const { data } = this.cliente.storage.from('imagens').getPublicUrl(caminho);
+    return data.publicUrl;
+  }
+
   private async exigirUsuario(): Promise<string> {
     const { data } = await this.cliente.auth.getUser();
     if (!data.user) throw new Error('Entra na sua conta pra fazer isso.');

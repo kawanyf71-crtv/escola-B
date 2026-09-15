@@ -1,6 +1,8 @@
 import { useState, type FormEvent } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Campo, EscolhaUnica, GrupoOpcoes, SeletorSimNao } from '../components/Campos';
+import { CampoImagem } from '../components/CampoImagem';
+import { REGRA_CAPA } from '../lib/imagem';
 import { Carregando, Erro } from '../components/Estados';
 import {
   AREAS, ESTAGIOS, HABILIDADES, MODALIDADES, TEMAS, TIPOS_PARTICIPACAO,
@@ -287,12 +289,15 @@ function Corpo({ projetoId, inicial }: { projetoId?: string; inicial: Formulario
               </Campo>
             )}
 
-            <Campo id="imagem" rotulo="Capa do projeto"
-                   dica="Cola o endereço de uma imagem. Opcional.">
-              <input id="imagem" type="url" value={form.imagem} inputMode="url"
-                     placeholder="https://…"
-                     onChange={(e) => campo('imagem', e.target.value)} />
-            </Campo>
+            <CampoImagem
+              rotulo="Capa do projeto"
+              dica="Escolhe uma imagem do seu celular ou computador. Opcional."
+              proporcao="16:9"
+              regra={REGRA_CAPA}
+              pasta="projetos"
+              valor={form.imagem || null}
+              aoMudar={(v) => campo('imagem', v ?? '')}
+            />
 
             <div className="cartaz" style={{ margin: '2rem 0' }}>
               <h3>Tá procurando gente?</h3>

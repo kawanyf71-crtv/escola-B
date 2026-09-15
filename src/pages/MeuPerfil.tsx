@@ -1,6 +1,8 @@
 import { useState, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Campo, GrupoOpcoes } from '../components/Campos';
+import { CampoImagem } from '../components/CampoImagem';
+import { REGRA_FOTO } from '../lib/imagem';
 import { Erro } from '../components/Estados';
 import {
   AREAS, DISPONIBILIDADES, HABILIDADES, TEMAS,
@@ -181,12 +183,15 @@ export function MeuPerfil() {
               dica="Dá pra marcar mais de um. Muda de ideia quando quiser."
             />
 
-            <Campo id="foto" rotulo="Sua foto"
-                   dica="Cola o endereço de uma imagem. Dá pra deixar em branco.">
-              <input id="foto" type="url" value={form.foto} inputMode="url"
-                     placeholder="https://…"
-                     onChange={(e) => campo('foto', e.target.value)} />
-            </Campo>
+            <CampoImagem
+              rotulo="Sua foto"
+              dica="Escolhe uma foto do seu celular ou computador. Dá pra deixar em branco."
+              proporcao="1:1"
+              regra={REGRA_FOTO}
+              pasta="perfis"
+              valor={form.foto || null}
+              aoMudar={(v) => campo('foto', v ?? '')}
+            />
 
             <Campo id="instagram" rotulo="Instagram">
               <input id="instagram" type="text" value={form.instagram} placeholder="@seuperfil"
