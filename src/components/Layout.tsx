@@ -3,13 +3,6 @@ import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useSessao } from '../lib/sessao';
 
 /**
- * Páginas-cartaz: onde a marca dá o soco, com faixas alternadas de cor. São
- * peça de comunicação, vistas de uma vez. Todo o resto é página-ferramenta, de
- * fundo contínuo — lugar onde se permanece, rola e preenche.
- */
-const ROTAS_CARTAZ = new Set(['/', '/inicio']);
-
-/**
  * `barra` marca o que cabe na barra fixa do celular. São quatro — mais que isso
  * e cada alvo fica menor que o dedo. O que sobra vai pro menu de tela cheia,
  * que deixa de ser a navegação e passa a ser só o que se usa de vez em quando.
@@ -45,11 +38,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className={[
-      'pagina',
-      ROTAS_CARTAZ.has(local.pathname) ? 'pagina--cartaz' : 'pagina--app',
-      logado ? 'pagina--com-barra' : '',
-    ].filter(Boolean).join(' ')}>
+    <div className={`pagina${logado ? ' pagina--com-barra' : ''}`}>
       <a className="pular" href="#conteudo">Pular para o conteúdo</a>
 
       <header className="cabecalho">

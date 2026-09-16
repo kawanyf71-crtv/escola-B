@@ -5,7 +5,7 @@ import { TEMAS, slugTema } from '../lib/dominio';
 export function Temas() {
   return (
     <>
-      <section className="faixa faixa--preto faixa--fina">
+      <section className="faixa faixa--fina">
         <div className="faixa__interno">
           <Globo className="grafismo-solto" />
           <h1>Temas</h1>
@@ -16,7 +16,7 @@ export function Temas() {
         </div>
       </section>
 
-      <section className="faixa faixa--amarelo">
+      <section className="faixa">
         <div className="faixa__interno">
           <ul className="lista-limpa grade grade--3">
             {TEMAS.map((t) => (

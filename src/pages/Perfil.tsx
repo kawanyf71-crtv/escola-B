@@ -23,7 +23,7 @@ export function Perfil() {
 
   if (pessoa.carregando) {
     return (
-      <section className="faixa faixa--claro">
+      <section className="faixa">
         <div className="faixa__interno"><Carregando quantidade={1} rotulo="Buscando o perfil" /></div>
       </section>
     );
@@ -31,7 +31,7 @@ export function Perfil() {
 
   if (pessoa.erro) {
     return (
-      <section className="faixa faixa--claro">
+      <section className="faixa">
         <div className="faixa__interno">
           <Erro mensagem={pessoa.erro} aoTentarDeNovo={pessoa.recarregar} />
         </div>
@@ -42,7 +42,7 @@ export function Perfil() {
   const p = pessoa.dados;
   if (!p) {
     return (
-      <section className="faixa faixa--claro">
+      <section className="faixa">
         <div className="faixa__interno">
           <div className="cartaz cartaz--vermelho">
             <h2>Esse perfil<br />não existe mais</h2>
@@ -64,7 +64,7 @@ export function Perfil() {
 
   return (
     <>
-      <section className="faixa faixa--preto">
+      <section className="faixa">
         <div className="faixa__interno">
           <Link className="migalha" to="/pessoas">
             <span className="seta" aria-hidden="true"
@@ -91,7 +91,7 @@ export function Perfil() {
         </div>
       </section>
 
-      <section className="faixa faixa--claro">
+      <section className="faixa">
         <div className="faixa__interno empilhado">
           <div>
             <h2>Sabe fazer</h2>
@@ -133,7 +133,7 @@ export function Perfil() {
       </section>
 
       {(p.instagram || p.linkedin || p.site) && (
-        <section className="faixa faixa--vermelho faixa--fina">
+        <section className="faixa faixa--fina">
           <div className="faixa__interno">
             <h2>Chamar</h2>
             <p className="miudo">
@@ -163,7 +163,7 @@ export function Perfil() {
         </section>
       )}
 
-      <section className="faixa faixa--preto">
+      <section className="faixa">
         <div className="faixa__interno">
           <h2>Projetos</h2>
           {projetos.carregando && <Carregando quantidade={2} rotulo="Buscando os projetos" />}
@@ -193,7 +193,7 @@ export function Perfil() {
         </div>
       </section>
 
-      <section className="faixa faixa--claro">
+      <section className="faixa">
         <div className="faixa__interno">
           <h2>Assuntos</h2>
           {discussoes.carregando && <Carregando quantidade={2} rotulo="Buscando os assuntos" />}

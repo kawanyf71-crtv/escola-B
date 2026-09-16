@@ -56,7 +56,7 @@ export function MeuEspaco() {
 
   return (
     <>
-      <section className="faixa faixa--preto faixa--fina">
+      <section className="faixa faixa--fina">
         <div className="faixa__interno">
           <h1>Meu<br />espaço</h1>
           <p className="miudo">Seus projetos, quem chegou junto e onde você chegou junto.</p>
@@ -73,7 +73,7 @@ export function MeuEspaco() {
         </div>
       </section>
 
-      <section className="faixa faixa--vermelho">
+      <section className="faixa">
         <div className="faixa__interno">
           <h2>Meus projetos</h2>
           {projetos.carregando && <Carregando quantidade={2} rotulo="Buscando os seus projetos" />}
@@ -122,7 +122,7 @@ export function MeuEspaco() {
         </div>
       </section>
 
-      <section className="faixa faixa--claro">
+      <section className="faixa">
         <div className="faixa__interno">
           <h2>Onde eu<br />cheguei junto</h2>
           {interesses.carregando && (
@@ -164,7 +164,7 @@ export function MeuEspaco() {
         </div>
       </section>
 
-      <section className="faixa faixa--preto">
+      <section className="faixa">
         <div className="faixa__interno" style={{ maxWidth: '36rem' }}>
           <h2>Sair da rede</h2>
           <p className="miudo">
@@ -202,7 +202,7 @@ export function MeuEspaco() {
       {/* Área discreta: o lote de demonstração serve pra avaliar o visual da
           plataforma cheia, não faz parte do produto. */}
       {repo.suportaExemplo && (
-        <section className="faixa faixa--claro faixa--fina">
+        <section className="faixa faixa--fina">
           <div className="faixa__interno" style={{ maxWidth: '36rem' }}>
             <span className="rotulo">Dados de exemplo</span>
             <p className="miudo">

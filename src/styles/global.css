@@ -90,11 +90,6 @@ a:not(:where(.botao, .chip)) {
   outline-offset: 2px;
 }
 
-.faixa--preto :focus-visible,
-.faixa--vermelho :focus-visible {
-  outline-color: var(--amarelo);
-}
-
 /* Link de pulo para teclado (acessibilidade). */
 .pular {
   position: absolute;
@@ -181,58 +176,10 @@ p:last-child { margin-bottom: 0; }
   padding: 0 var(--gutter);
 }
 
-/* Cada faixa e um retangulo de UMA cor so. A tinta de cada uma foi escolhida
-   para passar em contraste AA: sobre vermelho e sobre amarelo a tinta e preta. */
-.faixa--preto      { background: var(--preto);     color: var(--off-white); }
-.faixa--preto-2    { background: var(--preto-2);   color: var(--off-white); }
-.faixa--amarelo    { background: var(--amarelo);   color: var(--preto); }
-.faixa--vermelho   { background: var(--vermelho);  color: var(--preto); }
-.faixa--claro      { background: var(--off-white); color: var(--preto); }
-
-/* Superficies claras pedem link preto; as escuras, amarelo. Botao e chip ficam
-   de fora porque ja trazem a propria tinta.
-   A ordem importa: `.card` e `.card--escuro` tem a mesma especificidade, entao
-   as escuras vem DEPOIS — senao a variante escura de um bloco claro herda
-   tinta preta sobre fundo preto. */
-.faixa--amarelo, .faixa--vermelho, .faixa--claro, .menu-cheio,
-.cartaz, .cartaz--vermelho, .correspondencia,
-.esqueleto { --tinta-link: var(--preto); }
-
-.faixa--preto, .faixa--preto-2, .cabecalho, .rodape,
-.cartaz--preto { --tinta-link: var(--amarelo); }
-
-/* O card NAO fixa a tinta do link: sobre faixa clara ele e off-white e herda
-   preto, sobre faixa escura e transparente e herda amarelo. So quando o fundo
-   do card diverge do fundo da faixa e que ele precisa declarar a sua. */
-.faixa--amarelo .card, .faixa--vermelho .card,
-.card--escuro { --tinta-link: var(--amarelo); }
-
-/* Sobre preto o card fica de contorno, sem preenchimento: e o que deixa o
-   fundo aparecer e o preto chegar aos 60-70% da tela numa lista longa. */
-.faixa--preto, .faixa--preto-2 {
-  --card-fundo: transparent;
-  --card-borda: var(--amarelo);
-  --card-tinta: var(--off-white);
-}
-
-/* Sobre amarelo e sobre vermelho o card e preto: devolve massa escura a uma
-   faixa de cor cheia, em vez de empilhar placa sobre placa. */
-.faixa--amarelo, .faixa--vermelho {
-  --card-fundo: var(--preto);
-  --card-borda: var(--preto);
-  --card-tinta: var(--off-white);
-}
-
-/* O vermelho nao alcanca 3:1 sobre o amarelo (2,90:1), entao sobre amarelo e
-   sobre o proprio vermelho o acento e preto. Nas demais superficies o acento e
-   vermelho, que e o que quebra o binario amarelo/preto. */
-.faixa--amarelo, .faixa--vermelho, .cartaz, .cartaz--vermelho, .correspondencia {
-  --acento: var(--preto);
-  --tinta-titulo: var(--preto);
-}
-
-.faixa--preto, .faixa--preto-2 { --tinta-titulo: var(--vermelho); }
-
+/* A faixa nao pinta: ela e ritmo vertical, so isso. Os modificadores de cor
+   que existiam aqui (--preto, --claro, --amarelo, --vermelho) sairam junto com
+   o markup que os usava, e com eles todas as redefinicoes de token por faixa.
+   O que sobrou e o que mede espaco. */
 
 
 .faixa--fina { padding: 1.25rem 0; }
@@ -341,23 +288,6 @@ p:last-child { margin-bottom: 0; }
   border-color: var(--acento);
 }
 
-/* Um botao preenchido precisa se destacar da superficie atras dele — a WCAG
-   pede 3:1 entre componente e fundo (1.4.11). Quando a variante coincide com a
-   cor da faixa, o botao continua legivel e some como objeto: e o caso do botao
-   vermelho numa faixa vermelha. Aqui a variante troca pela cor que contrasta
-   naquela superficie. */
-.faixa--preto .botao--preto,
-.faixa--preto-2 .botao--preto  { background: var(--amarelo);  color: var(--preto); }
-.faixa--amarelo .botao--amarelo  { background: var(--preto);  color: var(--off-white); }
-.faixa--vermelho .botao--vermelho { background: var(--preto); color: var(--off-white); }
-.faixa--claro .botao--amarelo    { background: var(--vermelho); color: var(--off-white); }
-
-/* Cartaz e card sao superficies proprias dentro da faixa: ali a variante volta
-   a valer, medida contra o fundo do bloco e nao contra o da faixa. */
-.cartaz .botao--preto, .card .botao--preto { background: var(--preto); color: var(--off-white); }
-.cartaz .botao--amarelo, .card .botao--amarelo { background: var(--amarelo); color: var(--preto); }
-.cartaz--preto .botao--preto { background: var(--amarelo); color: var(--preto); }
-.cartaz--vermelho .botao--vermelho { background: var(--preto); color: var(--off-white); }
 
 .acoes {
   display: flex;
@@ -393,8 +323,18 @@ p:last-child { margin-bottom: 0; }
   text-decoration: none;
 }
 
-.chip--inverso { background: var(--preto); color: var(--amarelo); }
-.chip--claro   { background: var(--off-white); color: var(--preto); }
+/* As variantes existiam pra funcionar sobre faixa clara: o chip preto com tinta
+   amarela era o par do chip amarelo com tinta preta. Sobre fundo continuo
+   escuro, chip preto sobre preto some como objeto — entao a hierarquia passa a
+   ser preenchido (destaque) contra contorno (secundario), que e a mesma logica
+   dos botoes. A borda usa --linha-campo pelo mesmo motivo dos campos: 3:1 entre
+   o que identifica o componente e o fundo (WCAG 1.4.11). */
+.chip--inverso {
+  background: transparent;
+  color: var(--tinta);
+  border: 1px solid var(--linha-campo);
+}
+.chip--claro   { background: var(--superficie-2); color: var(--tinta); }
 .chip--alerta  { background: var(--vermelho); color: var(--preto); }
 
 a.chip:hover, a.chip:focus-visible { text-decoration: underline; }
@@ -452,11 +392,9 @@ a.chip:hover, a.chip:focus-visible { text-decoration: underline; }
 /* O card escuro tira a borda da superficie em que esta: preta sobre faixa clara
    (o bloco preto ja se identifica sozinho), amarela sobre faixa preta. Amarelo
    sobre off-white dava 1,27:1 e lia como sujeira. */
-.card--escuro {
-  background: var(--preto);
-  color: var(--off-white);
-  border-color: var(--card-borda);
-}
+/* Variante rebaixada: sem preenchimento proprio, so o contorno. Serve pra um
+   bloco secundario nao competir com os cards cheios ao redor. */
+.card--escuro { background: transparent; }
 
 .card:hover, .card:focus-visible { border-color: var(--acento); }
 
@@ -635,9 +573,6 @@ select {
   overflow: hidden;
 }
 
-.faixa--preto .zona-imagem,
-.faixa--preto-2 .zona-imagem { border-color: var(--amarelo); }
-
 .zona-imagem--quadrada { max-width: 14rem; aspect-ratio: 1; }
 .zona-imagem--larga    { aspect-ratio: 16 / 9; }
 
@@ -725,11 +660,6 @@ select {
 .opcao input:checked + span { background: var(--preto); color: var(--amarelo); }
 .opcao input:focus-visible + span { outline: 4px solid var(--vermelho); outline-offset: 2px; }
 
-.faixa--preto .opcao span,
-.faixa--preto-2 .opcao span { border-color: var(--off-white); }
-.faixa--preto .opcao input:checked + span,
-.faixa--preto-2 .opcao input:checked + span { background: var(--amarelo); color: var(--preto); }
-
 .interruptor {
   display: flex;
   gap: 0.5rem;
@@ -774,26 +704,32 @@ select {
 /* ------------------------------------------------- estados: vazio/erro/load */
 /* Linguagem de cartaz: cor chapada no bloco inteiro, tipografia empilhada. */
 
+/* O cartaz era um retangulo de cor cheia dentro da pagina — o ultimo pedaco de
+   campo de cor como estrutura. Vira superficie, e a cor que dizia o tipo dele
+   passa pra barra da esquerda: amarelo destaca, vermelho alerta ou avisa que
+   nao ha nada ali, cinza e neutro. E a mesma barra que o comentario ja usa. */
 .cartaz {
-  background: var(--amarelo);
-  color: var(--preto);
-  padding: 2rem 1.25rem;
+  background: var(--superficie);
+  color: var(--tinta);
+  border: 1px solid var(--linha);
+  border-left: 4px solid var(--amarelo);
+  padding: 1.5rem 1.25rem;
   border-radius: 0;
 }
 
-.cartaz--vermelho { background: var(--vermelho); color: var(--preto); }
-.cartaz--preto    { background: var(--preto);    color: var(--off-white); }
+.cartaz--vermelho { border-left-color: var(--vermelho); }
+.cartaz--preto    { border-left-color: var(--linha-forte); }
 
 .cartaz h2, .cartaz h3 { margin-bottom: 0.75rem; }
 .cartaz p { max-width: 34rem; }
 
 .esqueleto {
-  border: 4px solid var(--preto);
-  padding: 1rem;
+  border: 1px solid var(--linha);
+  padding: 1.25rem;
 }
 
 .esqueleto__barra {
-  background: var(--preto);
+  background: var(--tinta);
   height: 1rem;
   margin-bottom: 0.625rem;
   opacity: 0.18;
@@ -922,8 +858,8 @@ select {
   position: fixed;
   inset: 0;
   z-index: 30;
-  background: var(--amarelo);
-  color: var(--preto);
+  background: var(--preto);
+  color: var(--tinta);
   overflow-y: auto;
   padding: calc(1rem + env(safe-area-inset-top, 0px)) var(--gutter)
            calc(2rem + env(safe-area-inset-bottom, 0px));
@@ -946,23 +882,28 @@ select {
   text-transform: uppercase;
   line-height: 1;
   font-size: clamp(2rem, 10vw, 3rem);
-  color: var(--preto);
+  color: var(--tinta);
   text-decoration: none;
-  padding: 0.5rem 0;
+  padding: 0.75rem 0;
   min-height: var(--alvo);
-  border-bottom: 4px solid var(--preto);
+  border-bottom: 1px solid var(--linha);
 }
 
 .menu-cheio nav button {
   width: 100%;
   background: transparent;
-  border-width: 0 0 4px;
+  border-width: 0 0 1px;
   border-style: solid;
   cursor: pointer;
   text-align: left;
 }
 
-.menu-cheio nav a[aria-current='page'] { background: var(--preto); color: var(--amarelo); }
+/* Mesma marcacao da barra de baixo: amarelo diz onde se esta, o sublinhado diz
+   o mesmo sem depender de cor. */
+.menu-cheio nav a[aria-current='page'] {
+  color: var(--amarelo);
+  text-decoration: underline;
+}
 
 /* ------------------------------------------------------------------- rodape */
 
@@ -1057,34 +998,28 @@ select {
   margin-top: auto;
 }
 
+/* ======================================================================
+   UM TIPO DE PAGINA SO
+
+   A identidade do BATEKOO e de peca grafica: um cartaz e visto de uma vez e
+   por isso pode ser um bloco de cor inteiro. Um site nao — e um lugar onde se
+   permanece, rola e preenche.
+
+   Por um tempo o app teve dois tipos de pagina, e a entrada guardava as faixas
+   alternadas. Nao se sustentou: a pessoa entrava por uma linguagem e usava
+   outra, e as telas de acesso ficavam no meio do caminho — metade cartaz,
+   metade produto. Agora e uma linguagem so, do primeiro acesso ao formulario:
+   fundo continuo, e a cor da marca vivendo dentro dos objetos — titulo, chip,
+   seta, borda, botao, estado — em vez de no campo de fundo.
+
+   O que saiu foi so campo de cor como estrutura de pagina, que nunca foi regra
+   da marca: e consequencia de ela viver em cartazes.
+   ====================================================================== */
+
 .pagina {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-}
-
-/* ======================================================================
-   DOIS TIPOS DE PAGINA
-
-   A identidade do BATEKOO e de peca grafica: um cartaz e visto de uma vez e
-   por isso pode ser um bloco de cor inteiro. Um site nao — e um lugar onde se
-   permanece, rola e preenche. Dai a separacao:
-
-   .pagina--cartaz  a entrada publica. Faixas alternadas de cor, a marca dando
-                    o soco. E peca de comunicacao.
-   .pagina--app     todo o resto. Fundo continuo, e a cor da marca migra do
-                    fundo para dentro dos objetos: titulo, chip, seta, borda,
-                    botao, estado.
-
-   O que sai e so campo de cor como estrutura de pagina — que nao e regra da
-   marca, e consequencia de ela viver em cartazes.
-   ====================================================================== */
-
-/* Comportamento atual, sem nenhuma mudanca. A classe existe pra deixar a
-   intencao escrita no markup. */
-.pagina--cartaz { }
-
-.pagina--app {
   background: var(--preto);
   color: var(--tinta);
 
@@ -1108,114 +1043,44 @@ select {
   --e5: 4rem;
 }
 
-/* A faixa deixa de pintar e vira so ritmo vertical. A tinta precisa cair
-   junto: sem isso, o texto preto de uma faixa amarela ficaria preto sobre
-   preto. */
-.pagina--app .faixa--preto,
-.pagina--app .faixa--preto-2,
-.pagina--app .faixa--amarelo,
-.pagina--app .faixa--vermelho,
-.pagina--app .faixa--claro {
-  background: transparent;
-  color: inherit;
-}
+/* Contra o preto da pagina, o unico botao preenchido que precisa trocar de cor
+   e o preto: ele sumiria no fundo. Amarelo e vermelho ja se destacam. */
+.pagina .botao--preto,
+.pagina .botao--amarelo { background: var(--amarelo); color: var(--preto); }
 
-/* Nenhuma faixa redefine token de componente dentro da pagina-ferramenta. */
-.pagina--app .faixa--preto,
-.pagina--app .faixa--preto-2,
-.pagina--app .faixa--amarelo,
-.pagina--app .faixa--vermelho,
-.pagina--app .faixa--claro,
-.pagina--app .faixa--amarelo .card,
-.pagina--app .faixa--vermelho .card {
-  --card-fundo: var(--superficie);
-  --card-borda: var(--linha);
-  --card-tinta: var(--tinta);
-  --tinta-titulo: var(--amarelo);
-  --tinta-link: var(--amarelo);
-  --acento: var(--vermelho);
-}
+/* A tinta do rotulo vermelho vai a preto, nao off-white: off-white sobre
+   vermelho da 3,67:1 e reprova em corpo pequeno — e a mesma razao que ja levava
+   o botao pequeno a preto. */
+.pagina .botao--vermelho { background: var(--vermelho); color: var(--preto); }
 
-/* As guardas de botao eram medidas contra a cor da faixa: botao vermelho sobre
-   faixa vermelha virava preto, botao preto sobre faixa preta virava amarelo.
-   Sem faixa pintada essas guardas passam a mentir — o botao vermelho virava
-   preto sobre uma pagina preta e sumia de vez. Entao a guarda da faixa cai
-   inteira e no lugar dela vale uma so: contra o preto da pagina, o unico botao
-   que precisa trocar e o preto. */
-.pagina--app .faixa--preto .botao--preto,
-.pagina--app .faixa--preto-2 .botao--preto,
-.pagina--app .faixa--amarelo .botao--amarelo,
-.pagina--app .faixa--claro .botao--amarelo,
-.pagina--app .botao--preto,
-.pagina--app .botao--amarelo { background: var(--amarelo); color: var(--preto); }
+.pagina .comentario { border-left-color: var(--amarelo); }
+.pagina :focus-visible { outline-color: var(--amarelo); }
 
-/* O vermelho preenchido volta a valer sobre a pagina preta. A tinta do rotulo
-   vai a preto, nao off-white: off-white sobre vermelho da 3,67:1 e reprova em
-   corpo pequeno — e a mesma razao que ja levava o botao pequeno a preto. */
-.pagina--app .faixa--vermelho .botao--vermelho,
-.pagina--app .botao--vermelho { background: var(--vermelho); color: var(--preto); }
-
-/* Cartaz e card continuam sendo superficie propria: ali a guarda volta a ser
-   medida contra o fundo do bloco, e nao contra o da pagina. */
-.pagina--app .cartaz .botao--preto,
-.pagina--app .menu-cheio .botao--preto,
-.pagina--app .card .botao--preto { background: var(--preto); color: var(--tinta); }
-.pagina--app .cartaz--preto .botao--preto { background: var(--amarelo); color: var(--preto); }
-.pagina--app .cartaz--vermelho .botao--vermelho { background: var(--preto); color: var(--tinta); }
-
-/* Mesma historia fora dos botoes: tudo que era "sobre faixa escura" passa a
-   valer na pagina inteira, porque a pagina inteira agora e escura. Sem isto o
-   chip de opcao dentro de um formulario — que morava numa faixa clara — fica
-   com borda preta sobre fundo preto e some como controle. */
-.pagina--app .comentario { border-left-color: var(--amarelo); }
-
-/* O anel de foco era vermelho por padrao e virava amarelo nas faixas escuras.
-   Com um fundo so, ele fica amarelo em toda a pagina — menos dentro das ilhas
-   de cor que ainda existem, onde amarelo sobre amarelo sumiria. */
-.pagina--app :focus-visible { outline-color: var(--amarelo); }
-.pagina--app .cartaz:not(.cartaz--preto) :focus-visible,
-.pagina--app .menu-cheio :focus-visible { outline-color: var(--preto); }
-
-/* Escala de titulo da pagina-ferramenta. O h1 de 8.6vw e medida de cartaz: numa
-   tela interna ele toma a viewport inteira e faz o conteudo parecer legenda.
-   Aqui o titulo volta a ser titulo de tela, e a Archivo Black continua sendo a
-   assinatura — o que muda e o tamanho, nao a fonte. Na .pagina--cartaz a escala
-   grande fica como esta. */
-.pagina--app h1 { font-size: clamp(1.5rem, 4vw, 2.25rem); }
-.pagina--app h2 { font-size: clamp(1.25rem, 3vw, 1.625rem); }
-.pagina--app h3 { font-size: 1.125rem; }
+/* O h1 de 8,6vw era medida de cartaz: numa tela ele toma a viewport inteira e
+   faz o conteudo abaixo parecer legenda. Aqui o titulo volta a ser titulo de
+   tela, e a Archivo Black continua sendo a assinatura — o que muda e o tamanho,
+   nao a fonte. */
+.pagina h1 { font-size: clamp(1.5rem, 4vw, 2.25rem); }
+.pagina h2 { font-size: clamp(1.25rem, 3vw, 1.625rem); }
+.pagina h3 { font-size: 1.125rem; }
 
 /* ======================================================================
-   SUPERFICIE, BORDA E RESPIRO NA PAGINA-FERRAMENTA
+   SUPERFICIE, BORDA E RESPIRO
 
    A borda de 4px foi desenhada pra faixa de cor chapada, onde ela e o que
    separa o card do campo atras. Sobre um fundo continuo ela faz o contrario:
-   cada elemento vira uma caixa fechada, e a tela lê como uma pilha de caixas.
+   cada elemento vira uma caixa fechada, e a tela le como uma pilha de caixas.
    Aqui a borda afina e quem separa passa a ser a superficie.
    ====================================================================== */
 
 /* -- card ------------------------------------------------------------- */
-.pagina--app .card {
+.pagina .card {
   border-width: 1px;
   padding: 1.25rem;
 }
-.pagina--app .card > * + * { margin-top: var(--e2); }
-.pagina--app .card:hover,
-.pagina--app .card:focus-visible { border-color: var(--amarelo); }
-
-/* O bloco de correspondencia e o unico que pode pesar: e o momento mais
-   importante do produto, quando a pessoa descobre que tem o que o projeto
-   procura. Deixa de ser retangulo amarelo e vira card de borda amarela grossa
-   — o destaque continua, sem tomar a tela. */
-.pagina--app .correspondencia {
-  background: var(--superficie);
-  color: var(--tinta);
-  border: 4px solid var(--amarelo);
-  padding: var(--e2);
-  --tinta-link: var(--amarelo);
-  --tinta-titulo: var(--amarelo);
-  --acento: var(--vermelho);
-}
+.pagina .card > * + * { margin-top: var(--e2); }
+.pagina .card:hover,
+.pagina .card:focus-visible { border-color: var(--amarelo); }
 
 /* -- campos de formulario --------------------------------------------- */
 /* A borda do campo e --linha-campo, nao --linha. Um campo de texto e um
@@ -1223,60 +1088,50 @@ select {
    superficie atras (1.4.11): --linha da 1,39:1 sobre o preto da pagina, e o
    preenchimento --superficie-2 da 1,16:1 — nenhum dos dois identifica o campo
    como campo. --linha-campo da 3,49:1. O verificar:ritmo cobra isso. */
-.pagina--app input[type='text'],
-.pagina--app input[type='email'],
-.pagina--app input[type='password'],
-.pagina--app input[type='url'],
-.pagina--app select,
-.pagina--app textarea {
+.pagina input[type='text'],
+.pagina input[type='email'],
+.pagina input[type='password'],
+.pagina input[type='url'],
+.pagina select,
+.pagina textarea {
   background: var(--superficie-2);
   border: 2px solid var(--linha-campo);
   color: var(--tinta);
 }
 
-.pagina--app input[type='text']:focus,
-.pagina--app input[type='email']:focus,
-.pagina--app input[type='password']:focus,
-.pagina--app input[type='url']:focus,
-.pagina--app select:focus,
-.pagina--app textarea:focus { border-color: var(--amarelo); }
+.pagina input[type='text']:focus,
+.pagina input[type='email']:focus,
+.pagina input[type='password']:focus,
+.pagina input[type='url']:focus,
+.pagina select:focus,
+.pagina textarea:focus { border-color: var(--amarelo); }
 
-.pagina--app .campo--erro input,
-.pagina--app .campo--erro select,
-.pagina--app .campo--erro textarea { border-color: var(--vermelho); }
+.pagina .campo--erro input,
+.pagina .campo--erro select,
+.pagina .campo--erro textarea { border-color: var(--vermelho); }
 
 /* Opacidade desbota a cor inteira e tira o controle do contraste. A dica ganha
    tinta propria. */
-.pagina--app .campo__dica {
+.pagina .campo__dica {
   color: var(--tinta-fraca);
   opacity: 1;
 }
 
 /* A zona de imagem e campo de formulario tambem: era o ultimo retangulo branco
    da tela. O que ela mantem e a moldura de 7px, que e assinatura da marca. */
-.pagina--app .zona-imagem {
+.pagina .zona-imagem {
   background: var(--superficie-2);
   border-color: var(--preto);
 }
-.pagina--app .zona-imagem__convite { color: var(--tinta); }
-.pagina--app .zona-imagem__dica { color: var(--tinta-fraca); }
+.pagina .zona-imagem__convite { color: var(--tinta); }
+.pagina .zona-imagem__dica { color: var(--tinta-fraca); }
 
 /* -- chip de opcao ---------------------------------------------------- */
-.pagina--app .opcao span { border: 2px solid var(--linha-campo); }
-.pagina--app .opcao input:checked + span {
+.pagina .opcao span { border: 2px solid var(--linha-campo); }
+.pagina .opcao input:checked + span {
   background: var(--amarelo);
   color: var(--preto);
   border-color: var(--amarelo);
-}
-
-/* Nas ilhas de cor que ainda existem, o chip marcado inverte: amarelo marcado
-   sobre cartaz amarelo da 1,00:1 — o estado deixa de existir como informacao
-   visual, que e o que o criterio 1.4.11 cobra. */
-.pagina--app .cartaz:not(.cartaz--preto) .opcao span { border-color: var(--preto); }
-.pagina--app .cartaz:not(.cartaz--preto) .opcao input:checked + span {
-  background: var(--preto);
-  color: var(--amarelo);
-  border-color: var(--preto);
 }
 
 /* -- moldura ---------------------------------------------------------- */
@@ -1284,26 +1139,35 @@ select {
    fundo escuro eles sumiriam no fundo, entao ganham um contorno externo de 1px
    — contorno, nao moldura clara: a borda clara em volta do rosto ja foi
    tentada e chamava mais atencao que o rosto. */
-.pagina--app .moldura,
-.pagina--app .card__capa,
-.pagina--app .zona-imagem { outline: 1px solid var(--linha); }
+.pagina .moldura,
+.pagina .card__capa,
+.pagina .zona-imagem { outline: 1px solid var(--linha); }
 
 /* -- respiro ---------------------------------------------------------- */
-.pagina--app .grade { gap: var(--e2); }
-.pagina--app .empilhado > * + * { margin-top: var(--e3); }
-.pagina--app .acoes { gap: var(--e1); margin-top: var(--e3); }
+/* Um bloco estreito — formulario, texto de leitura — nao se centraliza: alinha
+   pela esquerda com o resto da pagina. Quando cada faixa era um retangulo de
+   cor, a troca de eixo passava por mudanca de registro; sobre fundo continuo
+   ela le como desalinho, com o titulo num eixo e o campo em outro. */
+.pagina .faixa__interno {
+  margin-left: max(0px, calc((100% - var(--largura)) / 2));
+  margin-right: auto;
+}
+
+.pagina .grade { gap: var(--e2); }
+.pagina .empilhado > * + * { margin-top: var(--e3); }
+.pagina .acoes { gap: var(--e1); margin-top: var(--e3); }
 
 /* A separacao entre secoes era a troca de fundo. Sem ela, o vao e que separa —
    e precisa ser maior que o vao de dentro dos blocos, senao nada se agrupa. */
-.pagina--app .faixa { padding: 0; }
-.pagina--app .conteudo > .faixa:first-child { margin-top: var(--e3); }
-.pagina--app .faixa + .faixa { margin-top: var(--e4); }
-.pagina--app .conteudo > .faixa:last-child { margin-bottom: var(--e4); }
+.pagina .faixa { padding: 0; }
+.pagina .conteudo > .faixa:first-child { margin-top: var(--e3); }
+.pagina .faixa + .faixa { margin-top: var(--e4); }
+.pagina .conteudo > .faixa:last-child { margin-bottom: var(--e4); }
 
 /* E no lugar do corte de cor, uma regua curta acima do titulo da secao. Curta
    de proposito: regua da largura toda corta a pagina de novo, regua de 4rem
    agrupa o que vem embaixo dela. */
-.pagina--app .faixa h2::before {
+.pagina .faixa h2::before {
   content: '';
   display: block;
   width: 4rem;
@@ -1313,10 +1177,10 @@ select {
 }
 
 /* Dentro de um bloco que ja tem superficie propria, a regua seria ruido. */
-.pagina--app .card h2::before,
-.pagina--app .cartaz h2::before,
-.pagina--app .correspondencia h2::before,
-.pagina--app .esqueleto h2::before { content: none; }
+.pagina .card h2::before,
+.pagina .cartaz h2::before,
+.pagina .correspondencia h2::before,
+.pagina .esqueleto h2::before { content: none; }
 
 .conteudo { flex: 1; }
 
@@ -1353,10 +1217,14 @@ select {
 .faixa--encaixe p { margin-bottom: 0.625rem; }
 
 /* Bloco de correspondencia (RF-008): o destaque mais importante do produto. */
+/* O unico bloco que pode pesar: e o momento mais importante do produto, quando
+   a pessoa descobre que tem o que o projeto procura. Borda amarela de 4px em
+   vez de retangulo amarelo — o destaque continua, sem tomar a tela. */
 .correspondencia {
-  background: var(--amarelo);
-  color: var(--preto);
-  padding: 1rem;
+  background: var(--superficie);
+  color: var(--tinta);
+  border: 4px solid var(--amarelo);
+  padding: var(--e2);
   border-radius: 0;
 }
 
@@ -1382,8 +1250,6 @@ select {
   border-left: 7px solid var(--preto);
   padding-left: 0.875rem;
 }
-
-.faixa--preto .comentario, .faixa--preto-2 .comentario { border-left-color: var(--amarelo); }
 
 .visualmente-oculto {
   position: absolute;

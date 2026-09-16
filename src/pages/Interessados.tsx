@@ -12,7 +12,7 @@ export function Interessados() {
 
   return (
     <>
-      <section className="faixa faixa--preto">
+      <section className="faixa">
         <div className="faixa__interno">
           <Link className="migalha" to={`/projetos/${id}`}>
             <span className="seta" aria-hidden="true" style={{ transform: 'scaleX(-1)' }} />
@@ -26,7 +26,7 @@ export function Interessados() {
         </div>
       </section>
 
-      <section className="faixa faixa--claro">
+      <section className="faixa">
         <div className="faixa__interno">
           {lista.carregando && <Carregando quantidade={2} rotulo="Buscando quem chegou junto" />}
           {lista.erro && <Erro mensagem={lista.erro} aoTentarDeNovo={lista.recarregar} />}

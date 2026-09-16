@@ -154,7 +154,7 @@ await p.goto(urlProjeto);
 await checar('RF-008 o projeto sinaliza a correspondência de habilidade', async () => {
   await p.getByRole('heading', { name: /Você tem exatamente o que este projeto tá procurando/i })
     .waitFor({ timeout: 3000 });
-  await p.locator('.faixa--amarelo .chip', { hasText: 'Fotografia' }).first()
+  await p.locator('.correspondencia .chip', { hasText: 'Fotografia' }).first()
     .waitFor({ timeout: 3000 });
 });
 
@@ -233,7 +233,10 @@ await checar('Página de tema mostra o assunto solto', () =>
 await p.goto(urlProjeto);
 await checar('Página do projeto mostra só os assuntos ligados a ele', async () => {
   await p.getByRole('link', { name: /Baile é política de memória/i }).waitFor({ timeout: 3000 });
-  const secao = p.locator('.faixa--preto-2', { hasText: 'Assuntos deste projeto' });
+  const secao = p.locator('section.faixa').filter({
+    has: p.getByRole('heading', { name: /Assuntos deste projeto/i }),
+  });
+  if (await secao.count() === 0) throw new Error('não achei a seção de assuntos do projeto');
   if (await secao.getByRole('link', { name: /Cachê justo em coletivo/i }).count() !== 0) {
     throw new Error('o assunto solto vazou para a página do projeto');
   }

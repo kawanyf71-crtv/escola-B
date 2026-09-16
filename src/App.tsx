@@ -29,7 +29,7 @@ function AoTrocarDeRota() {
 
 function Espera() {
   return (
-    <section className="faixa faixa--preto">
+    <section className="faixa">
       <div className="faixa__interno">
         <h1>Só um<br />segundo…</h1>
         <span className="visualmente-oculto" role="status">Buscando a rede…</span>
@@ -110,7 +110,7 @@ function Rotas() {
 
 function NaoEncontrada() {
   return (
-    <section className="faixa faixa--vermelho">
+    <section className="faixa">
       <div className="faixa__interno">
         <h1>Essa página<br />não existe</h1>
         <div className="acoes">

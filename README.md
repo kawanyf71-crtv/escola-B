@@ -81,7 +81,7 @@ Três suítes, todas contra o navegador de verdade em 390px:
 | `npm run verificar:acessibilidade` | Alvos de toque de 44px, rótulo em todo controle, `alt` em toda imagem, um `h1` por página, link de pulo no primeiro Tab. |
 | `npm run verificar:imagem` | O upload: compressão de um PNG de 12 MB, limite de 512x512 na foto e 1280px na capa, pré-visualização, remoção, arrastar e soltar, tipo recusado, persistência e compatibilidade com URL antiga. |
 | `npm run verificar:exemplo` | O lote de demonstração: quantos registros de cada tipo, quais páginas de tema ficaram com conteúdo, se algum card estoura em 390px, se o selo EXEMPLO aparece em todo card do lote, se um perfil de exemplo consegue entrar (não pode) e se apagar o lote deixa intacto o que é de verdade. |
-| `npm run verificar:ritmo` | As regras de cor por tipo de página. Na página-cartaz: nunca duas faixas da mesma cor coladas, no máximo uma faixa amarela por tela, preto como base da maior parte da área pintada. Na página-ferramenta: fundo preto único, nenhuma faixa pintando por conta própria. Nas duas: nenhum botão que suma na superfície atrás dele, e nenhum campo ou chip de opção sem 3:1 entre o que o identifica e o fundo. O menu de tela cheia entra na conta — é a única superfície que só existe depois de um clique, e por isso a única que passava sem ser medida. |
+| `npm run verificar:ritmo` | Fundo preto único em toda tela e nenhuma faixa pintando por conta própria, mais o critério 1.4.11 da WCAG nos dois sentidos: nenhum botão que suma na superfície atrás dele, e nenhum campo ou chip de opção sem 3:1 entre o que o identifica e o fundo. O menu de tela cheia entra na conta — é a única superfície que só existe depois de um clique, e por isso a única que passava sem ser medida. |
 
 Variáveis que as suítes aceitam:
 
@@ -251,11 +251,9 @@ caixa alta onde já era, com `letter-spacing` para a caixa alta respirar no peso
 menor. A assinatura da marca (entrelinha 1.0, `letter-spacing` normal) fica
 intacta onde a Archivo Black ficou.
 
-O tamanho dos títulos também muda por tipo de página. Na página-cartaz o `h1`
-continua em `clamp(1.875rem, 8.6vw, 4.5rem)` — é a medida que faz ANCESTRALIDADE
-caber em uma linha a 390px e é o que dá o soco na entrada. Na página-ferramenta
-ele cai para `clamp(1.5rem, 4vw, 2.25rem)`: um `h1` de 8,6vw numa tela interna
-toma a viewport inteira e faz o conteúdo abaixo dele parecer legenda.
+O `h1` é `clamp(1.5rem, 4vw, 2.25rem)` em toda tela. O de 8,6vw que existia
+antes era medida de cartaz: numa tela ele toma a viewport inteira e faz o
+conteúdo abaixo dele parecer legenda.
 
 O aviso de erro deixou de ser retângulo vermelho cheio em caixa alta. A borda
 vermelha do campo já diz onde foi; o texto, na cor do acento, diz o que houve.
@@ -268,33 +266,46 @@ de terceiro, economiza conexões no 4G e garante que a assinatura tipográfica
 apareça mesmo em rede que bloqueie o Google Fonts. Trocar pela Shapiro 95 Super,
 se a Escola B tiver a licença, são duas linhas em `src/styles/fontes.css`.
 
-### Dois tipos de página
+### Uma linguagem só
 
 A identidade do BATEKOO é de peça gráfica, e peça gráfica é vista de uma vez:
 por isso um cartaz pode ser um bloco de cor inteiro. Um site não — é um lugar
-onde se permanece, rola e preenche. As duas coisas não obedecem à mesma regra,
-então o app declara qual é qual em `Layout.tsx` (`ROTAS_CARTAZ`) e o CSS trata
-cada uma no seu bloco:
+onde se permanece, rola e preenche.
 
-| | `.pagina--cartaz` | `.pagina--app` |
-|---|---|---|
-| onde | a entrada (`/`) | todo o resto |
-| o que é | peça de comunicação | ferramenta |
-| fundo | faixas alternadas de cor | preto contínuo, um só |
-| onde a cor vive | no campo de fundo | dentro dos objetos: título, chip, seta, borda, botão, estado |
+Por um tempo o app teve dois tipos de página, e a entrada guardava as faixas
+alternadas de cor. Não se sustentou: a pessoa entrava por uma linguagem e usava
+outra, e as telas de acesso ficavam no meio do caminho — metade cartaz, metade
+produto, com o título num eixo e o formulário em outro. Hoje é uma linguagem só,
+do primeiro acesso ao formulário de perfil.
 
-Na página-ferramenta a `.faixa` continua existindo como ritmo vertical, mas não
-pinta: `background: transparent`. Os tokens de componente (`--card-fundo`,
-`--tinta-link`, `--tinta-titulo`, `--acento`) passam a ter **um valor só na
-página inteira**, em vez de serem redefinidos por cada faixa. Era essa
-redefinição que fazia o mesmo card mudar de aparência três vezes na mesma tela.
+O fundo é `--preto` contínuo, do topo ao rodapé, em toda rota. A `.faixa`
+continua existindo, mas como ritmo vertical: não pinta nada. Os modificadores de
+cor dela (`--preto`, `--claro`, `--amarelo`, `--vermelho`) saíram do CSS e do
+markup, e com eles todas as redefinições de token por faixa — era isso que fazia
+o mesmo card mudar de aparência três vezes na mesma tela.
 
-O preto ganha degraus para isso funcionar — `--superficie`, `--linha`, `--tinta`
-e companhia — que não são cinza de interface genérica: são níveis dentro do
-`#111111` da marca, o que permite um card existir sem precisar ser um retângulo
-amarelo.
+Os tokens de componente (`--card-fundo`, `--tinta-link`, `--tinta-titulo`,
+`--acento`) têm **um valor só, válido na página inteira**, declarados em
+`.pagina`. O preto ganha degraus para isso funcionar — `--superficie`,
+`--linha`, `--tinta` e companhia —, que não são cinza de interface genérica: são
+níveis dentro do `#111111` da marca, o que permite um card existir sem precisar
+ser um retângulo amarelo.
 
-### Superfície, borda e respiro (página-ferramenta)
+Onde havia bloco de cor cheia, a cor passou para a borda. O `.cartaz` virou
+superfície com uma barra de 4px na esquerda — amarela destaca, vermelha alerta,
+cinza é neutra —, a mesma barra que o comentário já usava. O menu de tela cheia
+deixou de ser uma tela amarela. E o chip secundário (`.chip--inverso`), que era
+preto com tinta amarela para funcionar sobre faixa clara, virou chip de
+contorno: preenchido é destaque, contorno é secundário, a mesma lógica dos
+botões.
+
+Um bloco estreito — formulário, texto de leitura — alinha pela esquerda com o
+resto da página em vez de se centralizar. Quando cada faixa era um retângulo de
+cor, a troca de eixo passava por mudança de registro; sobre fundo contínuo ela
+lê como desalinho, com o título num eixo e o campo em outro.
+
+
+### Superfície, borda e respiro
 
 A borda de 4px foi desenhada para faixa de cor chapada, onde ela é o que separa
 o card do campo atrás. Sobre fundo contínuo ela faz o contrário: cada elemento
@@ -321,15 +332,15 @@ E a separação entre seções, que era troca de fundo, passa a ser uma régua d
 vermelha de 4rem acima do título amarelo da seção. Curta de propósito: régua da
 largura toda corta a página de novo; régua de 4rem agrupa o que vem embaixo.
 
-### Duas entradas, o mesmo cartaz
+### Duas entradas, a mesma abertura
 
-O cartaz de abertura (`src/components/Abertura.tsx`) roda em dois lugares: em
-`/`, para quem chega de fora, e em `/inicio`, a home de quem já entrou. O texto
-é o mesmo nos dois — é o que a plataforma é — e só os botões mudam: quem está de
-fora precisa criar conta, quem está dentro precisa de um caminho pra dentro do
-que já existe. São as duas únicas rotas `.pagina--cartaz`.
+A abertura (`src/components/Abertura.tsx`) roda em dois lugares: em `/`, para
+quem chega de fora, e em `/inicio`, a home de quem já entrou. O texto é o mesmo
+nos dois — é o que a plataforma é — e só os botões mudam: quem está de fora
+precisa criar conta, quem está dentro precisa de um caminho pra dentro do que já
+existe.
 
-A `/inicio` continua depois do cartaz com três seções que só existem lá:
+A `/inicio` continua depois da abertura com três seções que só existem lá:
 
 - **Como isso nasceu**, que abre dizendo que o site não é da Escola B nem do
   BATEKOO, e sim um projeto independente de uma aluna da turma.
@@ -368,33 +379,6 @@ tema, quem chegou junto).
 No desktop nada disso aparece: a barra some, a navegação horizontal completa
 continua no cabeçalho.
 
-### Proporção e ritmo (página-cartaz)
-
-Na entrada, o preto é a base e precisa ocupar mais área pintada que qualquer
-outra cor, medido pelo `verificar:ritmo`, que desconta da faixa os blocos com
-fundo próprio — uma faixa amarela cheia de cards pretos pinta muito menos
-amarelo do que a altura dela sugere. Cabeçalho e rodapé entram na conta de área;
-na conta de alternância, não.
-
-O amarelo é acento: no máximo uma faixa cheia por tela, às vezes nenhuma. As
-faixas alternam preto → off-white → acento → preto, e duas da mesma cor nunca
-se encostam.
-
-Na página-ferramenta essas três regras não se aplicam — não há faixa pintada
-para alternar. No lugar delas o `verificar:ritmo` cobra o oposto: nenhuma faixa
-pinta fundo próprio, e o fundo da página é o preto da marca. O relatório lista
-as ilhas de superfície que sobram em cada tela (card, cartaz, campo branco),
-que é o material dos próximos passos.
-
-O vermelho é a terceira cor e é o que quebra o binário amarelo/preto: títulos de
-seção, botão secundário, ações destrutivas, setas de destaque e os números de
-contagem.
-
-Onde não há fotografia, os elementos gráficos da marca entram como quebra: setas
-triangulares maciças e o globo em traço grosso sem preenchimento
-(`src/components/Grafismo.tsx`). Os estados vazios ganham uma seta grande como
-elemento visual central.
-
 ### Desvios conscientes da marca
 
 Os dois que a spec já previu, mais um que apareceu na conferência:
@@ -403,12 +387,10 @@ Os dois que a spec já previu, mais um que apareceu na conferência:
 2. **Corpo a 16px**, não 12,8px (previsto na spec).
 3. **Título de seção em faixa amarela fica preto, não vermelho.** O vermelho
    sobre o amarelo dá **2,90:1** — reprova até no limiar de texto grande (3:1).
-   Vermelho como cor de título funciona sobre preto (4,56:1) e sobre off-white
-   (3,67:1, válido na página-cartaz porque lá todo `h2` tem no mínimo 28px), e é
-   onde ele está. Na faixa amarela, a marca de destaque antes do título é que
-   fica vermelha — ela é decorativa e não responde por contraste de texto. Na
-   página-ferramenta o `h2` encolheu e saiu da faixa de texto grande, mas lá o
-   título é amarelo sobre preto (15,7:1) e a conta não aperta.
+   Isso deixou de ser um caso vivo quando as faixas pararam de pintar: não há
+   mais superfície amarela do tamanho de uma seção. O título é amarelo sobre
+   preto (15,7:1) e o vermelho ficou onde ele passa — a régua curta acima do
+   título, o botão, o aviso de erro, os números de contagem.
 4. **Sobre vermelho, a tinta é preta.** `#F1F1F1` sobre `#ED3124` dá 3,67:1 e
    reprova em AA para texto normal. O botão já foi a exceção — a 19px em Archivo
    Black ele contava como "texto grande" e o off-white passava no limiar de 3:1.

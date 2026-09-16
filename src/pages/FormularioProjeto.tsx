@@ -61,14 +61,14 @@ export function FormularioProjeto() {
 
   if (editando && carregado.carregando) {
     return (
-      <section className="faixa faixa--claro">
+      <section className="faixa">
         <div className="faixa__interno"><Carregando quantidade={1} rotulo="Buscando o projeto" /></div>
       </section>
     );
   }
   if (editando && carregado.erro) {
     return (
-      <section className="faixa faixa--claro">
+      <section className="faixa">
         <div className="faixa__interno">
           <Erro mensagem={carregado.erro} aoTentarDeNovo={carregado.recarregar} />
         </div>
@@ -217,7 +217,7 @@ function Corpo({ projetoId, inicial }: { projetoId?: string; inicial: Formulario
 
   return (
     <>
-      <section className="faixa faixa--vermelho">
+      <section className="faixa">
         <div className="faixa__interno">
           <h1>{projetoId ? 'Editar\nprojeto' : 'Conta do\nseu projeto'}</h1>
           <p style={{ maxWidth: '32rem' }}>
@@ -227,7 +227,7 @@ function Corpo({ projetoId, inicial }: { projetoId?: string; inicial: Formulario
         </div>
       </section>
 
-      <section className="faixa faixa--claro">
+      <section className="faixa">
         <div className="faixa__interno" style={{ maxWidth: '40rem' }}>
           <form onSubmit={publicar} noValidate>
             {falha && <Erro mensagem={falha} />}

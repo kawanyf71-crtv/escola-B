@@ -21,14 +21,14 @@ export function Projeto() {
 
   if (projeto.carregando) {
     return (
-      <section className="faixa faixa--claro">
+      <section className="faixa">
         <div className="faixa__interno"><Carregando quantidade={1} rotulo="Buscando o projeto" /></div>
       </section>
     );
   }
   if (projeto.erro) {
     return (
-      <section className="faixa faixa--claro">
+      <section className="faixa">
         <div className="faixa__interno">
           <Erro mensagem={projeto.erro} aoTentarDeNovo={projeto.recarregar} />
         </div>
@@ -39,7 +39,7 @@ export function Projeto() {
   const p = projeto.dados;
   if (!p) {
     return (
-      <section className="faixa faixa--claro">
+      <section className="faixa">
         <div className="faixa__interno">
           <div className="cartaz cartaz--vermelho">
             <h2>Esse projeto<br />não existe mais</h2>
@@ -61,8 +61,6 @@ export function Projeto() {
   // Num projeto do lote a porta fica aberta pra que a tela de quem chegou junto
   // possa ser avaliada — a autora dele é um perfil fictício, sem acesso.
   const podeVerQuemChegou = souAutora || p.demo === true;
-  // Sem a faixa amarela no meio, a capa encostaria no "Sobre", que é claro.
-  const faixaDaCapa = mostraCorrespondencia ? 'faixa--claro' : 'faixa--vermelho';
 
   async function alterarEstado(estado: 'publicado' | 'despublicado') {
     await repo.definirEstadoProjeto(id, estado);
@@ -71,7 +69,7 @@ export function Projeto() {
 
   return (
     <>
-      <section className="faixa faixa--preto">
+      <section className="faixa">
         <div className="faixa__interno">
           <Link className="migalha" to="/projetos">
             <span className="seta" aria-hidden="true" style={{ transform: 'scaleX(-1)' }} />
@@ -127,7 +125,7 @@ export function Projeto() {
       </section>
 
       {p.imagem && (
-        <section className={`faixa ${faixaDaCapa} faixa--fina`}>
+        <section className="faixa faixa--fina">
           <div className="faixa__interno">
             <img className="card__capa" src={p.imagem} alt={`Capa de ${p.nome}`}
                  style={{ aspectRatio: '21 / 9' }} />
@@ -137,24 +135,27 @@ export function Projeto() {
 
       {/* RF-008: o destaque de correspondência é o coração do produto. */}
       {mostraCorrespondencia && (
-        <section className="faixa faixa--amarelo faixa--encaixe">
+        <section className="faixa faixa--encaixe">
           <div className="faixa__interno">
-            {/* Sem quebras forçadas: elas empurravam o título para quatro linhas
-                e faziam o bloco ocupar 38% da tela a 390px. */}
-            <h2>Você tem exatamente o que este projeto tá procurando</h2>
-            <p className="destaque">
-              Não é coincidência. Foi pra isso que este lugar foi feito.
-            </p>
-            <ul className="chips">
-              {encaixe.map((h) => (
-                <li key={h}><span className="chip chip--inverso">{h}</span></li>
-              ))}
-            </ul>
+            {/* O único bloco que pode pesar na tela: é aqui que a pessoa
+                descobre que tem o que o projeto procura. Antes era uma faixa
+                amarela inteira; agora é a borda que carrega o amarelo. */}
+            <div className="correspondencia">
+              {/* Sem quebras forçadas: elas empurravam o título para quatro
+                  linhas e faziam o bloco ocupar 38% da tela a 390px. */}
+              <h2>Você tem exatamente o que este projeto tá procurando</h2>
+              <p className="destaque">
+                Não é coincidência. Foi pra isso que este lugar foi feito.
+              </p>
+              <ul className="chips">
+                {encaixe.map((h) => <li key={h}><span className="chip">{h}</span></li>)}
+              </ul>
+            </div>
           </div>
         </section>
       )}
 
-      <section className="faixa faixa--claro">
+      <section className="faixa">
         <div className="faixa__interno empilhado">
           <div>
             <h2>Sobre</h2>
@@ -195,7 +196,7 @@ export function Projeto() {
       />
 
       {/* RF-012: todas as discussões vinculadas ao projeto. */}
-      <section className="faixa faixa--claro">
+      <section className="faixa">
         <div className="faixa__interno">
           <h2>Assuntos<br />deste projeto</h2>
           {discussoes.carregando && <Carregando quantidade={1} rotulo="Buscando os assuntos" />}
@@ -254,7 +255,7 @@ function BlocoProcura({
   // "Não busca pessoas": sem botão, só o contato de quem publicou (spec seção 9).
   if (!projeto.busca_pessoas) {
     return (
-      <section className="faixa faixa--preto">
+      <section className="faixa">
         <div className="faixa__interno">
           <h2>Não tá<br />procurando gente<br />agora</h2>
           <p style={{ maxWidth: '32rem' }}>
@@ -308,7 +309,7 @@ function BlocoProcura({
   const jaManifestei = interesse.dados !== null;
 
   return (
-    <section className="faixa faixa--preto">
+    <section className="faixa">
       <div className="faixa__interno">
         <h2>Quem este<br />projeto procura</h2>
         <ul className="chips" aria-label="Quem o projeto procura">

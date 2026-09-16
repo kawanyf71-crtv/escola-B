@@ -49,13 +49,13 @@ function FormularioAcesso({ modo }: { modo: 'entrar' | 'criar' }) {
 
   return (
     <>
-      <section className="faixa faixa--preto">
+      <section className="faixa">
         <div className="faixa__interno">
           <h1>{criando ? 'Criar\nconta' : 'Entrar'}</h1>
         </div>
       </section>
 
-      <section className="faixa faixa--claro">
+      <section className="faixa">
         <div className="faixa__interno" style={{ maxWidth: '34rem' }}>
           {criando && (
             <div className="cartaz" style={{ marginBottom: '1.5rem' }}>

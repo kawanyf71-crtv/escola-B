@@ -1,17 +1,15 @@
 /**
- * Ritmo, proporção e superfície.
+ * Superfície e fundo.
  *
- * O app tem dois tipos de página e cada um responde a uma regra diferente.
+ * O app tem um tipo de página só: fundo preto contínuo, do topo ao rodapé. A
+ * faixa existe como ritmo vertical e não pinta nada. É isso que se cobra aqui —
+ * nenhuma faixa com fundo próprio, e o fundo da página sendo o preto da marca.
+ * As ilhas de superfície que sobram em cada tela entram no relatório sem
+ * cobrança: são o material de trabalho de quem for mexer em superfície.
  *
- * Página-cartaz (a entrada): faixas alternadas de cor, peça de comunicação.
- * Duas regras da identidade que não dá pra conferir a olho: nunca duas faixas
- * da mesma cor coladas, no máximo uma faixa amarela por tela, e o preto como
- * base da maior parte da área pintada.
- *
- * Página-ferramenta (todo o resto): fundo contínuo, lugar onde se permanece e
- * se preenche. Aqui a regra é o oposto — nenhuma faixa pinta fundo próprio, a
- * página inteira tem um fundo só. As ilhas de superfície que sobram entram no
- * relatório, sem cobrança: é o material de trabalho do bloco de superfícies.
+ * Cobra também o critério 1.4.11 da WCAG nos dois sentidos: nenhum botão que
+ * suma na superfície atrás dele, nenhum campo ou chip de opção sem 3:1 entre o
+ * que o identifica e o fundo.
  */
 import { ir, abrirNavegador, criarParticipante, marcarChip, sair } from './navegador.mjs';
 
@@ -28,13 +26,9 @@ const PALETA = {
 const nome = (c) => PALETA[c] ?? c;
 
 /**
- * Área pintada, não altura de faixa: uma faixa amarela cheia de cards pretos
- * pinta muito menos amarelo do que a altura dela sugere. Desconta da faixa a
- * área dos blocos que têm fundo opaco próprio e credita à cor deles.
- *
- * Devolve junto o tipo da página e as ilhas de superfície — blocos com fundo
- * opaco diferente do fundo da página —, que é o que resta de relevo depois que
- * as faixas ficam transparentes.
+ * O fundo da página e o de cada faixa, mais as ilhas de superfície — blocos com
+ * fundo opaco diferente do fundo da página. As ilhas são o que resta de relevo
+ * depois que as faixas param de pintar.
  */
 const MEDIR = () => {
   const opaco = (el) => {
@@ -43,31 +37,12 @@ const MEDIR = () => {
     return m && (m.length < 4 || Number(m[3]) === 1) ? c : null;
   };
   const pagina = document.querySelector('.pagina');
-  const tipo = pagina?.classList.contains('pagina--cartaz') ? 'cartaz' : 'app';
   const base = pagina ? opaco(pagina) : null;
 
-  // Cabecalho e rodape sao area pintada da tela como qualquer faixa. Ficavam
-  // de fora porque, quando toda pagina era faixa, eram uma constante que nao
-  // mudava a comparacao — na pagina-cartaz, que tem tres faixas, mudam.
-  const MOLDURA = '.faixa, .cabecalho, .rodape';
-  const faixas = [...document.querySelectorAll(MOLDURA)].map((f) => {
-    const corFaixa = getComputedStyle(f).backgroundColor;
-    const r = f.getBoundingClientRect();
-    const area = Math.round(r.width * r.height);
-    const dentro = [];
-    f.querySelectorAll('.card, .cartaz, .correspondencia, .esqueleto').forEach((el) => {
-      const cor = opaco(el);
-      if (!cor || cor === corFaixa) return;
-      // Só blocos de primeiro nível dentro da faixa, pra não contar duas vezes.
-      if (el.parentElement?.closest('.card, .cartaz, .correspondencia')) return;
-      const rr = el.getBoundingClientRect();
-      dentro.push({ cor, area: Math.round(rr.width * rr.height) });
-    });
-    return {
-      cor: corFaixa, propria: opaco(f), area, altura: Math.round(r.height), dentro,
-      cromo: !f.classList.contains('faixa'),
-    };
-  });
+  const faixas = [...document.querySelectorAll('.faixa')].map((f) => ({
+    propria: opaco(f),
+    altura: Math.round(f.getBoundingClientRect().height),
+  }));
 
   const ilhas = new Map();
   const ALVO = '.card, .cartaz, .correspondencia, .zona-imagem, .esqueleto,' +
@@ -80,17 +55,8 @@ const MEDIR = () => {
     ilhas.set(cor, (ilhas.get(cor) ?? 0) + 1);
   }
 
-  return { tipo, base, faixas, ilhas: [...ilhas].map(([cor, n]) => ({ cor, n })) };
+  return { base, faixas, ilhas: [...ilhas].map(([cor, n]) => ({ cor, n })) };
 };
-
-/**
- * Telas de leitura longa. A regra de proporção manda o preto dominar, mas a
- * mesma regra manda off-white nos blocos de leitura longa — formulário e texto
- * corrido. Essas telas são quase só isso, então entram no relatório sem cobrar
- * a proporção. Só valem enquanto a tela for página-cartaz.
- */
-const LEITURA_LONGA = new Set(['/meu-perfil', '/projetos/novo', '/assuntos/novo',
-                               '/entrar', '/criar-conta']);
 
 /**
  * Botão que se confunde com a superfície atrás dele. O auditor de contraste
@@ -189,85 +155,26 @@ const { navegador, pagina: p } = await abrirNavegador();
 const problemas = [];
 const relatorio = [];
 
-/** Página-cartaz: alternância, uma amarela só, preto dominando a área. */
-function conferirCartaz(rota, faixas) {
-  const cores = faixas.map((f) => ({ nome: nome(f.cor), altura: f.altura, cromo: f.cromo }));
-  if (cores.length === 0) return;
+async function conferir(rota) {
+  await p.waitForTimeout(350);
+  const { base, faixas, ilhas } = await p.evaluate(MEDIR);
 
-  // Área por cor, já descontando os blocos com fundo próprio.
-  const porCor = new Map();
-  const somar = (n, area) => porCor.set(n, (porCor.get(n) ?? 0) + area);
-  for (const f of faixas) {
-    const dentro = f.dentro.reduce((s, d) => s + d.area, 0);
-    somar(nome(f.cor), Math.max(0, f.area - dentro));
-    for (const d of f.dentro) somar(nome(d.cor), d.area);
-  }
-
-  // Alternância é regra da sequência de faixas. Cabeçalho e rodapé entram na
-  // conta de área, mas não nesta: o cabeçalho preto colado ao topo preto da
-  // entrada é uma massa só de propósito, não duas faixas repetidas.
-  const seq = cores.filter((f) => !f.cromo);
-  for (let i = 1; i < seq.length; i++) {
-    if (seq[i].nome === seq[i - 1].nome) {
-      problemas.push(`${rota}: duas faixas ${seq[i].nome} coladas ` +
-        `(posições ${i} e ${i + 1} de ${seq.length})`);
-    }
-  }
-
-  const amarelas = seq.filter((f) => f.nome === 'amarelo').length;
-  if (amarelas > 1) {
-    problemas.push(`${rota}: ${amarelas} faixas amarelas — o máximo é uma`);
-  }
-
-  const total = [...porCor.values()].reduce((s, a) => s + a, 0);
-  const escuro = (porCor.get('preto') ?? 0) + (porCor.get('preto-2') ?? 0);
-  const proporcao = Math.round((escuro / total) * 100);
-  const ehLeitura = LEITURA_LONGA.has(rota) || rota.includes('/editar')
-    || rota.includes('/quem-chegou-junto');
-  const outras = [...porCor].filter(([n]) => n !== 'preto' && n !== 'preto-2');
-  const maiorOutra = outras.sort((a, b) => b[1] - a[1])[0];
-  relatorio.push(`cartaz  ${String(proporcao).padStart(3)}% preto  ${rota}` +
-    `${ehLeitura ? '  (leitura longa: off-white por regra)' : ''}` +
-    `\n                     ${cores.map((f) => `${f.nome}:${f.altura}`).join(' → ')}`);
-
-  // A regra escrita é "o preto é a base da maior parte da área". O piso de 45%
-  // era o atalho pra isso quando TODA tela era faixa; hoje a página-ferramenta
-  // garante a base por construção (um fundo preto só, 100%) e sobrou um cartaz
-  // de três faixas, onde o que dá pra cobrar é a dominância. A percentagem
-  // continua impressa acima justamente pra ninguém perder de vista quanto é.
-  if (!ehLeitura && maiorOutra && escuro <= maiorOutra[1]) {
-    problemas.push(`${rota}: ${maiorOutra[0]} ocupa mais área que o preto ` +
-      `(${proporcao}% preto) — a base devia dominar a tela`);
-  }
-}
-
-/** Página-ferramenta: um fundo só, do topo ao rodapé. */
-function conferirApp(rota, base, faixas, ilhas) {
   if (base === null) {
-    problemas.push(`${rota}: a página-ferramenta não pinta fundo próprio`);
+    problemas.push(`${rota}: a página não pinta fundo próprio`);
   } else if (nome(base) !== 'preto') {
     problemas.push(`${rota}: fundo da página é ${nome(base)} — devia ser o preto da marca`);
   }
 
-  const pintadas = faixas.filter((f) => f.propria && f.propria !== base);
+  const pintadas = faixas.filter((f) => f.altura > 0 && f.propria && f.propria !== base);
   if (pintadas.length > 0) {
     const quais = [...new Set(pintadas.map((f) => nome(f.propria)))].join(', ');
-    problemas.push(`${rota}: ${pintadas.length} faixa(s) ainda pintam fundo próprio ` +
-      `(${quais}) — página-ferramenta tem um fundo só`);
+    problemas.push(`${rota}: ${pintadas.length} faixa(s) pintam fundo próprio ` +
+      `(${quais}) — a página tem um fundo só`);
   }
 
-  relatorio.push(`app     fundo ${nome(base)}  ${rota}` +
-    `\n                     ${ilhas.length === 0 ? 'sem ilhas de superfície'
+  relatorio.push(`fundo ${nome(base)}  ${rota}` +
+    `\n                ${ilhas.length === 0 ? 'sem ilhas de superfície'
       : `ilhas: ${ilhas.map((i) => `${nome(i.cor)}×${i.n}`).join('  ')}`}`);
-}
-
-async function conferir(rota) {
-  await p.waitForTimeout(350);
-  const { tipo, base, faixas, ilhas } = await p.evaluate(MEDIR);
-  const visiveis = faixas.filter((f) => f.altura > 0);
-
-  if (tipo === 'cartaz') conferirCartaz(rota, visiveis);
-  else conferirApp(rota, base, visiveis, ilhas);
 
   for (const aviso of await p.evaluate(BOTOES_SUMIDOS)) {
     problemas.push(`${rota}: botão ${aviso}`);
@@ -334,7 +241,7 @@ for (const aviso of await p.evaluate(BOTOES_SUMIDOS)) {
 await p.getByRole('button', { name: /^Fechar$/i }).click();
 
 /* Entrada, cadastro e login só existem deslogado — logado as três redirecionam
-   pra dentro do app. É aqui que a página-cartaz entra na conta. */
+   pra dentro. */
 await sair(p);
 for (const rota of ['/', '/entrar', '/criar-conta']) {
   await ir(p, rota);

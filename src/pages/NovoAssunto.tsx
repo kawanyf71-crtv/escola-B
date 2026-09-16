@@ -57,7 +57,7 @@ export function NovoAssunto() {
 
   return (
     <>
-      <section className="faixa faixa--preto">
+      <section className="faixa">
         <div className="faixa__interno">
           <Link className="migalha" to="/assuntos">
             <span className="seta" aria-hidden="true" style={{ transform: 'scaleX(-1)' }} />
@@ -71,7 +71,7 @@ export function NovoAssunto() {
         </div>
       </section>
 
-      <section className="faixa faixa--claro">
+      <section className="faixa">
         <div className="faixa__interno" style={{ maxWidth: '40rem' }}>
           <form onSubmit={enviar} noValidate>
             {falha && <Erro mensagem={falha} />}

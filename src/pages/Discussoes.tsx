@@ -13,7 +13,7 @@ export function Discussoes() {
 
   return (
     <>
-      <section className="faixa faixa--preto faixa--fina">
+      <section className="faixa faixa--fina">
         <div className="faixa__interno">
           <h1>Assuntos</h1>
           <p className="miudo" style={{ maxWidth: '34rem' }}>
@@ -28,7 +28,7 @@ export function Discussoes() {
         </div>
       </section>
 
-      <section className="faixa faixa--claro faixa--fina">
+      <section className="faixa faixa--fina">
         <div className="faixa__interno">
           <div className="filtros" style={{ gridTemplateColumns: '1fr' }}>
             <div>
@@ -56,7 +56,7 @@ export function Discussoes() {
         </div>
       </section>
 
-      <section className="faixa faixa--preto">
+      <section className="faixa">
         <div className="faixa__interno">
           {discussoes.carregando && <Carregando rotulo="Buscando os assuntos" />}
           {!discussoes.carregando && discussoes.erro && (

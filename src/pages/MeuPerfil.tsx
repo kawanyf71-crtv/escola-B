@@ -118,7 +118,7 @@ export function MeuPerfil() {
 
   return (
     <>
-      <section className="faixa faixa--preto">
+      <section className="faixa">
         <div className="faixa__interno">
           <h1>{editando ? 'Editar\nmeu perfil' : 'Quem é você\nnessa turma'}</h1>
           <p style={{ maxWidth: '32rem' }}>
@@ -128,7 +128,7 @@ export function MeuPerfil() {
         </div>
       </section>
 
-      <section className="faixa faixa--claro">
+      <section className="faixa">
         <div className="faixa__interno" style={{ maxWidth: '40rem' }}>
           <form onSubmit={enviar} noValidate>
             {falha && <Erro mensagem={falha} />}

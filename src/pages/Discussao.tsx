@@ -32,14 +32,14 @@ export function Discussao() {
 
   if (discussao.carregando) {
     return (
-      <section className="faixa faixa--claro">
+      <section className="faixa">
         <div className="faixa__interno"><Carregando quantidade={1} rotulo="Buscando o assunto" /></div>
       </section>
     );
   }
   if (discussao.erro) {
     return (
-      <section className="faixa faixa--claro">
+      <section className="faixa">
         <div className="faixa__interno">
           <Erro mensagem={discussao.erro} aoTentarDeNovo={discussao.recarregar} />
         </div>
@@ -50,7 +50,7 @@ export function Discussao() {
   const d = discussao.dados;
   if (!d) {
     return (
-      <section className="faixa faixa--claro">
+      <section className="faixa">
         <div className="faixa__interno">
           <div className="cartaz cartaz--vermelho">
             <h2>Esse assunto<br />não existe mais</h2>
@@ -122,7 +122,7 @@ export function Discussao() {
 
   return (
     <>
-      <section className="faixa faixa--preto">
+      <section className="faixa">
         <div className="faixa__interno">
           <Link className="migalha" to="/assuntos">
             <span className="seta" aria-hidden="true" style={{ transform: 'scaleX(-1)' }} />
@@ -188,7 +188,7 @@ export function Discussao() {
         </div>
       </section>
 
-      <section className="faixa faixa--claro">
+      <section className="faixa">
         <div className="faixa__interno">
           <h2>Conversa</h2>
 
@@ -245,7 +245,7 @@ export function Discussao() {
         </div>
       </section>
 
-      <section className="faixa faixa--preto">
+      <section className="faixa">
         <div className="faixa__interno">
           <h2>Quem tá aqui</h2>
           {participantes.carregando && (

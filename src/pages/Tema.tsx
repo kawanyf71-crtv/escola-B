@@ -26,7 +26,7 @@ export function Tema() {
 
   if (!tema) {
     return (
-      <section className="faixa faixa--claro">
+      <section className="faixa">
         <div className="faixa__interno">
           <div className="cartaz cartaz--vermelho">
             <h2>Tema não existe</h2>
@@ -44,7 +44,7 @@ export function Tema() {
 
   return (
     <>
-      <section className="faixa faixa--preto">
+      <section className="faixa">
         <div className="faixa__interno">
           <Link className="migalha" to="/temas">
             <span className="seta" aria-hidden="true" style={{ transform: 'scaleX(-1)' }} />
@@ -55,7 +55,7 @@ export function Tema() {
         </div>
       </section>
 
-      <section className="faixa faixa--claro">
+      <section className="faixa">
         <div className="faixa__interno">
           <h2>Assuntos<br />abertos</h2>
           {discussoes.carregando && <Carregando quantidade={2} rotulo="Buscando os assuntos" />}
@@ -86,7 +86,7 @@ export function Tema() {
         </div>
       </section>
 
-      <section className="faixa faixa--amarelo">
+      <section className="faixa">
         <div className="faixa__interno">
           <h2>Projetos<br />neste tema</h2>
           {projetos.carregando && <Carregando quantidade={2} rotulo="Buscando os projetos" />}
@@ -109,7 +109,7 @@ export function Tema() {
         </div>
       </section>
 
-      <section className="faixa faixa--preto">
+      <section className="faixa">
         <div className="faixa__interno">
           <h2>Quem se<br />interessa</h2>
           {pessoas.carregando && <Carregando quantidade={2} rotulo="Buscando a turma" />}

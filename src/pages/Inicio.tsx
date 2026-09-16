@@ -11,7 +11,7 @@ export function Inicio() {
     <>
       <Abertura dentro />
 
-      <section className="faixa faixa--preto">
+      <section className="faixa">
         <div className="faixa__interno">
           <h2>Como isso nasceu</h2>
           <p style={{ maxWidth: '36rem' }}>
@@ -27,7 +27,7 @@ export function Inicio() {
         </div>
       </section>
 
-      <section className="faixa faixa--claro">
+      <section className="faixa">
         <div className="faixa__interno">
           <h2>Quem construiu</h2>
           <p className="rotulo">Kawany Feliciano</p>
@@ -80,7 +80,7 @@ export function Inicio() {
         </div>
       </section>
 
-      <section className="faixa faixa--preto">
+      <section className="faixa">
         <div className="faixa__interno">
           <p className="selo-humano">
             Pensado e sentido por humanos<br />e desenvolvido por IA

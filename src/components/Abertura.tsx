@@ -28,7 +28,7 @@ const BLOCOS = [
 export function Abertura({ dentro = false }: { dentro?: boolean }) {
   return (
     <>
-      <section className="faixa faixa--preto">
+      <section className="faixa">
         <div className="faixa__interno">
           {/* A Escola B aparece descrevendo QUEM está aqui — a turma do curso —,
               nunca como dona da plataforma. Quem a fez é uma aluna, e isso está
@@ -70,7 +70,7 @@ export function Abertura({ dentro = false }: { dentro?: boolean }) {
         </div>
       </section>
 
-      <section className="faixa faixa--claro">
+      <section className="faixa">
         <div className="faixa__interno">
           <h2>Três caminhos<br />até uma pessoa</h2>
           <FileiraDeSetas />
@@ -88,7 +88,7 @@ export function Abertura({ dentro = false }: { dentro?: boolean }) {
         </div>
       </section>
 
-      <section className="faixa faixa--vermelho">
+      <section className="faixa">
         <div className="faixa__interno">
           {/* Sem fotografia, a faixa seria só placa de cor: o globo em traço
               grosso é o elemento da marca que dá textura no lugar da imagem. */}
