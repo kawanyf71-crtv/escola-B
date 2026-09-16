@@ -2,16 +2,32 @@
 
 A foto que aparece ao lado do texto de "Quem construiu", na `/inicio`.
 
-Coloque o arquivo aqui com o nome `kawany`, em qualquer formato que o navegador
-abra: `kawany.jpg`, `kawany.jpeg`, `kawany.png` ou `kawany.webp`.
+## Como colocar
 
-Não precisa mexer em código. A página procura o arquivo na hora do build
-(`import.meta.glob` em `src/pages/Inicio.tsx`) e passa a mostrá-lo sozinha. Sem
-arquivo, o espaço fica com a inicial dentro da moldura, como um perfil sem foto
-— nada quebra e nada fica com cara de imagem faltando.
+Jogue a imagem nesta pasta. **Qualquer nome serve** — `IMG_4821.jpg` está ótimo,
+não precisa renomear. Formatos aceitos: `.jpg`, `.jpeg`, `.png`, `.webp`.
 
-Proporção: o espaço é 3:4 (retrato) e a imagem é cortada pelo centro
-(`object-fit: cover`). Uma foto com o rosto no terço de cima funciona melhor.
+Pelo navegador, sem baixar o projeto:
+https://github.com/kawanyf71-crtv/escola-B/upload/claude/mvp-spec-vybd9z/src/fotos
 
-Tamanho: o espaço tem 208px de largura no desktop. Uma imagem de ~600px de
-largura já cobre telas de alta densidade; acima disso é peso à toa no bundle.
+Arrasta o arquivo, escreve qualquer mensagem de commit e confirma. Não precisa
+mexer em código: a página varre esta pasta na hora do build
+(`import.meta.glob` em `src/pages/Inicio.tsx`) e passa a mostrar a imagem.
+
+Havendo mais de uma foto aqui, vale a primeira em ordem alfabética. Pra trocar,
+apague a antiga.
+
+## Sem arquivo
+
+O espaço fica com a inicial dentro da moldura, como um perfil sem foto — nada
+quebra, nada dá 404 e nada fica com cara de imagem faltando. É um estado, não um
+placeholder.
+
+## Enquadramento e peso
+
+O espaço é 3:4 (retrato) e a imagem é cortada pelo centro (`object-fit: cover`).
+Uma foto com o rosto no terço de cima funciona melhor.
+
+No desktop o espaço tem 208px de largura. Uma imagem de ~600px de largura já
+cobre tela de alta densidade; acima disso é peso à toa no bundle, porque esta
+imagem entra no build e não passa pela compressão do upload de perfil.

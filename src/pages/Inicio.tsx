@@ -5,15 +5,21 @@ import { Abertura } from '../components/Abertura';
 const ZAP = 'https://wa.me/5511940391863';
 
 /**
- * A foto da bio é procurada no build, não pedida ao servidor: se o arquivo não
- * existir, `glob` devolve um objeto vazio e a página nem chega a tentar
- * carregar nada — sem 404 no console e sem imagem quebrada na tela. Basta pôr
- * `src/fotos/kawany.jpg` (ou .png, .webp) pra ela aparecer.
+ * A foto da bio é procurada no build, não pedida ao servidor: se não houver
+ * nenhuma imagem em `src/fotos/`, `glob` devolve um objeto vazio e a página nem
+ * chega a tentar carregar nada — sem 404 no console e sem imagem quebrada na
+ * tela.
+ *
+ * Vale qualquer nome de arquivo, porque quem sobe a foto pela interface do
+ * GitHub não escolhe o nome: é o do arquivo que saiu da câmera. Havendo mais de
+ * uma, a primeira em ordem alfabética ganha — ordenado, e não "a que o bundler
+ * devolver primeiro", pra que dois builds do mesmo commit deem a mesma página.
  */
-const FOTOS = import.meta.glob('../fotos/kawany.{jpg,jpeg,png,webp}', {
+const FOTOS = import.meta.glob('../fotos/*.{jpg,jpeg,png,webp,JPG,JPEG,PNG,WEBP}', {
   eager: true, query: '?url', import: 'default',
 });
-const FOTO = Object.values(FOTOS)[0] as string | undefined;
+const FOTO = Object.entries(FOTOS)
+  .sort(([a], [b]) => a.localeCompare(b))[0]?.[1] as string | undefined;
 
 export function Inicio() {
   const [bioAberta, setBioAberta] = useState(false);
