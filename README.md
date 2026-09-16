@@ -113,9 +113,24 @@ valer.
 
 ### 3. Deploy
 
-É só isso. O `vercel.json` do repositório já traz o *fallback* de SPA — sem ele,
-abrir `/eventos` direto ou recarregar a página daria 404, porque o roteamento é
-do React e não do servidor.
+**Conectar o repositório não constrói nada.** A Vercel espera o próximo push na
+branch de produção, então logo depois de importar a tela fica em "No Production
+Deployment" — não é erro, é só que ainda não houve commit. O banner da Overview
+diz qual branch ela está esperando; se for a certa, está tudo no lugar.
+
+Pra destravar, três caminhos: fazer um commit qualquer na branch, usar
+**Deployments → Create Deployment**, ou **Redeploy** num deploy que já exista.
+
+O `vercel.json` do repositório já traz o *fallback* de SPA — sem ele, abrir
+`/eventos` direto ou recarregar a página daria 404, porque o roteamento é do
+React e não do servidor.
+
+### Conferir se o Supabase entrou no build
+
+Abra o site publicado, aperte **F12** e olhe o **Console**. A mensagem
+`[NÓIS] Rodando com o adaptador local` significa que as variáveis não chegaram
+no build — elas são lidas **no build**, não em tempo de execução, então adicionar
+depois exige um **Redeploy** pra valer. Console silencioso: Supabase ligado.
 
 O `vite.config.ts` também se acerta sozinho: o caminho dos arquivos é relativo
 por padrão, mas a Vercel exporta `VERCEL=1` durante o build e ele troca para
