@@ -1,10 +1,4 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "rewrites": [
-    {
-      "comment": "Fallback de SPA: o roteamento é do React, não do servidor. Sem isto, abrir /eventos direto ou recarregar a página dá 404. O Vercel procura o arquivo antes de aplicar a regra, então /assets/* continua sendo servido normalmente.",
-      "source": "/(.*)",
-      "destination": "/index.html"
-    }
-  ]
+  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
 }

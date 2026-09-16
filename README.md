@@ -123,7 +123,9 @@ Pra destravar, três caminhos: fazer um commit qualquer na branch, usar
 
 O `vercel.json` do repositório já traz o *fallback* de SPA — sem ele, abrir
 `/eventos` direto ou recarregar a página daria 404, porque o roteamento é do
-React e não do servidor.
+React e não do servidor. Ele tem duas chaves e mais nada: o schema da Vercel
+rejeita propriedade que não conhece, e o build falha antes de começar. Por isso
+a explicação da regra mora aqui e não lá dentro.
 
 ### Conferir se o Supabase entrou no build
 
