@@ -767,6 +767,28 @@ select {
   min-height: var(--alvo);
 }
 
+/* Marca e lema andam juntos como um bloco so, pra que o cabecalho continue
+   tendo duas pontas: a marca de um lado, a navegacao do outro. */
+.marca-bloco {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+/* O lema em voz baixa. Com o mesmo peso da marca o cabecalho viraria duas
+   marcas, e nenhuma das duas seria lida primeiro. */
+.marca__lema {
+  font-family: var(--corpo);
+  font-weight: 600;
+  font-size: 0.6875rem;
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--tinta-fraca);
+  white-space: nowrap;
+}
+
 .marca {
   font-weight: 900;
   font-family: var(--titulo);

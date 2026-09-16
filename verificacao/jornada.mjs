@@ -272,6 +272,23 @@ await checar('RF-017 quem abriu o assunto pode apagá-lo', async () => {
   await p.getByRole('button', { name: /apagar este assunto/i }).waitFor({ timeout: 3000 });
 });
 
+// -------------------------------------------------------- marca e rodapé
+await checar('O lema anda com a marca sem entrar no nome do link', async () => {
+  await ir(p, '/pessoas');
+  await p.locator('.marca__lema').waitFor({ timeout: 3000 });
+  await p.getByText('(É tudo que nóis tem)').waitFor({ timeout: 3000 });
+  // Dentro do link, o lema viraria o nome acessível do botão de voltar pra
+  // home, repetido em toda tela por quem navega por leitor de tela.
+  const nome = await p.getByRole('link', { name: /^Nóis$/i }).count();
+  if (nome !== 1) throw new Error('o link da marca deixou de se chamar só "Nóis"');
+});
+
+await checar('O rodapé diz quem construiu, com nome', async () => {
+  await p.locator('.rodape')
+    .getByText(/projeto independente construído pela aluna Kawany Feliciano/i)
+    .waitFor({ timeout: 3000 });
+});
+
 // ---------------------------------------------------------------- home
 await checar('A marca leva à home de quem já está dentro', async () => {
   await ir(p, '/pessoas');

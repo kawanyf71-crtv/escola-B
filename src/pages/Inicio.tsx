@@ -32,8 +32,8 @@ export function Inicio() {
         <div className="faixa__interno">
           <h2>Como isso nasceu</h2>
           <p style={{ maxWidth: '36rem' }}>
-            Este site não é da Escola B nem do BATEKOO. É um projeto independente,
-            feito por uma aluna da turma.
+            Este site não é da Escola B nem do BATEKOO. É um projeto independente
+            construído pela aluna Kawany Feliciano.
           </p>
           <p style={{ maxWidth: '36rem' }}>
             Nasceu de uma constatação simples: tem muita gente boa aqui, com projeto

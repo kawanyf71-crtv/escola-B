@@ -43,10 +43,16 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
       <header className="cabecalho">
         <div className="cabecalho__barra">
-          <Link className="marca" to={logado ? '/inicio' : '/'}>
-            <span className="seta seta--amarela" aria-hidden="true" />
-            Nóis
-          </Link>
+          {/* O lema fica FORA do link: dentro dele, o nome acessível do botão
+              de voltar pra home viraria a frase inteira, repetida em toda tela
+              por quem navega por leitor de tela. */}
+          <div className="marca-bloco">
+            <Link className="marca" to={logado ? '/inicio' : '/'}>
+              <span className="seta seta--amarela" aria-hidden="true" />
+              Nóis
+            </Link>
+            <span className="marca__lema">(É tudo que nóis tem)</span>
+          </div>
 
           {logado && (
             <>
@@ -129,8 +135,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <div className="faixa__interno">
           <p className="rotulo">Nóis</p>
           <p className="miudo" style={{ maxWidth: '34rem' }}>
-            Feito por uma aluna da turma, pra turma. O curso acaba em novembro — o que
-            a gente construir aqui não precisa acabar junto.
+            Projeto independente construído pela aluna Kawany Feliciano. O curso acaba
+            em novembro — o que a gente construir aqui não precisa acabar junto.
           </p>
         </div>
       </footer>
