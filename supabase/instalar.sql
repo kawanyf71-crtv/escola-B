@@ -1,4 +1,4 @@
--- NÓIS — instalação do banco, tudo num arquivo só
+-- NÓIZ — instalação do banco, tudo num arquivo só
 --
 -- ARQUIVO GERADO. Não edite aqui: mexa nas migrações em supabase/migrations/ e
 -- rode `npm run sql`. As migrações são a fonte; este é o atalho pra quem está
@@ -16,7 +16,7 @@
 -- 0001_esquema_inicial.sql
 -- --------------------------------------------------------------------------
 
--- NÓIS — esquema inicial (MVP)
+-- NÓIZ — esquema inicial (MVP)
 -- Regras da spec aplicadas como constraint sempre que o banco consegue
 -- garanti-las, para que nao dependam so do formulario.
 
@@ -270,7 +270,7 @@ create policy interesses_atualizacao on interesses
 -- 0002_assunto_sem_projeto.sql
 -- --------------------------------------------------------------------------
 
--- NÓIS — assunto pode nascer solto, sem projeto de origem
+-- NÓIZ — assunto pode nascer solto, sem projeto de origem
 --
 -- Reverte a regra RN-004 da spec ("toda discussão nasce de um projeto"). O
 -- vínculo continua existindo e continua dando contexto; só deixa de ser
@@ -317,7 +317,7 @@ create index if not exists discussoes_soltas_idx
 -- 0003_bucket_de_imagens.sql
 -- --------------------------------------------------------------------------
 
--- NÓIS — bucket das imagens de perfil e de capa
+-- NÓIZ — bucket das imagens de perfil e de capa
 --
 -- O registro nunca guarda os bytes da imagem: guarda só a URL pública. Os
 -- arquivos vivem aqui. A compressão continua acontecendo no navegador antes do
@@ -366,7 +366,7 @@ create policy imagens_remocao on storage.objects
 -- 0004_mural_de_eventos.sql
 -- --------------------------------------------------------------------------
 
--- NÓIS — mural de eventos
+-- NÓIZ — mural de eventos
 --
 -- O mural mostra e manda pra fora: nao vende, nao emite ingresso, nao processa
 -- pagamento. Por isso nao ha tabela de ingresso, de pedido nem de check-in —

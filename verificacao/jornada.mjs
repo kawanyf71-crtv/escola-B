@@ -398,11 +398,11 @@ await checar('A barra do celular troca Meu espaço pelo mural', async () => {
 await checar('O lema anda com a marca sem entrar no nome do link', async () => {
   await ir(p, '/pessoas');
   await p.locator('.marca__lema').waitFor({ timeout: 3000 });
-  await p.getByText('(É tudo que nóis tem)').waitFor({ timeout: 3000 });
+  await p.getByText('(É tudo que nóiz tem)').waitFor({ timeout: 3000 });
   // Dentro do link, o lema viraria o nome acessível do botão de voltar pra
   // home, repetido em toda tela por quem navega por leitor de tela.
-  const nome = await p.getByRole('link', { name: /^Nóis$/i }).count();
-  if (nome !== 1) throw new Error('o link da marca deixou de se chamar só "Nóis"');
+  const nome = await p.getByRole('link', { name: /^Nóiz$/i }).count();
+  if (nome !== 1) throw new Error('o link da marca deixou de se chamar só "Nóiz"');
 });
 
 await checar('O rodapé diz quem construiu, com nome', async () => {
@@ -414,7 +414,7 @@ await checar('O rodapé diz quem construiu, com nome', async () => {
 // ---------------------------------------------------------------- home
 await checar('A marca leva à home de quem já está dentro', async () => {
   await ir(p, '/pessoas');
-  await p.getByRole('link', { name: /^Nóis$/i }).click();
+  await p.getByRole('link', { name: /^Nóiz$/i }).click();
   await p.waitForURL('**/inicio', { timeout: 3000 });
   await p.getByRole('heading', { name: /ainda não\s*se encontrou/i }).waitFor({ timeout: 3000 });
 });

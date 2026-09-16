@@ -1,4 +1,4 @@
-# NÓIS
+# NÓIZ
 
 Site responsivo onde a turma do curso de produção cultural negra da Escola B
 declara **o que sabe fazer**, publica projetos declarando **o que precisa**, e
@@ -130,7 +130,7 @@ a explicação da regra mora aqui e não lá dentro.
 ### Conferir se o Supabase entrou no build
 
 Abra o site publicado, aperte **F12** e olhe o **Console**. A mensagem
-`[NÓIS] Rodando com o adaptador local` significa que as variáveis não chegaram
+`[NÓIZ] Rodando com o adaptador local` significa que as variáveis não chegaram
 no build — elas são lidas **no build**, não em tempo de execução, então adicionar
 depois exige um **Redeploy** pra valer. Console silencioso: Supabase ligado.
 

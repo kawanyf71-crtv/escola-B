@@ -54,9 +54,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
           <div className="marca-bloco">
             <Link className="marca" to={logado ? '/inicio' : '/'}>
               <span className="seta seta--amarela" aria-hidden="true" />
-              Nóis
+              Nóiz
             </Link>
-            <span className="marca__lema">(É tudo que nóis tem)</span>
+            <span className="marca__lema">(É tudo que nóiz tem)</span>
           </div>
 
           {logado && (
@@ -145,7 +145,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
       <footer className="rodape">
         <div className="faixa__interno">
-          <p className="rotulo">Nóis</p>
+          <p className="rotulo">Nóiz</p>
           <p className="miudo" style={{ maxWidth: '34rem' }}>
             Projeto independente construído pela aluna Kawany Feliciano. O curso acaba
             em novembro — o que a gente construir aqui não precisa acabar junto.

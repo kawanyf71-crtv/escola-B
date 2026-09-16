@@ -16,7 +16,7 @@ const SAIDA = join(import.meta.dirname, '..', 'supabase', 'instalar.sql');
 
 const arquivos = readdirSync(PASTA).filter((n) => n.endsWith('.sql')).sort();
 
-const cabecalho = `-- NÓIS — instalação do banco, tudo num arquivo só
+const cabecalho = `-- NÓIZ — instalação do banco, tudo num arquivo só
 --
 -- ARQUIVO GERADO. Não edite aqui: mexa nas migrações em supabase/migrations/ e
 -- rode \`npm run sql\`. As migrações são a fonte; este é o atalho pra quem está

@@ -1,4 +1,4 @@
--- NÓIS — mural de eventos
+-- NÓIZ — mural de eventos
 --
 -- O mural mostra e manda pra fora: nao vende, nao emite ingresso, nao processa
 -- pagamento. Por isso nao ha tabela de ingresso, de pedido nem de check-in —

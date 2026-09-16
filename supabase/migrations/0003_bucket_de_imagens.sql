@@ -1,4 +1,4 @@
--- NÓIS — bucket das imagens de perfil e de capa
+-- NÓIZ — bucket das imagens de perfil e de capa
 --
 -- O registro nunca guarda os bytes da imagem: guarda só a URL pública. Os
 -- arquivos vivem aqui. A compressão continua acontecendo no navegador antes do

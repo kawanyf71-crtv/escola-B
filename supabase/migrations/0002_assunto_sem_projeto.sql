@@ -1,4 +1,4 @@
--- NÓIS — assunto pode nascer solto, sem projeto de origem
+-- NÓIZ — assunto pode nascer solto, sem projeto de origem
 --
 -- Reverte a regra RN-004 da spec ("toda discussão nasce de um projeto"). O
 -- vínculo continua existindo e continua dando contexto; só deixa de ser
