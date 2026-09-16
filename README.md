@@ -27,40 +27,108 @@ rede só dela. O rodapé avisa isso enquanto o modo estiver ligado.
 
 ## Ligar o Supabase (necessário para a turma usar)
 
-1. Crie um projeto em [supabase.com](https://supabase.com).
-2. No **SQL Editor**, rode `supabase/migrations/0001_esquema_inicial.sql`
-   inteiro. Ele cria as tabelas, as constraints das regras de negócio e as
-   políticas de RLS.
-3. Em **Authentication → Providers → Email**, desligue "Confirm email" — o
-   fluxo da spec leva a pessoa direto do cadastro ao formulário de perfil, sem
-   passar por caixa de entrada.
-4. Copie `.env.example` para `.env` e preencha:
+### 1. Criar o projeto
 
-   ```
-   VITE_SUPABASE_URL=https://xxxx.supabase.co
-   VITE_SUPABASE_ANON_KEY=eyJ...
-   ```
+Em [supabase.com](https://supabase.com), **New project**. Escolha a região
+**South America (São Paulo)** — o banco fica mais perto de quem vai usar.
+Guarde a senha do banco que ele pede; ela não é usada pelo site, mas é a única
+forma de recuperar acesso direto ao Postgres depois.
 
-5. `npm run dev` de novo. O aviso de modo local some.
+### 2. Rodar as migrações, em ordem
 
-Com as duas variáveis preenchidas o site usa o Supabase; sem elas, cai no
-adaptador local. As telas não sabem qual dos dois está ativo.
+No **SQL Editor**, cole e rode cada arquivo inteiro, um de cada vez e **nesta
+ordem**:
 
-## Publicar
+| arquivo | o que faz |
+|---|---|
+| `supabase/migrations/0001_esquema_inicial.sql` | tabelas, constraints das regras de negócio, políticas de RLS |
+| `supabase/migrations/0002_assunto_sem_projeto.sql` | torna o projeto de origem do assunto opcional |
+| `supabase/migrations/0003_bucket_de_imagens.sql` | bucket `imagens` e políticas do Storage |
+| `supabase/migrations/0004_mural_de_eventos.sql` | tabela `eventos`, RLS, e a pasta `eventos` no bucket |
+
+Cada um depende do anterior. Rodar fora de ordem dá erro de dependência — o que
+é bom: o banco recusa em vez de ficar meio criado.
+
+### 3. Desligar a confirmação de e-mail
+
+**Authentication → Providers → Email**, desligue **Confirm email**. O fluxo leva
+a pessoa direto do cadastro ao formulário de perfil (RF-002); com a confirmação
+ligada, ela cadastra, cai numa tela de espera e some.
+
+### 4. Pegar as chaves
+
+**Project Settings → API**. Copie **Project URL** e a chave **anon / public** —
+essa é a chave pública, feita pra ir no navegador; quem protege os dados é a
+RLS, não o segredo da chave. **Nunca** use a `service_role` aqui: ela ignora a
+RLS inteira.
+
+Copie `.env.example` para `.env` e preencha:
+
+```
+VITE_SUPABASE_URL=https://xxxx.supabase.co
+VITE_SUPABASE_ANON_KEY=eyJ...
+```
+
+`npm run dev` de novo: o aviso de modo local some. Com as duas variáveis
+preenchidas o site usa o Supabase; sem elas, cai no adaptador local. As telas não
+sabem qual dos dois está ativo.
+
+> O lote de demonstração **não existe** no Supabase, e os botões dele somem
+> sozinhos. Cada perfil do lote precisaria de um usuário de autenticação de
+> verdade, e perfis fictícios não têm.
+
+## Publicar na Vercel
+
+### 1. Importar o repositório
+
+Em [vercel.com](https://vercel.com), **Add New → Project**, escolha este
+repositório. A Vercel detecta Vite sozinha: *build* `npm run build`, saída
+`dist`. Não precisa mexer.
+
+### 2. Pôr as variáveis
+
+Em **Settings → Environment Variables**, as mesmas duas do `.env`:
+
+```
+VITE_SUPABASE_URL
+VITE_SUPABASE_ANON_KEY
+```
+
+Marque os três ambientes (Production, Preview, Development). Elas são lidas **no
+build**, não em tempo de execução: mudar uma variável exige um *redeploy* pra
+valer.
+
+### 3. Deploy
+
+É só isso. O `vercel.json` do repositório já traz o *fallback* de SPA — sem ele,
+abrir `/eventos` direto ou recarregar a página daria 404, porque o roteamento é
+do React e não do servidor.
+
+O `vite.config.ts` também se acerta sozinho: o caminho dos arquivos é relativo
+por padrão, mas a Vercel exporta `VERCEL=1` durante o build e ele troca para
+absoluto. Sem isso, `./assets/x.js` sairia de dentro de `/eventos/abc` e a página
+abriria em branco em qualquer rota que não fosse a raiz.
+
+### 4. Voltar no Supabase
+
+Com o domínio em mãos, **Authentication → URL Configuration**: ponha o endereço
+da Vercel em **Site URL**. Não é obrigatório pro login por senha, mas é o que
+mantém a porta certa caso um dia entre recuperação de senha ou link por e-mail.
+
+### Publicar em outro lugar
 
 ```bash
 npm run build                        # URLs limpas: /projetos/algo
 VITE_ROTEADOR=hash npm run build     # URLs com hash: /#/projetos/algo
 ```
 
-`dist/` é estático e usa caminhos relativos, então funciona servido da raiz de
-um domínio ou de uma subpasta.
+`dist/` é estático e, fora da Vercel, usa caminhos relativos — funciona servido
+da raiz de um domínio ou de uma subpasta.
 
-Qual dos dois builds usar depende da hospedagem. O padrão dá URLs limpas mas
-exige *fallback* de SPA (toda rota serve `index.html`), senão recarregar
-`/projetos/algo` dá 404. Com `VITE_ROTEADOR=hash` as rotas ficam depois do `#`
-e o site roda em qualquer hospedagem estática sem configurar nada — mais feio
-na barra de endereço, à prova de bala num link que circula no WhatsApp.
+O padrão dá URLs limpas mas exige *fallback* de SPA. Com `VITE_ROTEADOR=hash` as
+rotas ficam depois do `#` e o site roda em qualquer hospedagem estática sem
+configurar nada: mais feio na barra de endereço, à prova de bala num link que
+circula no WhatsApp. É esse o build da prévia.
 
 ---
 
