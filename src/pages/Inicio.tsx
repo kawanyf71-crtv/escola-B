@@ -4,6 +4,17 @@ import { Abertura } from '../components/Abertura';
 /** Sem espaço, o número do WhatsApp com DDI do Brasil. */
 const ZAP = 'https://wa.me/5511940391863';
 
+/**
+ * A foto da bio é procurada no build, não pedida ao servidor: se o arquivo não
+ * existir, `glob` devolve um objeto vazio e a página nem chega a tentar
+ * carregar nada — sem 404 no console e sem imagem quebrada na tela. Basta pôr
+ * `src/fotos/kawany.jpg` (ou .png, .webp) pra ela aparecer.
+ */
+const FOTOS = import.meta.glob('../fotos/kawany.{jpg,jpeg,png,webp}', {
+  eager: true, query: '?url', import: 'default',
+});
+const FOTO = Object.values(FOTOS)[0] as string | undefined;
+
 export function Inicio() {
   const [bioAberta, setBioAberta] = useState(false);
 
@@ -33,6 +44,13 @@ export function Inicio() {
           <p className="rotulo">Kawany Feliciano</p>
 
           <div className="bio">
+            <div className="bio__foto">
+              {FOTO
+                ? <img className="retrato" src={FOTO} alt="Kawany Feliciano" />
+                : <div className="retrato retrato--vazio" aria-hidden="true">K</div>}
+            </div>
+
+            <div className="bio__texto">
             <p>
               Sempre fui movida pelo criar. A vida sempre me pareceu fascinante pelas
               possibilidades infinitas de combinação — cada segundo vivido é um fragmento
@@ -76,6 +94,7 @@ export function Inicio() {
             >
               {bioAberta ? 'Recolher' : 'Ler o resto'}
             </button>
+            </div>
           </div>
         </div>
       </section>

@@ -973,8 +973,56 @@ select {
 /* A mini bio abre e fecha: o primeiro paragrafo fica a vista, o resto so pra
    quem quiser. O botao mora depois do texto pra que abrir nao empurre o que a
    pessoa acabou de clicar pra fora da tela. */
-.bio { max-width: 40rem; }
-.bio > .botao { margin-top: 0.75rem; }
+/* A bio ganha a foto ao lado do texto: rosto e leitura na mesma linha. No
+   celular as duas colunas viram uma — espremer um retrato ao lado de texto a
+   390px nao deixa nem um nem outro respirar. */
+.bio {
+  display: grid;
+  gap: var(--e3);
+  max-width: 46rem;
+}
+
+.bio__texto > .botao { margin-top: 0.75rem; }
+
+@media (min-width: 40rem) {
+  .bio {
+    grid-template-columns: 13rem 1fr;
+    gap: var(--e4);
+    align-items: start;
+  }
+}
+
+/* Retrato: a mesma moldura de 7px das outras fotos do site, em proporcao alta.
+   O contorno de 1px e o que impede a moldura preta de sumir no fundo preto. */
+.retrato {
+  display: block;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  border: 7px solid var(--preto);
+  outline: 1px solid var(--linha);
+  background: var(--superficie-2);
+}
+
+/* Sem foto, o espaco fica com a inicial dentro da moldura — o mesmo que um
+   perfil sem foto mostra. Nao e placeholder de imagem faltando: e um estado. */
+.retrato--vazio {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--amarelo);
+  color: var(--preto);
+  font-family: var(--corpo);
+  font-weight: 600;
+  font-size: 3rem;
+  text-transform: uppercase;
+}
+
+/* No celular a foto nao precisa da largura toda: um retrato de 390px de largura
+   viraria meia tela antes do texto comecar. */
+@media (max-width: 39.99rem) {
+  .bio__foto { max-width: 11rem; }
+}
 
 /* O selo e carimbo, nao titulo: retangulo de canto reto com contorno, na
    familia dos chips e do selo de exemplo. */

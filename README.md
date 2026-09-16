@@ -344,10 +344,19 @@ A `/inicio` continua depois da abertura com três seções que só existem lá:
 
 - **Como isso nasceu**, que abre dizendo que o site não é da Escola B nem do
   BATEKOO, e sim um projeto independente de uma aluna da turma.
-- **Quem construiu**, uma mini bio com o primeiro parágrafo à vista e o resto
-  atrás de um botão (`aria-expanded` + `aria-controls`, o mesmo par que o menu
-  já usa). O botão fica depois do texto: assim abrir não empurra pra fora da
-  tela o que a pessoa acabou de clicar.
+- **Quem construiu**, uma mini bio com a foto à esquerda e o texto à direita —
+  no celular as duas colunas viram uma, com a foto em cima. O primeiro
+  parágrafo fica à vista e o resto atrás de um botão (`aria-expanded` +
+  `aria-controls`, o mesmo par que o menu já usa). O botão fica depois do
+  texto: assim abrir não empurra pra fora da tela o que a pessoa acabou de
+  clicar.
+
+  A foto é procurada no build, não pedida ao servidor: `import.meta.glob` em
+  `src/pages/Inicio.tsx` varre `src/fotos/kawany.{jpg,jpeg,png,webp}`. Sem
+  arquivo, o `glob` devolve vazio, a página nem tenta carregar nada — sem 404
+  no console, sem imagem quebrada — e o espaço fica com a inicial dentro da
+  moldura, do mesmo jeito que um perfil sem foto. Basta pôr o arquivo no lugar
+  pra ela aparecer; instruções em `src/fotos/LEIA-ME.md`.
 - **O selo** "Pensado e sentido por humanos e desenvolvido por IA", com o
   relato do vibe coding e um botão discreto de WhatsApp.
 

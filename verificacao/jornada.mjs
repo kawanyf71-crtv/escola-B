@@ -301,6 +301,19 @@ await checar('A mini bio começa recolhida e abre no clique', async () => {
   await resto.waitFor({ state: 'hidden', timeout: 3000 });
 });
 
+await checar('A bio tem o espaço da foto ao lado do texto', async () => {
+  const retrato = p.locator('.retrato');
+  await retrato.waitFor({ timeout: 3000 });
+  const foto = await retrato.boundingBox();
+  const texto = await p.locator('.bio__texto').boundingBox();
+  // Com ou sem o arquivo da foto, o espaço existe. Acima de 40rem ele fica ao
+  // lado do texto; a suíte roda a 390px, onde as duas colunas viram uma.
+  if (foto.width < 100) throw new Error(`o espaço da foto ficou com ${foto.width}px`);
+  if (foto.y + foto.height > texto.y + 1) {
+    throw new Error('a foto não está antes do texto');
+  }
+});
+
 await checar('O botão do WhatsApp aponta pro número certo, em outra aba', async () => {
   const zap = p.getByRole('link', { name: /WhatsApp/i });
   const destino = await zap.getAttribute('href');
