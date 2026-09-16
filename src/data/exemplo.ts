@@ -8,9 +8,9 @@
  * propósito — nenhum deles pode cair numa conta real de ninguém.
  */
 import type {
-  Comentario, Discussao, Interesse, Participante, Projeto,
+  Comentario, Discussao, Evento, Interesse, Participante, Projeto,
 } from '../lib/dominio';
-import { AVATARES, CAPAS } from './imagensExemplo';
+import { AVATARES, CAPAS, CARTAZES } from './imagensExemplo';
 
 /** Ids fixos: o lote precisa ser recarregável e as relações, estáveis. */
 const id = (grupo: string, n: number) =>
@@ -35,6 +35,14 @@ const ASSUNTO = {
   cache: id('c3', 2),
   comunidade: id('c3', 3),
   autoras: id('c3', 4),
+};
+
+const EVENTO = {
+  rodaDeSamba: id('d4', 1),
+  aparelhagem3Noites: id('d4', 2),
+  oficinaEdital: id('d4', 3),
+  curtasRecife: id('d4', 4),
+  antologiaPiloto: id('d4', 5),
 };
 
 /** Datas fixas e espaçadas, pra lista ordenada por data não sair embolada. */
@@ -428,6 +436,113 @@ export const INTERESSES_EXEMPLO: Interesse[] = [
 ];
 
 /** Quem entra em cada conversa: a autora, mais quem comentou nela. */
+/**
+ * Eventos do lote. Os quatro primeiros ainda vão acontecer e aparecem no mural;
+ * o último já passou e só aparece atrás de "Ver o que já rolou" — é o que
+ * permite conferir as duas seções com o lote carregado.
+ *
+ * As datas são fixas, como todo o resto do lote. Elas envelhecem: passado
+ * outubro de 2026, os quatro primeiros migram sozinhos para "Já rolou" e o
+ * mural do lote fica vazio. Para um lote de demonstração isso é aceitável — o
+ * que não pode é a data mudar a cada carregamento e o lote deixar de ser
+ * recarregável igual a si mesmo.
+ *
+ * Os links apontam para "#", como os sociais: nenhum pode cair num lugar real.
+ */
+export const EVENTOS_EXEMPLO: Evento[] = [
+  {
+    id: EVENTO.rodaDeSamba,
+    autor_id: PESSOA.taina,
+    banner: CARTAZES.rodaDeSamba,
+    titulo: 'Roda de Samba do Quintal',
+    data_inicio: '2026-10-03',
+    data_fim: null,
+    horario: '19:00',
+    link: '#',
+    formato: 'Presencial',
+    estado: 'SP',
+    cidade: 'Diadema',
+    entrada: 'Gratuito',
+    areas: ['Música', 'Cultura Popular'],
+    temas: ['Cultura negra', 'Periferias'],
+    criado_em: quando(6),
+    demo: true,
+  },
+  {
+    id: EVENTO.aparelhagem3Noites,
+    autor_id: PESSOA.dandara,
+    banner: CARTAZES.aparelhagem3Noites,
+    titulo: 'Mostra Aparelhagem: 3 Noites',
+    data_inicio: '2026-10-16',
+    data_fim: '2026-10-18',
+    horario: '22:00',
+    link: '#',
+    formato: 'Presencial',
+    estado: 'PA',
+    cidade: 'Belém',
+    entrada: 'Pago',
+    areas: ['Música', 'Eventos'],
+    temas: ['Ancestralidade', 'Memória', 'Periferias'],
+    criado_em: quando(7),
+    demo: true,
+  },
+  {
+    id: EVENTO.oficinaEdital,
+    autor_id: PESSOA.rita,
+    banner: CARTAZES.oficinaEdital,
+    titulo: 'Oficina: Como Ler um Edital de Cultura',
+    data_inicio: '2026-10-24',
+    data_fim: null,
+    horario: '14:00',
+    link: '#',
+    formato: 'Online',
+    // Online não tem lugar: é a mesma regra que o formulário e o banco aplicam.
+    estado: null,
+    cidade: null,
+    entrada: 'Gratuito',
+    areas: ['Educação', 'Pesquisa'],
+    temas: ['Educação', 'Direitos humanos'],
+    criado_em: quando(8),
+    demo: true,
+  },
+  {
+    id: EVENTO.curtasRecife,
+    autor_id: PESSOA.joel,
+    banner: CARTAZES.curtasRecife,
+    titulo: 'Sessão de Curtas do Recife',
+    data_inicio: '2026-11-08',
+    data_fim: null,
+    horario: '20:00',
+    link: '#',
+    formato: 'Presencial',
+    estado: 'PE',
+    cidade: 'Olinda',
+    entrada: 'Gratuito',
+    areas: ['Audiovisual'],
+    temas: ['Juventude', 'Identidade'],
+    criado_em: quando(9),
+    demo: true,
+  },
+  {
+    id: EVENTO.antologiaPiloto,
+    autor_id: PESSOA.taina,
+    banner: CARTAZES.antologiaPiloto,
+    titulo: 'Lançamento: Antologia Piloto',
+    data_inicio: '2026-08-22',
+    data_fim: null,
+    horario: null,
+    link: '#',
+    formato: 'Presencial',
+    estado: 'SP',
+    cidade: 'Diadema',
+    entrada: 'Gratuito',
+    areas: ['Literatura'],
+    temas: ['Cultura negra', 'Memória'],
+    criado_em: quando(4),
+    demo: true,
+  },
+];
+
 export const PARTICIPACOES_EXEMPLO = (() => {
   const pares = new Map<string, { discussao_id: string; participante_id: string }>();
   for (const d of DISCUSSOES_EXEMPLO) {

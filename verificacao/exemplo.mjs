@@ -25,6 +25,7 @@ const CONTAR = () => {
     comentarios: { demo: demo(b.comentarios), real: real(b.comentarios) },
     interesses: { demo: demo(b.interesses), real: real(b.interesses) },
     participacoes: { demo: demo(b.participacoes), real: real(b.participacoes) },
+    eventos: { demo: demo(b.eventos), real: real(b.eventos) },
   };
 };
 
@@ -73,15 +74,17 @@ for (const [nome, slug] of TEMAS) {
     // contar .card daria 1 em todo bloco. Conteúdo de verdade é o card que
     // leva a uma página de detalhe.
     const ehConteudo = (c) => [...c.querySelectorAll('a[href]')].some(
-      (a) => /\/(projetos|assuntos|pessoas)\/[0-9a-f]{8}-/.test(a.getAttribute('href') || ''));
+      (a) => /\/(projetos|eventos|assuntos|pessoas)\/[0-9a-f]{8}-/
+        .test(a.getAttribute('href') || ''));
     const secoes = [...document.querySelectorAll('.faixa')].slice(1);
     return secoes.map((s) => [...s.querySelectorAll('.card')].filter(ehConteudo).length);
   });
-  const [assuntos = 0, projetos = 0, pessoas = 0] = blocos;
-  const cheio = assuntos + projetos + pessoas > 0;
+  // A ordem dos blocos na página do tema: assuntos, eventos, projetos, pessoas.
+  const [assuntos = 0, eventos = 0, projetos = 0, pessoas = 0] = blocos;
+  const cheio = assuntos + eventos + projetos + pessoas > 0;
   if (!cheio) vazios.push(nome);
   console.log(`  ${cheio ? '✓' : '·'} ${nome.padEnd(24)} ` +
-    `assuntos ${assuntos} · projetos ${projetos} · pessoas ${pessoas}`);
+    `assuntos ${assuntos} · eventos ${eventos} · projetos ${projetos} · pessoas ${pessoas}`);
   if (await p.evaluate(ESTOUROU)) problemas.push(`/temas/${slug} rola na horizontal`);
 }
 console.log(`  → ${TEMAS.length - vazios.length} temas com conteúdo, ` +
@@ -89,7 +92,8 @@ console.log(`  → ${TEMAS.length - vazios.length} temas com conteúdo, ` +
 
 // --- selo EXEMPLO e estouro horizontal em toda página com dados ---
 console.log('\nSELO E LARGURA');
-for (const rota of ['/pessoas', '/projetos', '/assuntos', '/temas', '/meu-espaco']) {
+for (const rota of ['/pessoas', '/projetos', '/eventos', '/assuntos', '/temas',
+                    '/meu-espaco']) {
   await ir(p, rota);
   await p.waitForTimeout(350);
   const r = await p.evaluate(() => ({
@@ -102,8 +106,10 @@ for (const rota of ['/pessoas', '/projetos', '/assuntos', '/temas', '/meu-espaco
   if (r.estourou) problemas.push(`${rota} rola na horizontal`);
 }
 
-// Todo card de pessoa, projeto e assunto do lote tem selo.
-for (const [rota, esperado] of [['/pessoas', 4], ['/projetos', 4], ['/assuntos', 4]]) {
+// Todo card de pessoa, projeto, evento e assunto do lote tem selo. No mural são
+// quatro: o quinto evento já rolou e só aparece atrás de "Ver o que já rolou".
+for (const [rota, esperado] of [['/pessoas', 4], ['/projetos', 4], ['/eventos', 4],
+                                ['/assuntos', 4]]) {
   await ir(p, rota);
   await p.waitForTimeout(320);
   const selos = await p.evaluate(() => document.querySelectorAll('.selo-exemplo').length);

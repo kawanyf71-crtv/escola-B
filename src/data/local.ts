@@ -10,7 +10,7 @@ import type {
   ParticipanteResumo, ProjetoComAutor, Repositorio, Sessao,
 } from './tipos';
 import {
-  COMENTARIOS_EXEMPLO, DISCUSSOES_EXEMPLO, INTERESSES_EXEMPLO,
+  COMENTARIOS_EXEMPLO, DISCUSSOES_EXEMPLO, EVENTOS_EXEMPLO, INTERESSES_EXEMPLO,
   PARTICIPACOES_EXEMPLO, PARTICIPANTES_EXEMPLO, PROJETOS_EXEMPLO,
 } from './exemplo';
 
@@ -159,6 +159,7 @@ export class RepositorioLocal implements Repositorio {
     b.comentarios.push(...COMENTARIOS_EXEMPLO);
     b.interesses.push(...INTERESSES_EXEMPLO);
     b.participacoes.push(...PARTICIPACOES_EXEMPLO);
+    b.eventos.push(...EVENTOS_EXEMPLO);
     // Nenhuma conta e criada: as pessoas do lote nao conseguem entrar.
     gravar(b);
   }
@@ -188,6 +189,7 @@ export class RepositorioLocal implements Repositorio {
       (d) => !d.demo && !pessoas.has(d.autor_id)
         && !(d.projeto_origem_id !== null && projetos.has(d.projeto_origem_id)),
     );
+    b.eventos = b.eventos.filter((e) => !e.demo && !pessoas.has(e.autor_id));
     b.projetos = b.projetos.filter((p) => !p.demo && !pessoas.has(p.autor_id));
     b.participantes = b.participantes.filter((p) => !p.demo);
     gravar(b);

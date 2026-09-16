@@ -179,6 +179,12 @@ evento presencial sem cidade entraria pela API.
 
 Publicar exige perfil publicado, como todo o resto da rede.
 
+O lote de demonstração traz cinco eventos, quatro por vir e um passado — é o que
+permite conferir o mural e a seção "Já rolou" de uma vez. Os cartazes são SVG
+gerado nas cores da marca, como as capas de projeto, mas com uma composição
+própria (barras empilhadas): com a mesma imagem dos projetos, mural e mural de
+projetos virariam a mesma coisa numa rolagem rápida.
+
 **O que este mural não faz:** venda, ingresso, check-in, lista de presença,
 contagem de interessados, mapa, recorrência, moderação, notificação e descrição
 longa. O cadastro é curto de propósito — quem quiser detalhe clica no link.

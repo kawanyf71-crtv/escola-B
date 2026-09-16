@@ -64,6 +64,27 @@ function capaComGlobo(fundo: string, tinta: string): string {
     </svg>`);
 }
 
+/**
+ * Cartaz 16:9 de barras empilhadas. Os eventos precisavam de uma textura
+ * própria: com a mesma composição das capas de projeto, mural e projetos
+ * virariam a mesma coisa numa rolagem rápida.
+ */
+function cartazComBarras(fundo: string, tinta: string, quantidade: number): string {
+  const altura = 26;
+  const barras = Array.from({ length: quantidade }, (_, i) => {
+    // Larguras alternadas: barra igual vira listra de camiseta, não cartaz.
+    const largura = i % 2 === 0 ? 300 : 210;
+    return `<rect x="52" y="${52 + i * (altura + 16)}" width="${largura}"
+             height="${altura}" fill="${tinta}"/>`;
+  }).join('');
+  return paraDataUri(`
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 270" width="480" height="270">
+      <rect width="480" height="270" fill="${fundo}"/>
+      ${barras}
+      ${seta(384, 186, 58, 52, tinta)}
+    </svg>`);
+}
+
 const PRETO = '#111111';
 const AMARELO = '#ffd400';
 const VERMELHO = '#ed3124';
@@ -82,4 +103,14 @@ export const CAPAS = {
   corpoFechado: capaComSetas(VERMELHO, OFF_WHITE, 3),
   escolaLivre: capaComGlobo(AMARELO, VERMELHO),
   antologia: capaComSetas(PRETO, VERMELHO, 4),
+};
+
+/** Cartazes dos eventos do lote. Cada um numa combinação diferente, pra grade
+ *  do mural não virar cinco vezes a mesma imagem. */
+export const CARTAZES = {
+  rodaDeSamba: cartazComBarras(AMARELO, PRETO, 3),
+  aparelhagem3Noites: capaComGlobo(VERMELHO, PRETO),
+  oficinaEdital: cartazComBarras(PRETO, AMARELO, 4),
+  curtasRecife: capaComSetas(VERMELHO, PRETO, 2),
+  antologiaPiloto: cartazComBarras(PRETO, VERMELHO, 2),
 };

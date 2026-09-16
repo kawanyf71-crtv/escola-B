@@ -1134,6 +1134,10 @@ input[type='time'] {
 
 .card--evento { display: flex; flex-direction: column; }
 
+/* Num container flex em coluna o selo vira item e estica pra largura toda: sem
+   isto ele deixa de ser selo e vira uma barra vermelha em cima do cartaz. */
+.card--evento > .selo-exemplo { align-self: flex-start; }
+
 /* O banner e o unico lugar onde algo se sobrepoe a outra coisa no site inteiro:
    o selo de data precisa estar SOBRE o cartaz pra ser lido antes dele. */
 .card__banner { position: relative; }
