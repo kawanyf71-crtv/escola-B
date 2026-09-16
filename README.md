@@ -64,10 +64,16 @@ ligada, ela cadastra, cai numa tela de espera e some.
 
 ### 4. Pegar as chaves
 
-**Project Settings → API**. Copie **Project URL** e a chave **anon / public** —
-essa é a chave pública, feita pra ir no navegador; quem protege os dados é a
-RLS, não o segredo da chave. **Nunca** use a `service_role` aqui: ela ignora a
-RLS inteira.
+**Project Settings → API**. Copie o **Project URL** e a **Publishable key**
+(`sb_publishable_...`). Ela é feita pra ir no navegador: quem protege os dados é
+a RLS, não o segredo da chave.
+
+**Nunca** use a **Secret key** (`sb_secret_...`) aqui. Ela ignora a RLS inteira
+— no navegador, qualquer pessoa com o site aberto leria e apagaria tudo.
+
+> O Supabase renomeou as chaves. Publishable é a antiga **anon / public**;
+> Secret é a antiga **service_role**. Projetos mais velhos ainda mostram os
+> nomes antigos, e as duas formas funcionam igual aqui.
 
 Copie `.env.example` para `.env` e preencha:
 

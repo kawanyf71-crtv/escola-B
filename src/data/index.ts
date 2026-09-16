@@ -7,6 +7,11 @@ import type { Repositorio } from './tipos';
  * preenchidos, o site fala com o Supabase de verdade; sem eles, cai no
  * adaptador local (dados no navegador de quem abre) e continua funcionando
  * inteiro. As telas nao sabem qual dos dois esta ativo.
+ *
+ * ANON_KEY guarda a chave PUBLISHABLE do Supabase. O nome da variavel ficou do
+ * tempo em que o Supabase chamava essa chave de `anon`; renomear quebraria o
+ * .env de quem ja configurou, e o valor e o mesmo. A outra chave do painel, a
+ * Secret, nunca entra aqui: ela ignora a RLS.
  */
 function escolher(): Repositorio {
   const url = import.meta.env.VITE_SUPABASE_URL?.trim();
