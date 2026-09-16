@@ -8,6 +8,7 @@
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "typecheck": "tsc -b --noEmit",
+    "sql": "node scripts/juntar-sql.mjs",
     "verificar": "node verificacao/jornada.mjs && node verificacao/contraste.mjs && node verificacao/acessibilidade.mjs && node verificacao/ritmo.mjs && node verificacao/exemplo.mjs && node verificacao/imagem.mjs",
     "verificar:jornada": "node verificacao/jornada.mjs",
     "verificar:contraste": "node verificacao/contraste.mjs",

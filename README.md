@@ -34,20 +34,27 @@ Em [supabase.com](https://supabase.com), **New project**. Escolha a região
 Guarde a senha do banco que ele pede; ela não é usada pelo site, mas é a única
 forma de recuperar acesso direto ao Postgres depois.
 
-### 2. Rodar as migrações, em ordem
+### 2. Criar o banco
 
-No **SQL Editor**, cole e rode cada arquivo inteiro, um de cada vez e **nesta
-ordem**:
+Abra **`supabase/instalar.sql`**, copie o arquivo inteiro, cole no **SQL Editor**
+do Supabase e aperte **Run**. Uma vez só, num banco vazio.
 
-| arquivo | o que faz |
+> Copie o **conteúdo do arquivo**, não o nome dele. Se o editor reclamar de
+> `trailing junk after numeric literal`, foi isso: ele recebeu texto que não é
+> SQL.
+
+O `instalar.sql` é gerado (`npm run sql`) e emenda as quatro migrações na ordem:
+
+| migração | o que faz |
 |---|---|
-| `supabase/migrations/0001_esquema_inicial.sql` | tabelas, constraints das regras de negócio, políticas de RLS |
-| `supabase/migrations/0002_assunto_sem_projeto.sql` | torna o projeto de origem do assunto opcional |
-| `supabase/migrations/0003_bucket_de_imagens.sql` | bucket `imagens` e políticas do Storage |
-| `supabase/migrations/0004_mural_de_eventos.sql` | tabela `eventos`, RLS, e a pasta `eventos` no bucket |
+| `0001_esquema_inicial.sql` | tabelas, constraints das regras de negócio, políticas de RLS |
+| `0002_assunto_sem_projeto.sql` | torna o projeto de origem do assunto opcional |
+| `0003_bucket_de_imagens.sql` | bucket `imagens` e políticas do Storage |
+| `0004_mural_de_eventos.sql` | tabela `eventos`, RLS, e a pasta `eventos` no bucket |
 
-Cada um depende do anterior. Rodar fora de ordem dá erro de dependência — o que
-é bom: o banco recusa em vez de ficar meio criado.
+Num banco que já existe, rode só a migração que falta — as de `migrations/`
+continuam sendo a fonte, e cada uma depende da anterior. Fora de ordem dá erro
+de dependência, o que é bom: o banco recusa em vez de ficar meio criado.
 
 ### 3. Desligar a confirmação de e-mail
 
