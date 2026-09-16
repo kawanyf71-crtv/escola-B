@@ -1,6 +1,6 @@
 import { Link, useParams } from 'react-router-dom';
 import { Carregando, Erro } from '../components/Estados';
-import { CardDiscussao, CardPessoa, CardProjeto } from '../components/Cards';
+import { CardDiscussao, CardEvento, CardPessoa, CardProjeto } from '../components/Cards';
 import { temaPorSlug } from '../lib/dominio';
 import { repo } from '../data';
 import { useConsulta } from '../lib/useConsulta';
@@ -9,7 +9,7 @@ export function Tema() {
   const { slug = '' } = useParams();
   const tema = temaPorSlug(slug);
 
-  // Os três blocos carregam em paralelo e cada um trata o próprio vazio:
+  // Os quatro blocos carregam em paralelo e cada um trata o próprio vazio:
   // um bloco sem nada não esvazia a página inteira (spec seção 9).
   const discussoes = useConsulta(
     () => (tema ? repo.listarDiscussoes(tema) : Promise.resolve([])),
@@ -21,6 +21,10 @@ export function Tema() {
   );
   const pessoas = useConsulta(
     () => (tema ? repo.participantesPorTema(tema) : Promise.resolve([])),
+    [tema],
+  );
+  const eventos = useConsulta(
+    () => (tema ? repo.eventosPorTema(tema) : Promise.resolve([])),
     [tema],
   );
 
@@ -81,6 +85,38 @@ export function Tema() {
           {(discussoes.dados ?? []).length > 0 && (
             <div className="grade">
               {discussoes.dados!.map((d) => <CardDiscussao key={d.id} discussao={d} />)}
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* O tema é o ponto de encontro entre pessoas, projetos, assuntos — e
+          agora o que tá acontecendo. Só o que ainda vai rolar: tema não é
+          arquivo. */}
+      <section className="faixa">
+        <div className="faixa__interno">
+          <h2>Eventos<br />com este tema</h2>
+          {eventos.carregando && <Carregando quantidade={2} rotulo="Buscando os eventos" />}
+          {eventos.erro && <Erro mensagem={eventos.erro} aoTentarDeNovo={eventos.recarregar} />}
+          {!eventos.carregando && !eventos.erro && (eventos.dados ?? []).length === 0 && (
+            <div className="card card--escuro">
+              <h3 className="card__titulo">
+                <span className="seta seta--amarela" aria-hidden="true" />
+                Nada marcado com isso
+              </h3>
+              <p className="miudo">
+                Se tá rolando algo assim na sua cidade, sobe no mural e marca o tema.
+              </p>
+              <div className="acoes">
+                <Link className="botao botao--amarelo botao--pequeno" to="/eventos/novo">
+                  <span className="seta" aria-hidden="true" />Publicar um evento
+                </Link>
+              </div>
+            </div>
+          )}
+          {(eventos.dados ?? []).length > 0 && (
+            <div className="grade grade--eventos">
+              {eventos.dados!.map((e) => <CardEvento key={e.id} evento={e} />)}
             </div>
           )}
         </div>

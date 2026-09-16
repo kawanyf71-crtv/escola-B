@@ -3,7 +3,9 @@
  * P1 (H1 a H6) e os requisitos funcionais que dependem de interacao.
  * Roda contra o adaptador local, que e o modo padrao do `npm run dev`.
  */
-import { ir, abrirNavegador, criarParticipante, marcarChip, sair } from './navegador.mjs';
+import {
+  ir, abrirNavegador, criarEvento, criarParticipante, daquiAUmAno, marcarChip, sair,
+} from './navegador.mjs';
 
 const passos = [];
 const erros = [];
@@ -272,6 +274,126 @@ await checar('RF-017 quem abriu o assunto pode apagá-lo', async () => {
   await p.getByRole('button', { name: /apagar este assunto/i }).waitFor({ timeout: 3000 });
 });
 
+// ------------------------------------------------------ mural de eventos
+await checar('O mural começa vazio dizendo o que fazer', async () => {
+  await ir(p, '/eventos');
+  await p.getByRole('heading', { name: /ainda não tem nada no mural/i })
+    .waitFor({ timeout: 3000 });
+});
+
+await checar('O formulário não publica sem cartaz, data, link e área', async () => {
+  await ir(p, '/eventos/novo');
+  await p.getByRole('button', { name: /publicar no mural/i }).click();
+  for (const esperado of [/falta o cartaz/i, /falta o nome/i, /quando começa/i,
+                          /falta o link/i, /ao menos uma área/i]) {
+    await p.locator('.erro-campo', { hasText: esperado }).first().waitFor({ timeout: 3000 });
+  }
+});
+
+await checar('Online esconde estado e cidade e não os exige', async () => {
+  await p.locator('label.opcao', { hasText: /^Presencial$/ }).first().click();
+  await p.locator('#estado').waitFor({ timeout: 3000 });
+  await p.locator('label.opcao', { hasText: /^Online$/ }).first().click();
+  await p.locator('#estado').waitFor({ state: 'detached', timeout: 3000 });
+  if (await p.locator('#cidade').count() !== 0) throw new Error('a cidade continuou na tela');
+});
+
+const urlEvento = await criarEvento(p, {
+  titulo: 'Baile da Virada Preta', inicio: daquiAUmAno('11-28'), hora: '19:00',
+  uf: 'BA', cidade: 'Salvador', entrada: 'Gratuito',
+  areas: ['Música', 'Cultura Popular', 'Dança'], temas: ['Ancestralidade'],
+  link: 'instagram.com/bailedaviradapreta',
+});
+
+await checar('O link colado sem http vira https em vez de ser recusado', async () => {
+  const destino = await p.getByRole('link', { name: /ir para o evento/i })
+    .getAttribute('href');
+  if (destino !== 'https://instagram.com/bailedaviradapreta') {
+    throw new Error(`href é ${destino}`);
+  }
+});
+
+await checar('O botão do evento abre fora, em outra aba', async () => {
+  const botao = p.getByRole('link', { name: /ir para o evento/i });
+  if (await botao.getAttribute('target') !== '_blank'
+      || await botao.getAttribute('rel') !== 'noopener noreferrer') {
+    throw new Error('o link de saída não está protegido');
+  }
+});
+
+await checar('O mural mostra o evento agrupado por mês', async () => {
+  await ir(p, '/eventos');
+  await p.getByRole('heading', { name: /Baile da Virada Preta/i }).waitFor({ timeout: 3000 });
+  await p.getByRole('heading', { name: /NOVEMBRO DE/i }).waitFor({ timeout: 3000 });
+  await p.getByText(/1 evento chegando/i).waitFor({ timeout: 3000 });
+});
+
+await checar('O card do evento traz selo de data, lugar e entrada', async () => {
+  const card = p.locator('.card--evento').first();
+  await card.locator('.selo-data', { hasText: '28' }).waitFor({ timeout: 3000 });
+  await card.getByText('Salvador, BA').waitFor({ timeout: 3000 });
+  await card.getByText(/^Grátis$/).waitFor({ timeout: 3000 });
+  // Duas áreas no máximo; o resto vira "+N".
+  await card.getByText('+1').waitFor({ timeout: 3000 });
+});
+
+await checar('Filtro sem resultado sugere tirar um filtro, não some com a página', async () => {
+  await p.locator('#ev-entrada').selectOption('Pago');
+  await p.getByRole('heading', { name: /não tem nada assim por aqui/i })
+    .waitFor({ timeout: 3000 });
+  await p.getByRole('button', { name: /limpar filtros/i }).first().click();
+  await p.getByRole('heading', { name: /Baile da Virada Preta/i }).waitFor({ timeout: 3000 });
+});
+
+await checar('Evento que já rolou sai do mural e fica atrás do link', async () => {
+  const ontem = new Date();
+  ontem.setDate(ontem.getDate() - 1);
+  const p2 = `${ontem.getFullYear()}-${String(ontem.getMonth() + 1).padStart(2, '0')}`
+    + `-${String(ontem.getDate()).padStart(2, '0')}`;
+  await criarEvento(p, {
+    titulo: 'Roda Que Já Passou', inicio: p2, uf: 'BA', cidade: 'Salvador',
+    entrada: 'Gratuito', areas: ['Música'], link: 'instagram.com/roda',
+  });
+  await ir(p, '/eventos');
+  if (await p.getByRole('heading', { name: /Roda Que Já Passou/i }).count() !== 0) {
+    throw new Error('evento vencido ficou na listagem principal');
+  }
+  await p.getByRole('button', { name: /ver o que já rolou/i }).click();
+  await p.getByRole('heading', { name: /Roda Que Já Passou/i }).waitFor({ timeout: 3000 });
+});
+
+await checar('O tema junta o evento com as pessoas e os projetos', async () => {
+  await ir(p, '/temas/ancestralidade');
+  await p.getByRole('heading', { name: /Eventos com este tema/i }).waitFor({ timeout: 3000 });
+  await p.getByRole('heading', { name: /Baile da Virada Preta/i }).waitFor({ timeout: 3000 });
+});
+
+await checar('Meu espaço lista os meus eventos com editar', async () => {
+  await ir(p, '/meu-espaco');
+  await p.getByRole('heading', { name: /Meus eventos/i }).waitFor({ timeout: 3000 });
+  await p.getByRole('heading', { name: /Baile da Virada Preta/i }).waitFor({ timeout: 3000 });
+});
+
+await checar('Só a autora vê apagar, e apagar pede confirmação', async () => {
+  await p.goto(urlEvento);
+  await p.getByRole('button', { name: /^apagar$/i }).click();
+  await p.getByRole('heading', { name: /apagar este evento/i }).waitFor({ timeout: 3000 });
+  await p.getByRole('button', { name: /deixa pra lá/i }).click();
+  await p.getByRole('button', { name: /^apagar$/i }).waitFor({ timeout: 3000 });
+});
+
+await checar('A barra do celular troca Meu espaço pelo mural', async () => {
+  await ir(p, '/pessoas');
+  const barra = p.locator('.barra-baixo');
+  await barra.getByRole('link', { name: 'Eventos' }).waitFor({ timeout: 3000 });
+  if (await barra.getByRole('link', { name: 'Meu espaço' }).count() !== 0) {
+    throw new Error('Meu espaço continuou na barra — são cinco alvos em 390px');
+  }
+  // Ele virou o avatar no canto do cabeçalho.
+  await p.getByRole('link', { name: 'Meu espaço' }).click();
+  await p.waitForURL('**/meu-espaco', { timeout: 3000 });
+});
+
 // -------------------------------------------------------- marca e rodapé
 await checar('O lema anda com a marca sem entrar no nome do link', async () => {
   await ir(p, '/pessoas');
@@ -375,7 +497,8 @@ await checar('Dá pra fechar o menu e continuar de onde estava', async () => {
 // -------------------------------------------------- responsividade 390px
 await checar('Nenhuma tela rola na horizontal a 390px', async () => {
   for (const rota of ['/pessoas', '/projetos', '/assuntos', '/temas',
-                      '/temas/ancestralidade', '/meu-espaco', '/meu-perfil', urlProjeto]) {
+                      '/temas/ancestralidade', '/meu-espaco', '/meu-perfil',
+                      '/eventos', '/eventos/novo', urlProjeto, urlEvento]) {
     await (rota.startsWith('http') ? p.goto(rota) : ir(p, rota));
     await p.waitForTimeout(250);
     const estoura = await p.evaluate(

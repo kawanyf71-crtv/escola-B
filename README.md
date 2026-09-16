@@ -147,6 +147,42 @@ em branco, disfarçado de solto. A regra vive na política de RLS da migração
 
 ---
 
+## Mural de eventos
+
+Cadastro rápido onde a turma divulga o que tá rolando na cidade dela. Organiza e
+exibe como uma bilheteria, mas **não vende, não emite ingresso e não processa
+pagamento**: mostra o evento e manda pro link de quem organiza. Não há tabela de
+ingresso, de pedido nem de check-in — o único caminho pra fora é a coluna `link`.
+
+- `/eventos` — o mural. Filtros de estado, cidade, área, tema, quando e entrada;
+  ordenação sempre por data de início crescente, sem alternativa; lista agrupada
+  por mês, com o cabeçalho de cada grupo em amarelo sobre uma régua curta
+  vermelha. É isso que dá o ritmo de bilheteria sem precisar trocar o fundo.
+- `/eventos/novo` e `/eventos/:id/editar` — o formulário.
+- `/eventos/:id` — a página do evento, com o botão de saída.
+
+**O que já rolou sai da listagem sozinho.** Evento vencido no topo mata um mural
+em três semanas. O corte é `coalesce(data_fim, data_inicio) < hoje`, e no
+Postgres isso mora numa coluna gerada (`ultimo_dia`) porque o PostgREST não
+compara duas colunas entre si — sem ela, o filtro viraria trabalho do cliente e o
+mural traria o banco inteiro pra decidir. Os passados ficam atrás de um link no
+fim da página, em ordem decrescente e com o banner esmaecido.
+
+Datas são `date`, não `timestamptz`: um evento no dia 28 é dia 28 em qualquer
+fuso. Por isso `src/lib/datas.ts` nunca usa `new Date(texto)` — o construtor lê
+`"2026-11-28"` como meia-noite UTC e, no Brasil, devolve o dia 27.
+
+O link é aceito colado sem esquema e recebe `https://` automaticamente, em vez de
+ser recusado por isso. Quando o formato é Online, estado e cidade somem da tela e
+deixam de ser exigidos — regra que está também como `check` no banco, senão um
+evento presencial sem cidade entraria pela API.
+
+Publicar exige perfil publicado, como todo o resto da rede.
+
+**O que este mural não faz:** venda, ingresso, check-in, lista de presença,
+contagem de interessados, mapa, recorrência, moderação, notificação e descrição
+longa. O cadastro é curto de propósito — quem quiser detalhe clica no link.
+
 ## Dados de exemplo
 
 `Meu espaço` traz, numa área discreta no fim da página, os botões **Carregar
@@ -371,8 +407,10 @@ para trocar de seção a pessoa saía da página e voltava sem referência de on
 estava — mais um corte, agora no tempo em vez do espaço.
 
 Agora existe uma barra fixa no rodapé, abaixo de 55rem, com quatro itens: Gente,
-Projetos, Assuntos e Meu espaço. Quatro porque acima disso cada alvo fica menor
-que o dedo — Início e Temas ficam no menu, e a home também está na marca. Cada item é seta da marca mais rótulo; o item ativo fica amarelo e
+Projetos, Eventos e Assuntos. Quatro porque acima disso cada alvo fica menor que
+o dedo. Meu espaço saiu da barra quando o mural entrou e virou o avatar no canto
+do cabeçalho, que é onde se procura a própria conta; Início e Temas ficam no
+menu, e a home também está na marca. Cada item é seta da marca mais rótulo; o item ativo fica amarelo e
 sublinhado — sublinhado porque cor sozinha não pode ser o único indicador
 visual (WCAG 1.4.1), e é a mesma marcação que a navegação do desktop já usava.
 

@@ -34,6 +34,31 @@ export const DISPONIBILIDADES = [
 
 export const MODALIDADES = ['Presencial', 'Online', 'Híbrido', 'Não definido'] as const;
 
+/** Evento nao tem "nao definido": ou e presencial, ou online, ou os dois. */
+export const FORMATOS_EVENTO = ['Presencial', 'Online', 'Híbrido'] as const;
+
+export const ENTRADAS_EVENTO = ['Gratuito', 'Pago', 'Não informado'] as const;
+
+/** As 27 UFs. A sigla e o que fica guardado; o nome so aparece no formulario. */
+export const UFS = [
+  { sigla: 'AC', nome: 'Acre' }, { sigla: 'AL', nome: 'Alagoas' },
+  { sigla: 'AP', nome: 'Amapá' }, { sigla: 'AM', nome: 'Amazonas' },
+  { sigla: 'BA', nome: 'Bahia' }, { sigla: 'CE', nome: 'Ceará' },
+  { sigla: 'DF', nome: 'Distrito Federal' }, { sigla: 'ES', nome: 'Espírito Santo' },
+  { sigla: 'GO', nome: 'Goiás' }, { sigla: 'MA', nome: 'Maranhão' },
+  { sigla: 'MT', nome: 'Mato Grosso' }, { sigla: 'MS', nome: 'Mato Grosso do Sul' },
+  { sigla: 'MG', nome: 'Minas Gerais' }, { sigla: 'PA', nome: 'Pará' },
+  { sigla: 'PB', nome: 'Paraíba' }, { sigla: 'PR', nome: 'Paraná' },
+  { sigla: 'PE', nome: 'Pernambuco' }, { sigla: 'PI', nome: 'Piauí' },
+  { sigla: 'RJ', nome: 'Rio de Janeiro' }, { sigla: 'RN', nome: 'Rio Grande do Norte' },
+  { sigla: 'RS', nome: 'Rio Grande do Sul' }, { sigla: 'RO', nome: 'Rondônia' },
+  { sigla: 'RR', nome: 'Roraima' }, { sigla: 'SC', nome: 'Santa Catarina' },
+  { sigla: 'SP', nome: 'São Paulo' }, { sigla: 'SE', nome: 'Sergipe' },
+  { sigla: 'TO', nome: 'Tocantins' },
+] as const;
+
+export const SIGLAS_UF = UFS.map((u) => u.sigla);
+
 export type Area = (typeof AREAS)[number];
 export type Tema = (typeof TEMAS)[number];
 export type Habilidade = (typeof HABILIDADES)[number];
@@ -41,6 +66,9 @@ export type Estagio = (typeof ESTAGIOS)[number];
 export type TipoParticipacao = (typeof TIPOS_PARTICIPACAO)[number];
 export type Disponibilidade = (typeof DISPONIBILIDADES)[number];
 export type Modalidade = (typeof MODALIDADES)[number];
+export type FormatoEvento = (typeof FORMATOS_EVENTO)[number];
+export type EntradaEvento = (typeof ENTRADAS_EVENTO)[number];
+export type Uf = (typeof UFS)[number]['sigla'];
 
 export interface Participante {
   id: string;
@@ -116,6 +144,36 @@ export interface Comentario {
 export interface ParticipacaoDiscussao {
   discussao_id: string;
   participante_id: string;
+  criado_em: string;
+  /** Registro do lote de demonstração. Ausente nos registros de verdade. */
+  demo?: boolean;
+}
+
+/**
+ * Evento do mural. O cadastro e curto de proposito: quem quiser detalhe clica
+ * no link de quem organiza. Este lugar nao vende, nao emite ingresso e nao
+ * processa pagamento — so mostra e manda pra fora.
+ */
+export interface Evento {
+  id: string;
+  autor_id: string;
+  /** Obrigatorio, ao contrario da capa de projeto: sem cartaz nao ha mural. */
+  banner: string;
+  titulo: string;
+  /** AAAA-MM-DD. Data pura, sem fuso: um evento dia 28 e dia 28 em qualquer lugar. */
+  data_inicio: string;
+  /** Temporada, exposicao, festival de varios dias. */
+  data_fim: string | null;
+  /** HH:MM. */
+  horario: string | null;
+  link: string;
+  formato: FormatoEvento;
+  /** Nulos quando o formato e Online. */
+  estado: Uf | null;
+  cidade: string | null;
+  entrada: EntradaEvento;
+  areas: Area[];
+  temas: Tema[];
   criado_em: string;
   /** Registro do lote de demonstração. Ausente nos registros de verdade. */
   demo?: boolean;

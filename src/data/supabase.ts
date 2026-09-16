@@ -1,15 +1,19 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import type {
-  Comentario, Discussao, Interesse, Participante, Projeto, Tema, TipoParticipacao,
+  Comentario, Discussao, Evento, Interesse, Participante, Projeto, Tema,
+  TipoParticipacao, Uf,
 } from '../lib/dominio';
+import { fimDaJanela, hoje } from '../lib/datas';
 import type {
-  ComentarioComAutor, DadosPerfil, DadosProjeto, DiscussaoCompleta, FiltrosPessoas,
-  FiltrosProjetos, InteresseComParticipante, InteresseComProjeto, NovaDiscussao,
+  ComentarioComAutor, DadosEvento, DadosPerfil, DadosProjeto, DiscussaoCompleta,
+  EventoComAutor, FiltrosEventos, FiltrosPessoas, FiltrosProjetos,
+  InteresseComParticipante, InteresseComProjeto, LocalDeEventos, NovaDiscussao,
   ParticipanteResumo, ProjetoComAutor, Repositorio, Sessao,
 } from './tipos';
 
 const CAMPOS_RESUMO = 'id,nome,ocupacao,cidade,foto';
 const PROJETO_COM_AUTOR = `*, autor:participantes!projetos_autor_id_fkey(${CAMPOS_RESUMO})`;
+const EVENTO_COM_AUTOR = `*, autor:participantes!eventos_autor_id_fkey(${CAMPOS_RESUMO})`;
 const DISCUSSAO_COMPLETA =
   `*, autor:participantes!discussoes_autor_id_fkey(${CAMPOS_RESUMO}),` +
   ' projeto:projetos!discussoes_projeto_origem_id_fkey(id,nome),' +
@@ -383,7 +387,105 @@ export class RepositorioSupabase implements Repositorio {
     return data as Comentario;
   }
 
+  // --- Eventos ---
+
+  /**
+   * "Já rolou" é uma comparação sobre o último dia do evento — `data_fim`
+   * quando existe, `data_inicio` quando não. Em SQL isso é
+   * `coalesce(data_fim, data_inicio)`, e o filtro vai numa coluna gerada
+   * (`ultimo_dia`) porque PostgREST não compara duas colunas entre si.
+   */
+  private eventosFuturos(passados: boolean) {
+    const q = this.cliente.from('eventos').select(EVENTO_COM_AUTOR);
+    return passados
+      ? q.lt('ultimo_dia', hoje()).order('data_inicio', { ascending: false })
+      : q.gte('ultimo_dia', hoje()).order('data_inicio', { ascending: true });
+  }
+
+  async listarEventos(f: FiltrosEventos): Promise<EventoComAutor[]> {
+    let q = this.eventosFuturos(Boolean(f.passados));
+    if (f.estado) q = q.eq('estado', f.estado);
+    if (f.cidade) q = q.ilike('cidade', f.cidade);
+    if (f.area) q = q.contains('areas', [f.area]);
+    if (f.tema) q = q.contains('temas', [f.tema]);
+    if (f.entrada) q = q.eq('entrada', f.entrada);
+    // A janela olha o COMEÇO: uma temporada que já abriu conta como
+    // acontecendo nesta semana, mesmo terminando daqui a três meses.
+    if (f.janela) q = q.lte('data_inicio', fimDaJanela(f.janela));
+    const { data, error } = await q;
+    erro(error, 'Não deu pra buscar os eventos');
+    return (data ?? []) as unknown as EventoComAutor[];
+  }
+
+  async obterEvento(id: string): Promise<EventoComAutor | null> {
+    const { data, error } = await this.cliente
+      .from('eventos').select(EVENTO_COM_AUTOR).eq('id', id).maybeSingle();
+    erro(error, 'Não deu pra buscar o evento');
+    return (data as unknown as EventoComAutor) ?? null;
+  }
+
+  async eventosDoParticipante(participanteId: string): Promise<EventoComAutor[]> {
+    const { data, error } = await this.eventosFuturos(false).eq('autor_id', participanteId);
+    erro(error, 'Não deu pra buscar os eventos');
+    return (data ?? []) as unknown as EventoComAutor[];
+  }
+
+  async meusEventos(): Promise<EventoComAutor[]> {
+    const usuario = await this.exigirUsuario();
+    const { data, error } = await this.cliente.from('eventos').select(EVENTO_COM_AUTOR)
+      .eq('autor_id', usuario).order('data_inicio', { ascending: true });
+    erro(error, 'Não deu pra buscar os seus eventos');
+    return (data ?? []) as unknown as EventoComAutor[];
+  }
+
+  async criarEvento(dados: DadosEvento): Promise<Evento> {
+    const usuario = await this.exigirUsuario();
+    const { data, error } = await this.cliente
+      .from('eventos').insert({ autor_id: usuario, ...dados }).select('*').single();
+    erro(error, 'Não deu pra publicar no mural');
+    return data as Evento;
+  }
+
+  async atualizarEvento(id: string, dados: DadosEvento): Promise<Evento> {
+    const { data, error } = await this.cliente
+      .from('eventos').update(dados).eq('id', id).select('*').single();
+    erro(error, 'Não deu pra salvar o evento');
+    return data as Evento;
+  }
+
+  async excluirEvento(id: string): Promise<void> {
+    const { error } = await this.cliente.from('eventos').delete().eq('id', id);
+    erro(error, 'Não deu pra apagar o evento');
+  }
+
+  async locaisDeEventos(): Promise<LocalDeEventos[]> {
+    // Só o que está por vir: filtrar por um estado sem evento futuro devolveria
+    // uma lista vazia e pareceria defeito.
+    const { data, error } = await this.cliente.from('eventos').select('estado,cidade')
+      .gte('ultimo_dia', hoje()).not('estado', 'is', null);
+    erro(error, 'Não deu pra buscar os lugares');
+    const porEstado = new Map<Uf, Set<string>>();
+    for (const linha of (data ?? []) as { estado: Uf | null; cidade: string | null }[]) {
+      if (!linha.estado) continue;
+      const cidades = porEstado.get(linha.estado) ?? new Set<string>();
+      if (linha.cidade) cidades.add(linha.cidade);
+      porEstado.set(linha.estado, cidades);
+    }
+    return [...porEstado]
+      .map(([estado, cidades]) => ({
+        estado,
+        cidades: [...cidades].sort((a, z) => a.localeCompare(z, 'pt-BR')),
+      }))
+      .sort((a, z) => a.estado.localeCompare(z.estado));
+  }
+
   // --- Tema ---
+
+  async eventosPorTema(tema: Tema): Promise<EventoComAutor[]> {
+    const { data, error } = await this.eventosFuturos(false).contains('temas', [tema]);
+    erro(error, 'Não deu pra buscar os eventos deste tema');
+    return (data ?? []) as unknown as EventoComAutor[];
+  }
 
   async participantesPorTema(tema: Tema): Promise<Participante[]> {
     const { data, error } = await this.cliente.from('participantes').select('*')

@@ -1,6 +1,6 @@
 import { Link, useParams } from 'react-router-dom';
 import { Carregando, Erro } from '../components/Estados';
-import { CardDiscussao, CardProjeto, Foto } from '../components/Cards';
+import { CardDiscussao, CardEvento, CardProjeto, Foto } from '../components/Cards';
 import { slugTema } from '../lib/dominio';
 import { repo } from '../data';
 import { useConsulta } from '../lib/useConsulta';
@@ -18,6 +18,8 @@ export function Perfil() {
   const pessoa = useConsulta(() => repo.obterParticipante(id), [id]);
   const projetos = useConsulta(() => repo.projetosDoParticipante(id), [id]);
   const discussoes = useConsulta(() => repo.discussoesDoParticipante(id), [id]);
+  // Só os que ainda vão acontecer: perfil não é arquivo de evento vencido.
+  const eventos = useConsulta(() => repo.eventosDoParticipante(id), [id]);
 
   const souEu = meu?.id === id;
 
@@ -192,6 +194,19 @@ export function Perfil() {
           )}
         </div>
       </section>
+
+      {/* Só aparece quando há algo por vir: um bloco vazio em toda página de
+          perfil seria ruído em troca de nada. */}
+      {(eventos.dados ?? []).length > 0 && (
+        <section className="faixa">
+          <div className="faixa__interno">
+            <h2>Eventos<br />que publicou</h2>
+            <div className="grade grade--eventos">
+              {eventos.dados!.map((ev) => <CardEvento key={ev.id} evento={ev} />)}
+            </div>
+          </div>
+        </section>
+      )}
 
       <section className="faixa">
         <div className="faixa__interno">

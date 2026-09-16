@@ -11,7 +11,9 @@
  * suma na superfície atrás dele, nenhum campo ou chip de opção sem 3:1 entre o
  * que o identifica e o fundo.
  */
-import { ir, abrirNavegador, criarParticipante, marcarChip, sair } from './navegador.mjs';
+import {
+  ir, abrirNavegador, criarEvento, criarParticipante, daquiAUmAno, marcarChip, sair,
+} from './navegador.mjs';
 
 const PALETA = {
   'rgb(17, 17, 17)': 'preto',
@@ -207,16 +209,24 @@ await p.getByRole('button', { name: /publicar pra turma ver/i }).click();
 await p.waitForURL(/\/projetos\/[0-9a-f-]{36}$/);
 const projeto = p.url();
 
-for (const rota of ['/inicio', '/pessoas', '/projetos', '/projetos/novo', '/assuntos',
+await criarEvento(p, {
+  titulo: 'Baile da Virada Preta', inicio: daquiAUmAno('11-28'), hora: '19:00',
+  uf: 'BA', cidade: 'Salvador', entrada: 'Gratuito',
+  areas: ['Música', 'Cultura Popular', 'Dança'], temas: ['Ancestralidade'],
+});
+const evento = p.url();
+
+for (const rota of ['/inicio', '/eventos', '/eventos/novo',
+                    '/pessoas', '/projetos', '/projetos/novo', '/assuntos',
                     '/assuntos/novo', '/temas', '/temas/ancestralidade',
                     '/meu-espaco', '/meu-perfil']) {
   await ir(p, rota);
   await conferir(rota);
 }
 
-for (const url of [projeto, `${projeto}/quem-chegou-junto`]) {
+for (const url of [projeto, `${projeto}/quem-chegou-junto`, evento]) {
   await p.goto(url);
-  await conferir(url.replace(/^.*?(\/projetos.*)$/, '$1'));
+  await conferir(url.replace(/^.*?(\/(?:projetos|eventos).*)$/, '$1'));
 }
 
 await ir(p, '/assuntos');

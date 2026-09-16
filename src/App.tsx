@@ -7,6 +7,9 @@ import { CriarConta, Entrar } from './pages/Acesso';
 import { Discussao } from './pages/Discussao';
 import { Discussoes } from './pages/Discussoes';
 import { Entrada } from './pages/Entrada';
+import { Evento } from './pages/Evento';
+import { Eventos } from './pages/Eventos';
+import { FormularioEvento } from './pages/FormularioEvento';
 import { FormularioProjeto } from './pages/FormularioProjeto';
 import { Inicio } from './pages/Inicio';
 import { Interessados } from './pages/Interessados';
@@ -91,6 +94,14 @@ function Rotas() {
         <Route
           path="/projetos/:id/quem-chegou-junto"
           element={<Protegida><Interessados /></Protegida>}
+        />
+
+        <Route path="/eventos" element={<Protegida><Eventos /></Protegida>} />
+        <Route path="/eventos/novo" element={<Protegida><FormularioEvento /></Protegida>} />
+        <Route path="/eventos/:id" element={<Protegida><Evento /></Protegida>} />
+        <Route
+          path="/eventos/:id/editar"
+          element={<Protegida><FormularioEvento /></Protegida>}
         />
 
         <Route path="/assuntos" element={<Protegida><Discussoes /></Protegida>} />

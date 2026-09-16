@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Carregando, Erro } from '../components/Estados';
-import { CardProjeto } from '../components/Cards';
+import { CardEvento, CardProjeto } from '../components/Cards';
 import { repo } from '../data';
 import { useConsulta } from '../lib/useConsulta';
 import { useSessao } from '../lib/sessao';
@@ -16,6 +16,8 @@ export function MeuEspaco() {
     [meuId],
   );
   const interesses = useConsulta(() => repo.meusInteresses(), []);
+  // Aqui entram os passados também: é daqui que eu edito e apago.
+  const eventos = useConsulta(() => repo.meusEventos(), []);
 
   const [confirmando, setConfirmando] = useState(false);
   const [excluindo, setExcluindo] = useState(false);
@@ -115,6 +117,53 @@ export function MeuEspaco() {
               <div className="acoes">
                 <Link className="botao botao--vermelho" to="/projetos/novo">
                   <span className="seta" aria-hidden="true" />Publicar outro projeto
+                </Link>
+              </div>
+            </>
+          )}
+        </div>
+      </section>
+
+      <section className="faixa">
+        <div className="faixa__interno">
+          <h2>Meus eventos</h2>
+          {eventos.carregando && <Carregando quantidade={2} rotulo="Buscando os seus eventos" />}
+          {eventos.erro && <Erro mensagem={eventos.erro} aoTentarDeNovo={eventos.recarregar} />}
+
+          {!eventos.carregando && !eventos.erro && (eventos.dados ?? []).length === 0 && (
+            <div className="cartaz cartaz--preto">
+              <span className="seta seta--cartaz" aria-hidden="true" />
+              <h3>Você ainda não<br />subiu nada no mural</h3>
+              <p className="miudo">
+                Não precisa ser seu. Se tá rolando na sua cidade e a turma ia querer
+                saber, sobe aqui.
+              </p>
+              <div className="acoes">
+                <Link className="botao botao--amarelo" to="/eventos/novo">
+                  <span className="seta" aria-hidden="true" />Publicar um evento
+                </Link>
+              </div>
+            </div>
+          )}
+
+          {(eventos.dados ?? []).length > 0 && (
+            <>
+              <div className="grade grade--eventos">
+                {eventos.dados!.map((ev) => (
+                  <div key={ev.id}>
+                    <CardEvento evento={ev} />
+                    <div className="acoes" style={{ marginTop: '0.5rem' }}>
+                      <Link className="botao botao--preto botao--pequeno"
+                            to={`/eventos/${ev.id}/editar`}>Editar</Link>
+                      <Link className="botao botao--contorno botao--pequeno"
+                            to={`/eventos/${ev.id}`}>Abrir</Link>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="acoes">
+                <Link className="botao botao--amarelo" to="/eventos/novo">
+                  <span className="seta" aria-hidden="true" />Publicar outro evento
                 </Link>
               </div>
             </>

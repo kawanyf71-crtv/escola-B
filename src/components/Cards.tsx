@@ -1,7 +1,10 @@
 import { Link } from 'react-router-dom';
 import type { Participante } from '../lib/dominio';
 import { slugTema } from '../lib/dominio';
-import type { DiscussaoCompleta, ParticipanteResumo, ProjetoComAutor } from '../data/tipos';
+import { diaEMes, quandoPorExtenso, selo } from '../lib/datas';
+import type {
+  DiscussaoCompleta, EventoComAutor, ParticipanteResumo, ProjetoComAutor,
+} from '../data/tipos';
 
 /** Marca visível de que o registro veio do lote de demonstração. */
 export function SeloExemplo({ mostrar }: { mostrar?: boolean }) {
@@ -9,11 +12,14 @@ export function SeloExemplo({ mostrar }: { mostrar?: boolean }) {
   return <span className="selo-exemplo">Exemplo</span>;
 }
 
-export function Foto({ pessoa, grande = false }: {
+export function Foto({ pessoa, grande = false, mini = false }: {
   pessoa: { nome: string; foto: string | null };
   grande?: boolean;
+  /** Tamanho de cabeçalho: alvo de toque sem virar uma foto de perfil. */
+  mini?: boolean;
 }) {
-  const classe = grande ? 'moldura moldura--grande' : 'moldura';
+  const classe = ['moldura', grande && 'moldura--grande', mini && 'moldura--mini']
+    .filter(Boolean).join(' ');
   if (pessoa.foto) {
     return <img className={classe} src={pessoa.foto} alt={`Foto de ${pessoa.nome}`} />;
   }
@@ -98,6 +104,75 @@ export function CardProjeto({ projeto }: { projeto: ProjetoComAutor }) {
           <span className="chip chip--inverso">Não tá procurando gente agora</span>
         </p>
       )}
+    </article>
+  );
+}
+
+/**
+ * Selo de data sobre o banner. Um dia só empilha dia e mês, que é o que se lê
+ * de longe numa grade; um intervalo vira uma linha só, menor, porque empilhar
+ * quatro pedaços viraria um bloco maior que o próprio cartaz.
+ */
+function SeloDeData({ evento }: { evento: EventoComAutor }) {
+  if (evento.data_fim) {
+    return (
+      <span className="selo-data selo-data--intervalo">
+        {diaEMes(evento.data_inicio)} — {diaEMes(evento.data_fim)}
+      </span>
+    );
+  }
+  const { dia, mes } = selo(evento.data_inicio);
+  return (
+    <span className="selo-data">
+      <strong>{dia}</strong>
+      {mes}
+    </span>
+  );
+}
+
+/**
+ * "Não informado" não vira chip: um selo dizendo que não se sabe ocupa espaço
+ * pra não informar nada. Devolve null, e quem chama não cria o item da lista.
+ */
+export function chipDeEntrada(entrada: EventoComAutor['entrada']) {
+  if (entrada === 'Gratuito') return <span className="chip">Grátis</span>;
+  if (entrada === 'Pago') return <span className="chip chip--inverso">Pago</span>;
+  return null;
+}
+
+export function CardEvento({ evento, passado = false }: {
+  evento: EventoComAutor;
+  passado?: boolean;
+}) {
+  const onde = evento.formato === 'Online'
+    ? 'Online'
+    : `${evento.cidade}, ${evento.estado}`;
+  const areas = evento.areas.slice(0, 2);
+  const sobrando = evento.areas.length - areas.length;
+  const entrada = chipDeEntrada(evento.entrada);
+
+  return (
+    <article className={passado ? 'card card--evento card--passado' : 'card card--evento'}>
+      <SeloExemplo mostrar={evento.demo} />
+      <div className="card__banner">
+        <img className="card__capa" src={evento.banner} alt={`Cartaz de ${evento.titulo}`} />
+        <SeloDeData evento={evento} />
+      </div>
+      <h3 className="card__titulo card__titulo--evento">
+        <Link to={`/eventos/${evento.id}`}>{evento.titulo}</Link>
+      </h3>
+      <p className="card__meta">
+        <span className="seta" aria-hidden="true" />
+        {onde}
+      </p>
+      <p className="card__meta">{quandoPorExtenso(evento)}</p>
+      <ul className="chips" aria-label="Entrada e áreas">
+        {entrada && <li>{entrada}</li>}
+        {areas.map((a) => <li key={a}><span className="chip chip--inverso">{a}</span></li>)}
+        {sobrando > 0 && (
+          <li><span className="chip chip--inverso">+{sobrando}</span></li>
+        )}
+      </ul>
     </article>
   );
 }

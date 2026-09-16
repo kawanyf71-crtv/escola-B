@@ -4,7 +4,9 @@
  * paleta da marca tem combinacoes que reprovam — #F1F1F1 sobre #ED3124 da
  * 3,67:1 —, entao a conferencia precisa ser automatica.
  */
-import { ir, abrirNavegador, marcarChip } from './navegador.mjs';
+import {
+  ir, abrirNavegador, criarEvento, criarParticipante, daquiAUmAno, marcarChip,
+} from './navegador.mjs';
 
 const AUDITOR = () => {
   const lum = ([r, g, b]) => {
@@ -124,7 +126,15 @@ for (const r of ['/temas/memoria', '/temas/periferias', '/temas/outro']) {
   await auditar(r);
 }
 
-for (const r of ['/inicio', '/pessoas', '/projetos', '/assuntos', '/temas',
+await criarEvento(p, {
+  titulo: 'Baile da Virada Preta', inicio: daquiAUmAno('11-28'), hora: '19:00',
+  uf: 'BA', cidade: 'Salvador', entrada: 'Gratuito',
+  areas: ['Música', 'Cultura Popular', 'Dança'], temas: ['Ancestralidade'],
+});
+await auditar('página do evento');
+
+for (const r of ['/inicio', '/eventos', '/eventos/novo',
+                 '/pessoas', '/projetos', '/assuntos', '/temas',
                  '/temas/ancestralidade',
                  '/meu-espaco', '/meu-perfil', '/projetos/novo', '/assuntos/novo',
                  projeto, `${projeto}/quem-chegou-junto`]) {

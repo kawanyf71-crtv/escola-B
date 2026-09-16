@@ -73,3 +73,40 @@ export async function sair(pagina) {
   await pagina.getByRole('link', { name: /começar pelo meu perfil/i }).first()
     .waitFor({ timeout: 5000 });
 }
+
+/**
+ * Publica um evento pelo formulário e devolve a URL dele. O cartaz é
+ * obrigatório, então sobe uma amostra de verdade — é o mesmo caminho que a
+ * turma percorre.
+ */
+export async function criarEvento(pagina, {
+  titulo, inicio, fim = '', hora = '', formato = 'Presencial',
+  uf = 'BA', cidade = 'Salvador', entrada = 'Gratuito',
+  areas = ['Música'], temas = [], link = 'instagram.com/oevento',
+}) {
+  await ir(pagina, '/eventos/novo');
+  await pagina.locator('input[type=file]')
+    .setInputFiles(new URL('./amostras/media.png', import.meta.url).pathname);
+  await pagina.locator('.zona-imagem__previa').waitFor({ timeout: 20000 });
+  await pagina.locator('#titulo').fill(titulo);
+  await pagina.locator('#data_inicio').fill(inicio);
+  if (hora) await pagina.locator('#horario').fill(hora);
+  if (fim) await pagina.locator('#data_fim').fill(fim);
+  await pagina.locator('label.opcao', { hasText: new RegExp(`^${formato}$`) }).first().click();
+  if (formato !== 'Online') {
+    await pagina.locator('#estado').selectOption(uf);
+    await pagina.locator('#cidade').fill(cidade);
+  }
+  await pagina.locator('label.opcao', { hasText: new RegExp(`^${entrada}$`) }).first().click();
+  await pagina.locator('#link').fill(link);
+  for (const a of areas) await marcarChip(pagina, 'Áreas', a);
+  for (const t of temas) await marcarChip(pagina, 'Temas', t);
+  await pagina.getByRole('button', { name: /publicar no mural/i }).click();
+  await pagina.waitForURL(/\/eventos\/[0-9a-f-]{36}$/, { timeout: 10000 });
+  return pagina.url();
+}
+
+/** Um ano à frente: evento de teste nunca vence enquanto a suíte existir. */
+export function daquiAUmAno(mesDia) {
+  return `${new Date().getFullYear() + 1}-${mesDia}`;
+}

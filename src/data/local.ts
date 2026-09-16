@@ -1,9 +1,12 @@
 import type {
-  Comentario, Discussao, Interesse, Participante, Projeto, Tema, TipoParticipacao,
+  Comentario, Discussao, Evento, Interesse, Participante, Projeto, Tema,
+  TipoParticipacao, Uf,
 } from '../lib/dominio';
+import { fimDaJanela, jaRolou } from '../lib/datas';
 import type {
-  ComentarioComAutor, DadosPerfil, DadosProjeto, DiscussaoCompleta, FiltrosPessoas,
-  FiltrosProjetos, InteresseComParticipante, InteresseComProjeto, NovaDiscussao,
+  ComentarioComAutor, DadosEvento, DadosPerfil, DadosProjeto, DiscussaoCompleta,
+  EventoComAutor, FiltrosEventos, FiltrosPessoas, FiltrosProjetos,
+  InteresseComParticipante, InteresseComProjeto, LocalDeEventos, NovaDiscussao,
   ParticipanteResumo, ProjetoComAutor, Repositorio, Sessao,
 } from './tipos';
 import {
@@ -27,12 +30,13 @@ interface Banco {
     discussao_id: string; participante_id: string; criado_em: string; demo?: boolean;
   }[];
   interesses: Interesse[];
+  eventos: Evento[];
   sessao: Sessao | null;
 }
 
 const vazio = (): Banco => ({
   contas: [], participantes: [], projetos: [], discussoes: [],
-  comentarios: [], participacoes: [], interesses: [], sessao: null,
+  comentarios: [], participacoes: [], interesses: [], eventos: [], sessao: null,
 });
 
 function ler(): Banco {
@@ -107,6 +111,17 @@ function mesmaCidade(a: string, b: string): boolean {
 function resumo(p: Participante | undefined): ParticipanteResumo | null {
   if (!p) return null;
   return { id: p.id, nome: p.nome, ocupacao: p.ocupacao, cidade: p.cidade, foto: p.foto };
+}
+
+/**
+ * O mural ordena por quando o evento acontece, nao por quando foi publicado: o
+ * que vem antes aparece antes. Nos passados a ordem inverte — o que acabou de
+ * acontecer interessa mais do que o de um ano atras.
+ */
+function ordenarPorData<T extends { data_inicio: string }>(itens: T[], invertido: boolean): T[] {
+  return [...itens].sort((a, z) => (invertido
+    ? z.data_inicio.localeCompare(a.data_inicio)
+    : a.data_inicio.localeCompare(z.data_inicio)));
 }
 
 function maisRecentePrimeiro<T extends { criado_em: string }>(itens: T[]): T[] {
@@ -185,6 +200,10 @@ export class RepositorioLocal implements Repositorio {
 
   private comAutor(b: Banco, p: Projeto): ProjetoComAutor {
     return { ...p, autor: resumo(b.participantes.find((x) => x.id === p.autor_id)) };
+  }
+
+  private comAutorEvento(b: Banco, e: Evento): EventoComAutor {
+    return { ...e, autor: resumo(b.participantes.find((x) => x.id === e.autor_id)) };
   }
 
   private completarDiscussao(b: Banco, d: Discussao): DiscussaoCompleta {
@@ -588,7 +607,106 @@ export class RepositorioLocal implements Repositorio {
     return comentario;
   }
 
+  // --- Eventos ---
+
+  async listarEventos(f: FiltrosEventos): Promise<EventoComAutor[]> {
+    const b = ler();
+    const limite = f.janela ? fimDaJanela(f.janela) : null;
+    const encontrados = b.eventos.filter((e) => {
+      // O que já rolou sai da listagem principal; só aparece quando pedido.
+      if (jaRolou(e) !== Boolean(f.passados)) return false;
+      if (f.estado && e.estado !== f.estado) return false;
+      if (f.cidade && !mesmaCidade(e.cidade ?? '', f.cidade)) return false;
+      if (f.area && !e.areas.includes(f.area)) return false;
+      if (f.tema && !e.temas.includes(f.tema)) return false;
+      if (f.entrada && e.entrada !== f.entrada) return false;
+      // A janela olha o COMEÇO: uma temporada que já abriu conta como
+      // acontecendo nesta semana, mesmo terminando daqui a três meses.
+      if (limite && e.data_inicio > limite) return false;
+      return true;
+    });
+    return ordenarPorData(encontrados, Boolean(f.passados))
+      .map((e) => this.comAutorEvento(b, e));
+  }
+
+  async obterEvento(eid: string): Promise<EventoComAutor | null> {
+    const b = ler();
+    const e = b.eventos.find((x) => x.id === eid);
+    return e ? this.comAutorEvento(b, e) : null;
+  }
+
+  async eventosDoParticipante(participanteId: string): Promise<EventoComAutor[]> {
+    const b = ler();
+    const seus = b.eventos.filter((e) => e.autor_id === participanteId && !jaRolou(e));
+    return ordenarPorData(seus, false).map((e) => this.comAutorEvento(b, e));
+  }
+
+  async meusEventos(): Promise<EventoComAutor[]> {
+    const b = ler();
+    const s = this.exigirSessao(b);
+    const meus = b.eventos.filter((e) => e.autor_id === s.usuario_id);
+    return ordenarPorData(meus, false).map((e) => this.comAutorEvento(b, e));
+  }
+
+  async criarEvento(dados: DadosEvento): Promise<Evento> {
+    const b = ler();
+    const s = this.exigirSessao(b);
+    const evento: Evento = {
+      ...dados, id: id(), autor_id: s.usuario_id, criado_em: agora(),
+    };
+    b.eventos.push(evento);
+    gravar(b);
+    return evento;
+  }
+
+  async atualizarEvento(eid: string, dados: DadosEvento): Promise<Evento> {
+    const b = ler();
+    const s = this.exigirSessao(b);
+    const i = b.eventos.findIndex((x) => x.id === eid);
+    if (i < 0) throw new Error('Esse evento não existe mais.');
+    if (b.eventos[i].autor_id !== s.usuario_id) {
+      throw new Error('Só quem publicou pode editar.');
+    }
+    b.eventos[i] = { ...b.eventos[i], ...dados };
+    gravar(b);
+    return b.eventos[i];
+  }
+
+  async excluirEvento(eid: string): Promise<void> {
+    const b = ler();
+    const s = this.exigirSessao(b);
+    const e = b.eventos.find((x) => x.id === eid);
+    if (!e) return;
+    if (e.autor_id !== s.usuario_id) throw new Error('Só quem publicou pode apagar.');
+    b.eventos = b.eventos.filter((x) => x.id !== eid);
+    gravar(b);
+  }
+
+  async locaisDeEventos(): Promise<LocalDeEventos[]> {
+    // Só o que está por vir: filtrar por um estado sem evento futuro devolveria
+    // uma lista vazia e pareceria defeito.
+    const porEstado = new Map<Uf, Set<string>>();
+    for (const e of ler().eventos) {
+      if (jaRolou(e) || !e.estado) continue;
+      const cidades = porEstado.get(e.estado) ?? new Set<string>();
+      if (e.cidade) cidades.add(e.cidade);
+      porEstado.set(e.estado, cidades);
+    }
+    return [...porEstado]
+      .map(([estado, cidades]) => ({
+        estado,
+        cidades: [...cidades].sort((a, z) => a.localeCompare(z, 'pt-BR')),
+      }))
+      .sort((a, z) => a.estado.localeCompare(z.estado));
+  }
+
   // --- Tema ---
+
+  async eventosPorTema(tema: Tema): Promise<EventoComAutor[]> {
+    const b = ler();
+    const encontrados = b.eventos.filter((e) => e.temas.includes(tema) && !jaRolou(e));
+    return ordenarPorData(encontrados, false).map((e) => this.comAutorEvento(b, e));
+  }
 
   async participantesPorTema(tema: Tema): Promise<Participante[]> {
     return maisRecentePrimeiro(

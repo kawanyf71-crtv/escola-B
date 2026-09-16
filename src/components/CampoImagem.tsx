@@ -19,7 +19,7 @@ export function CampoImagem({
   dica: string;
   proporcao: '1:1' | '16:9';
   regra: RegraDeImagem;
-  pasta: 'perfis' | 'projetos';
+  pasta: 'perfis' | 'projetos' | 'eventos';
   /** URL ou data URL já guardada. Registros antigos com URL http continuam valendo. */
   valor: string | null;
   aoMudar: (novo: string | null) => void;

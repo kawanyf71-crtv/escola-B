@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
+import { Foto } from './Cards';
 import { useSessao } from '../lib/sessao';
 
 /**
@@ -11,9 +12,13 @@ const LINKS = [
   { para: '/inicio', texto: 'Início', barra: false },
   { para: '/pessoas', texto: 'Gente', barra: true },
   { para: '/projetos', texto: 'Projetos', barra: true },
+  { para: '/eventos', texto: 'Eventos', barra: true },
   { para: '/assuntos', texto: 'Assuntos', barra: true },
   { para: '/temas', texto: 'Temas', barra: false },
-  { para: '/meu-espaco', texto: 'Meu espaço', barra: true },
+  // Meu espaço saiu da barra pra abrir lugar pro mural: cinco alvos em 390px
+  // ficam menores que o dedo. Ele virou o avatar no canto do cabeçalho, que é
+  // onde se procura a própria conta.
+  { para: '/meu-espaco', texto: 'Meu espaço', barra: false },
 ];
 
 export function Layout({ children }: { children: React.ReactNode }) {
@@ -62,6 +67,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 ))}
                 <button type="button" className="nav-sair" onClick={encerrar}>Sair</button>
               </nav>
+
+              <Link className="avatar" to="/meu-espaco" aria-label="Meu espaço">
+                <Foto pessoa={perfil!} mini />
+              </Link>
               <button
                 type="button"
                 className="menu-botao menu-botao--discreto"
@@ -69,7 +78,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 onClick={() => setMenuAberto(true)}
               >
                 <span className="seta seta--baixo" aria-hidden="true" />
-                Menu
+                {/* No celular sobra só a seta: o avatar entrou no cabeçalho e o
+                    rótulo por extenso empurrava o lema da marca pra fora. O nome
+                    acessível continua sendo "Menu". */}
+                <span className="menu-botao__rotulo">Menu</span>
               </button>
             </>
           )}

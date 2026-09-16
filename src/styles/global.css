@@ -450,6 +450,14 @@ a.chip:hover, a.chip:focus-visible { text-decoration: underline; }
 
 .moldura--grande { width: 8rem; height: 8rem; }
 
+/* Avatar do cabecalho: a moldura de 7px viraria quase a foto inteira num quadro
+   de 2rem, entao aqui ela afina pra 2px. */
+.moldura--mini {
+  width: 2rem;
+  height: 2rem;
+  border-width: 2px;
+}
+
 /* A moldura e sempre preta, como manda a marca. Sobre faixa preta ela some, e
    e assim mesmo: uma fotografia de verdade ja se destaca do fundo chapado. Nao
    trocar por off-white nem por amarelo — foi tentado e a borda clara em volta
@@ -463,8 +471,8 @@ a.chip:hover, a.chip:focus-visible { text-decoration: underline; }
    `.moldura--grande` e, por vir depois, encolheria a foto do perfil de 128px
    para 112px entre 640px e 880px de largura. */
 @media (min-width: 40rem) {
-  .moldura:not(.moldura--grande) { width: 7rem; height: 7rem; }
-  .moldura--vazia:not(.moldura--grande) { font-size: 2.25rem; }
+  .moldura:not(.moldura--grande):not(.moldura--mini) { width: 7rem; height: 7rem; }
+  .moldura--vazia:not(.moldura--grande):not(.moldura--mini) { font-size: 2.25rem; }
 
   .moldura--grande { width: 11rem; height: 11rem; }
   .moldura--grande.moldura--vazia { font-size: 3.75rem; }
@@ -513,6 +521,8 @@ input[type='text'],
 input[type='email'],
 input[type='password'],
 input[type='url'],
+input[type='date'],
+input[type='time'],
 select,
 textarea {
   width: 100%;
@@ -538,6 +548,16 @@ select {
 .campo--erro input,
 .campo--erro select,
 .campo--erro textarea { border-color: var(--vermelho); }
+
+/* Campo de data e de hora tem altura propria do navegador, menor que o alvo de
+   toque: sem isto saem com 21px e reprovam na auditoria de acessibilidade. */
+input[type='date'],
+input[type='time'] {
+  min-height: var(--alvo);
+  /* Sem largura maxima o campo de data estica ate o fim da coluna e some junto
+     do vizinho. */
+  max-width: 14rem;
+}
 
 /* O erro era um retangulo vermelho cheio, em caixa alta e Archivo Black: no
    formulario inteiro davam a impressao de que a tela toda deu errado. A borda
@@ -833,6 +853,37 @@ select {
   color: var(--tinta);
 }
 
+/* Abaixo de 40rem o rotulo vira so nome acessivel: com o avatar no cabecalho,
+   "MENU" por extenso empurrava o lema da marca pra fora da tela. */
+.menu-botao__rotulo {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Sem rotulo o botao encolhe pra 37px e deixa de ser alvo de toque: a norma
+   pede 44px, que e o que --alvo vale. */
+.menu-botao {
+  min-width: var(--alvo);
+  justify-content: center;
+}
+
+.menu-botao .seta--baixo { margin-right: 0; }
+
+@media (min-width: 40rem) {
+  .menu-botao__rotulo {
+    position: static;
+    width: auto; height: auto;
+    margin: 0;
+    overflow: visible;
+    clip-path: none;
+  }
+  .menu-botao .seta--baixo { margin-right: 0.4em; }
+}
+
 .nav-sair {
   font-weight: 600;
   display: inline-flex;
@@ -929,6 +980,21 @@ select {
 
 /* ------------------------------------------------------------------- rodape */
 
+/* O avatar e o caminho pro proprio espaco: e onde se procura a propria conta, e
+   e o que libera um lugar na barra de baixo pro mural. O alvo de toque e o link
+   inteiro, nao so a imagem. */
+.avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--alvo);
+  min-height: var(--alvo);
+  flex: none;
+  text-decoration: none;
+}
+
+.avatar .moldura--vazia { font-size: 0.875rem; }
+
 /* ---------------------------------------------------- barra do celular */
 
 .barra-baixo {
@@ -989,6 +1055,173 @@ select {
     padding-bottom: calc(2rem + env(safe-area-inset-bottom, 0px));
   }
 }
+
+/* ------------------------------------------------------- mural de eventos */
+
+/* Filtro de mural: retangulo de canto reto com seta triangular, no espirito de
+   uma bilheteria mas com a tipografia daqui. Nunca pilula.
+
+   A borda herda --linha-campo do select comum, e nao --linha: um select e
+   componente de interface, e a WCAG pede 3:1 entre o que o identifica e o fundo
+   (1.4.11). --linha da 1,39:1 sobre o preto da pagina. Mesma razao do desvio
+   no 5, e o verificar:ritmo cobra. */
+.filtros-mural {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: var(--e1) var(--e2);
+}
+
+.filtro-mural__caixa { position: relative; }
+
+.filtro-mural select {
+  font-family: var(--corpo);
+  font-weight: 600;
+  font-size: 0.8125rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  /* Espaco a direita pra seta, que e desenhada por cima. */
+  padding-right: 2rem;
+}
+
+.filtro-mural .seta--baixo {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  margin: 0;
+  width: 0.6rem;
+  height: 0.6rem;
+  color: var(--tinta);
+  pointer-events: none;
+}
+
+/* Filtro ligado fica chapado: o estado nao depende so da borda. */
+.filtro-mural--ativo select {
+  background: var(--amarelo);
+  color: var(--preto);
+  border-color: var(--amarelo);
+}
+
+.filtro-mural--ativo .seta--baixo { color: var(--preto); }
+
+/* Cabecalho de mes: e ele que da o ritmo de bilheteria sem trocar o fundo. */
+.mes + .mes { margin-top: var(--e4); }
+
+.mes__titulo {
+  font-family: var(--titulo);
+  font-weight: 900;
+  font-size: 1.125rem;
+  line-height: 1;
+  text-transform: uppercase;
+  color: var(--amarelo);
+  margin: 0 0 var(--e2);
+}
+
+.mes__titulo::before {
+  content: '';
+  display: block;
+  width: 4rem;
+  height: 3px;
+  background: var(--vermelho);
+  margin-bottom: var(--e2);
+}
+
+/* Tres colunas onde cabe: um cartaz 16:9 numa coluna de 1/3 ainda e legivel, e
+   o mural vive de ver muita coisa de uma vez. */
+@media (min-width: 60rem) {
+  .grade--eventos { grid-template-columns: repeat(3, 1fr); }
+}
+
+.card--evento { display: flex; flex-direction: column; }
+
+/* O banner e o unico lugar onde algo se sobrepoe a outra coisa no site inteiro:
+   o selo de data precisa estar SOBRE o cartaz pra ser lido antes dele. */
+.card__banner { position: relative; }
+
+.card--evento .card__capa { margin-bottom: 0; }
+
+.selo-data {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: var(--amarelo);
+  color: var(--preto);
+  font-family: var(--titulo);
+  font-weight: 900;
+  line-height: 1;
+  text-transform: uppercase;
+  font-size: 0.6875rem;
+  letter-spacing: 0.04em;
+  padding: 0.4375rem 0.5rem;
+  border-radius: 0;
+}
+
+.selo-data strong {
+  font-size: 1.375rem;
+  letter-spacing: normal;
+  margin-bottom: 0.125rem;
+}
+
+/* Intervalo vira uma linha so: empilhar quatro pedacos daria um bloco maior que
+   o proprio cartaz. */
+.selo-data--intervalo {
+  flex-direction: row;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+}
+
+/* O titulo do evento para em duas linhas: numa grade de tres colunas, um nome
+   comprido empurraria o card inteiro e quebraria o alinhamento da fileira. */
+.card__titulo--evento {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* O que ja rolou aparece esmaecido no cartaz — o texto continua legivel, porque
+   opacidade em texto e o que quebra contraste. */
+.card--passado .card__capa { opacity: 0.45; }
+
+.card--evento .card__meta .seta { color: var(--tinta-fraca); }
+
+/* Banner da pagina do evento: mesma moldura, sem limite de largura. */
+.card__capa--grande { aspect-ratio: 16 / 9; }
+
+/* Ficha de dados do evento: rotulo em cima, valor embaixo, em colunas que
+   quebram sozinhas. */
+.ficha {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: var(--e2);
+  margin: var(--e2) 0 0;
+}
+
+.ficha dd { margin: 0.25rem 0 0; }
+
+/* Campos que andam lado a lado quando ha espaco: data, hora e fim de temporada
+   sao tres pedacos da mesma pergunta. */
+.linha-de-campos {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0 var(--e2);
+}
+
+@media (min-width: 34rem) {
+  .linha-de-campos { grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); }
+}
+
+/* No celular o botao principal ocupa a largura toda: e o alvo do polegar. */
+.botao--bloco-no-celular { width: 100%; }
+
+@media (min-width: 40rem) {
+  .botao--bloco-no-celular { width: auto; }
+}
+
+.contagem--amarela { color: var(--amarelo); }
 
 /* ------------------------------------------------------------- home */
 
@@ -1092,6 +1325,9 @@ select {
   flex-direction: column;
   background: var(--preto);
   color: var(--tinta);
+  /* O calendario e o relogio do campo de data sao desenhados pelo navegador:
+     sem isto o icone sai preto sobre o campo escuro e o seletor abre claro. */
+  color-scheme: dark;
 
   /* Um valor so, valido na pagina inteira. Antes cada faixa redefinia estes
      tokens, e o mesmo componente mudava de aparencia tres vezes na mesma tela
@@ -1162,6 +1398,8 @@ select {
 .pagina input[type='email'],
 .pagina input[type='password'],
 .pagina input[type='url'],
+.pagina input[type='date'],
+.pagina input[type='time'],
 .pagina select,
 .pagina textarea {
   background: var(--superficie-2);
@@ -1173,6 +1411,8 @@ select {
 .pagina input[type='email']:focus,
 .pagina input[type='password']:focus,
 .pagina input[type='url']:focus,
+.pagina input[type='date']:focus,
+.pagina input[type='time']:focus,
 .pagina select:focus,
 .pagina textarea:focus { border-color: var(--amarelo); }
 
