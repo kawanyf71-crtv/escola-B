@@ -4,6 +4,7 @@ import { Campo, GrupoOpcoes } from '../components/Campos';
 import { CampoImagem } from '../components/CampoImagem';
 import { REGRA_FOTO } from '../lib/imagem';
 import { chaveDoRascunhoDePerfil } from '../lib/adiantado';
+import { ContaAberta } from '../components/ContaAberta';
 import { Erro } from '../components/Estados';
 import {
   AREAS, DISPONIBILIDADES, HABILIDADES, TEMAS,
@@ -143,6 +144,7 @@ export function MeuPerfil() {
             Ninguém aqui é currículo. Conta o que você faz, o que sabe fazer e o que
             te move — é por aí que a turma vai te achar.
           </p>
+          <ContaAberta />
         </div>
       </section>
 

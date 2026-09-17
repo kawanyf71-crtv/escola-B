@@ -37,6 +37,21 @@ await p.getByRole('button', { name: /criar conta/i }).click();
 await checar('RF-002 primeiro login cai no começo do cadastro, não numa home vazia', () =>
   p.waitForURL('**/comecar', { timeout: 5000 }));
 
+// O e-mail e a senha continuam sendo pedidos uma vez, em /criar-conta. O que
+// faltava era o fluxo LEMBRAR disso: com sessão e sem perfil, toda porta leva
+// pra cá, e a tela parecia o primeiro passo de quem nunca criou conta.
+await checar('O cadastro diz qual é a conta criada', () =>
+  p.getByText('kawany@exemplo.org').first().waitFor({ timeout: 3000 }));
+
+await checar('Dá pra sair do meio do cadastro e voltar com o mesmo e-mail e senha', async () => {
+  await p.getByRole('button', { name: /não é você\? sair/i }).click();
+  await p.waitForURL('**/entrar', { timeout: 5000 });
+  await p.locator('#email').fill('kawany@exemplo.org');
+  await p.locator('#senha').fill('senha123');
+  await p.getByRole('button', { name: /^entrar$/i }).click();
+  await p.waitForURL('**/comecar', { timeout: 5000 });
+});
+
 await checar('Lista da turma: "sou eu" adianta nome, cidade e @ no formulário', async () => {
   await p.locator('#busca-comecar').fill('kawany');
   await p.locator('.rede').first().getByRole('button', { name: /^sou eu$/i })
@@ -49,6 +64,9 @@ await checar('Lista da turma: "sou eu" adianta nome, cidade e @ no formulário',
   if (nome !== 'Kawany Feliciano') throw new Error(`nome veio "${nome}"`);
   if (insta !== '@kawany_feliciano') throw new Error(`instagram veio "${insta}"`);
   if (cidade !== 'SP') throw new Error(`cidade veio "${cidade}"`);
+  // O recibo da conta acompanha até o formulário: é a última tela antes de
+  // publicar, e a última chance de alguém reparar que entrou na conta errada.
+  await p.getByText('kawany@exemplo.org').first().waitFor({ timeout: 3000 });
 });
 
 // -------------------------------------------------------------- H1 perfil

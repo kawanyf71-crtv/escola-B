@@ -1741,3 +1741,28 @@ input[type='time'] {
   font-size: 1.125rem;
   line-height: 1.15;
 }
+
+/* --------------------------------------------------- conta já criada */
+/* Recibo do passo do e-mail e da senha, e a única porta visível pra trocar de
+   conta no meio do cadastro. Discreto de propósito: é lembrete, não etapa —
+   quem está aqui quer preencher o perfil, não reler o que já fez. */
+
+.conta-aberta {
+  border-left: 4px solid var(--linha-campo);
+  padding-left: var(--e2);
+  margin-top: var(--e3);
+  max-width: 32rem;
+}
+
+.conta-aberta__linha {
+  font-size: 0.875rem;
+  color: var(--tinta-fraca);
+  margin: 0;
+}
+
+/* O e-mail é a informação que a pessoa veio buscar aqui: sai do cinza. */
+.conta-aberta__linha strong {
+  color: var(--tinta);
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}

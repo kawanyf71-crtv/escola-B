@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
+import { ContaAberta } from '../components/ContaAberta';
 import { Carregando, Erro } from '../components/Estados';
 import type { PerfilSuspenso } from '../lib/dominio';
 import { comArroba, combina, ondeFica, rotuloDaRede } from '../lib/redes';
@@ -53,6 +54,7 @@ export function Comecar() {
             Se você deixou seu @ no grupo, seu lugar já tá guardado. Procura seu nome
             ou seu @ que a gente adianta o começo pra você.
           </p>
+          <ContaAberta />
         </div>
       </section>
 
