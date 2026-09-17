@@ -219,7 +219,7 @@ const evento = p.url();
 for (const rota of ['/inicio', '/eventos', '/eventos/novo',
                     '/pessoas', '/projetos', '/projetos/novo', '/assuntos',
                     '/assuntos/novo', '/temas', '/temas/ancestralidade',
-                    '/meu-espaco', '/meu-perfil']) {
+                    '/meu-espaco', '/meu-perfil', '/gente/redes']) {
   await ir(p, rota);
   await conferir(rota);
 }
@@ -253,7 +253,7 @@ await p.getByRole('button', { name: /^Fechar$/i }).click();
 /* Entrada, cadastro e login só existem deslogado — logado as três redirecionam
    pra dentro. */
 await sair(p);
-for (const rota of ['/', '/entrar', '/criar-conta']) {
+for (const rota of ['/', '/entrar', '/criar-conta', '/gente/redes']) {
   await ir(p, rota);
   await conferir(rota);
 }

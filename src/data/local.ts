@@ -1,6 +1,6 @@
 import type {
-  Comentario, Discussao, Evento, Interesse, Participante, Projeto, Tema,
-  TipoParticipacao, Uf,
+  Comentario, Discussao, Evento, Interesse, Participante, PerfilSuspenso, Projeto,
+  Tema, TipoParticipacao, Uf,
 } from '../lib/dominio';
 import { fimDaJanela, jaRolou } from '../lib/datas';
 import type {
@@ -13,6 +13,7 @@ import {
   COMENTARIOS_EXEMPLO, DISCUSSOES_EXEMPLO, EVENTOS_EXEMPLO, INTERESSES_EXEMPLO,
   PARTICIPACOES_EXEMPLO, PARTICIPANTES_EXEMPLO, PROJETOS_EXEMPLO,
 } from './exemplo';
+import { REDES_DA_TURMA, chaveDaRede } from './redes';
 
 // Nao renomear junto com o produto: e a chave onde os dados ja gravados moram.
 // Trocar aqui faria todo mundo perder perfil, projeto e conversa.
@@ -31,12 +32,14 @@ interface Banco {
   }[];
   interesses: Interesse[];
   eventos: Evento[];
+  perfis_suspensos: PerfilSuspenso[];
   sessao: Sessao | null;
 }
 
 const vazio = (): Banco => ({
   contas: [], participantes: [], projetos: [], discussoes: [],
-  comentarios: [], participacoes: [], interesses: [], eventos: [], sessao: null,
+  comentarios: [], participacoes: [], interesses: [], eventos: [],
+  perfis_suspensos: [], sessao: null,
 });
 
 function ler(): Banco {
@@ -126,6 +129,25 @@ function ordenarPorData<T extends { data_inicio: string }>(itens: T[], invertido
 
 function maisRecentePrimeiro<T extends { criado_em: string }>(itens: T[]): T[] {
   return [...itens].sort((a, b) => b.criado_em.localeCompare(a.criado_em));
+}
+
+/**
+ * Semeia a lista de @ da turma, uma vez. O que já está gravado manda: quem foi
+ * reivindicado continua reivindicado, quem pediu pra sair continua fora, e
+ * registro novo no arquivo entra sem mexer em nada do que já existe.
+ *
+ * A comparação é pelo primeiro handle (ou pelo nome, nos dois registros que
+ * chegaram sem @ nenhum) e não pelo id: o id nasce aqui, e nasceria diferente
+ * a cada vez.
+ */
+function semearRedes(b: Banco): boolean {
+  const jaTem = new Set(b.perfis_suspensos.map((p) => chaveDaRede(p)));
+  const faltando = REDES_DA_TURMA.filter((r) => !jaTem.has(chaveDaRede(r)));
+  if (faltando.length === 0) return false;
+  b.perfis_suspensos.push(...faltando.map((r) => ({
+    ...r, id: id(), reivindicado_por: null, removido: false,
+  })));
+  return true;
 }
 
 export class RepositorioLocal implements Repositorio {
@@ -700,6 +722,87 @@ export class RepositorioLocal implements Repositorio {
         cidades: [...cidades].sort((a, z) => a.localeCompare(z, 'pt-BR')),
       }))
       .sort((a, z) => a.estado.localeCompare(z.estado));
+  }
+
+  // --- As redes da turma (perfis suspensos) ---
+
+  /**
+   * Lê o banco já com a lista semeada. Gravar é melhor-esforço: em aba anônima
+   * o localStorage recusa escrita, e aí a lista existe só nesta sessão — ver a
+   * lista continua funcionando, o que se perde é a memória de quem a
+   * reivindicou, que nessa aba já se perderia de qualquer jeito.
+   */
+  private lerComRedes(): Banco {
+    const b = ler();
+    if (semearRedes(b)) {
+      try { gravar(b); } catch { /* segue com a lista em memória */ }
+    }
+    return b;
+  }
+
+  async listarPerfisSuspensos(): Promise<PerfilSuspenso[]> {
+    return this.lerComRedes().perfis_suspensos.filter((p) => !p.removido);
+  }
+
+  async obterPerfilSuspenso(pid: string): Promise<PerfilSuspenso | null> {
+    const p = this.lerComRedes().perfis_suspensos.find((x) => x.id === pid);
+    return p && !p.removido ? p : null;
+  }
+
+  async meuPerfilSuspenso(): Promise<PerfilSuspenso | null> {
+    const b = this.lerComRedes();
+    if (!b.sessao) return null;
+    const meu = b.perfis_suspensos.find(
+      (p) => p.reivindicado_por === b.sessao!.usuario_id && !p.removido,
+    );
+    return meu ?? null;
+  }
+
+  async reivindicarPerfilSuspenso(pid: string): Promise<void> {
+    const b = this.lerComRedes();
+    const s = this.exigirSessao(b);
+    const p = b.perfis_suspensos.find((x) => x.id === pid);
+    if (!p || p.removido) throw new Error('Esse @ não está mais na lista.');
+    if (p.reivindicado_por && p.reivindicado_por !== s.usuario_id) {
+      throw new Error('Alguém já disse que esse @ é dela.');
+    }
+    // Uma pessoa, um @: reivindicar um segundo devolve o primeiro.
+    for (const outro of b.perfis_suspensos) {
+      if (outro.id !== pid && outro.reivindicado_por === s.usuario_id) {
+        outro.reivindicado_por = null;
+      }
+    }
+    p.reivindicado_por = s.usuario_id;
+    gravar(b);
+  }
+
+  async devolverPerfilSuspenso(pid: string): Promise<void> {
+    const b = this.lerComRedes();
+    const s = this.exigirSessao(b);
+    const p = b.perfis_suspensos.find((x) => x.id === pid);
+    if (!p) return;
+    if (p.reivindicado_por !== s.usuario_id) {
+      throw new Error('Esse registro não é seu pra devolver.');
+    }
+    p.reivindicado_por = null;
+    gravar(b);
+  }
+
+  async sairDaLista(handle: string): Promise<boolean> {
+    const procurado = handle.trim().toLowerCase();
+    if (!procurado) return false;
+    const b = this.lerComRedes();
+    const p = b.perfis_suspensos.find(
+      (x) => !x.removido && x.handles.some((h) => h.toLowerCase() === procurado),
+    );
+    if (!p) return false;
+    // Só a marca de removido: quem some da lista some de toda a interface, e
+    // uma reivindicação pendurada num registro invisível não aparece em lugar
+    // nenhum. No Supabase é a única coluna que a pessoa deslogada pode tocar,
+    // e os dois adaptadores fazem a mesma coisa.
+    p.removido = true;
+    gravar(b);
+    return true;
   }
 
   // --- Tema ---

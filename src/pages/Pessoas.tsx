@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Carregando, Cartaz, Erro, VazioDeFiltro } from '../components/Estados';
 import { CardPessoa } from '../components/Cards';
 import { AREAS, HABILIDADES, TEMAS, type Area, type Habilidade, type Tema } from '../lib/dominio';
@@ -36,6 +37,12 @@ export function Pessoas() {
           <p className="miudo">
             Quem tá no curso, o que cada uma faz e o que sabe fazer.
           </p>
+          <div className="acoes">
+            <Link className="botao botao--neutro" to="/gente/redes">
+              <span className="seta" aria-hidden="true" />
+              Confira as redes da turma aqui
+            </Link>
+          </div>
         </div>
       </section>
 

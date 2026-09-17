@@ -43,7 +43,7 @@ do Supabase e aperte **Run**. Uma vez só, num banco vazio.
 > `trailing junk after numeric literal`, foi isso: ele recebeu texto que não é
 > SQL.
 
-O `instalar.sql` é gerado (`npm run sql`) e emenda as quatro migrações na ordem:
+O `instalar.sql` é gerado (`npm run sql`) e emenda as cinco migrações na ordem:
 
 | migração | o que faz |
 |---|---|
@@ -51,6 +51,7 @@ O `instalar.sql` é gerado (`npm run sql`) e emenda as quatro migrações na ord
 | `0002_assunto_sem_projeto.sql` | torna o projeto de origem do assunto opcional |
 | `0003_bucket_de_imagens.sql` | bucket `imagens` e políticas do Storage |
 | `0004_mural_de_eventos.sql` | tabela `eventos`, RLS, e a pasta `eventos` no bucket |
+| `0005_perfis_suspensos.sql` | tabela `perfis_suspensos` com os 139 @ da turma, RLS e a função de saída |
 
 Num banco que já existe, rode só a migração que falta — as de `migrations/`
 continuam sendo a fonte, e cada uma depende da anterior. Fora de ordem dá erro
@@ -170,7 +171,7 @@ npm run dev                       # em outro terminal
 npm run verificar
 ```
 
-Três suítes, todas contra o navegador de verdade em 390px:
+Seis suítes, todas contra o navegador de verdade em 390px:
 
 | Comando | O que confere |
 |---|---|
@@ -206,6 +207,8 @@ src/
   data/local.ts         adaptador localStorage (padrão)
   data/supabase.ts      adaptador Supabase
   data/index.ts         escolhe um dos dois pelas variáveis de ambiente
+  data/redes.json       os 139 @ da turma — fonte do adaptador local E da 0005
+  data/redes.ts         tipa o JSON acima; não guarda dado nenhum
   components/           layout, estados (vazio/carregando/erro), campos, cards
   pages/                uma por tela da seção 9 da spec
                         (o código fala "discussao"; a interface fala "assunto")
@@ -213,7 +216,8 @@ src/
   styles/fontes.css     @font-face das fontes auto-hospedadas
   fontes/               os .woff2, processados pelo Vite (nome com hash)
 supabase/migrations/    esquema + RLS
-verificacao/            as três suítes acima
+scripts/                gera instalar.sql e a migração 0005 (npm run sql)
+verificacao/            as seis suítes acima
 ```
 
 **A camada de dados fica atrás de uma interface** (`src/data/tipos.ts`) com dois
@@ -286,6 +290,63 @@ projetos virariam a mesma coisa numa rolagem rápida.
 **O que este mural não faz:** venda, ingresso, check-in, lista de presença,
 contagem de interessados, mapa, recorrência, moderação, notificação e descrição
 longa. O cadastro é curto de propósito — quem quiser detalhe clica no link.
+
+## As redes da turma
+
+A lista de @ que a turma foi deixando no grupo. Um **perfil suspenso** é um @ com
+lugar guardado: não é conta, não é perfil, e não aparece no diretório de Gente —
+vive só em `/gente/redes` e na busca do começo do cadastro.
+
+São **139 registros**, do jeito que ela mandou: **6 sem nome** (aí o @ vira o
+rótulo), **9 sem UF**, **2 sem @ nenhum**, 19 UFs, 153 handles sem uma repetição.
+Nenhum handle foi corrigido, inventado ou completado — quem sabe qual é o @
+certo é a dona dele.
+
+- `/gente/redes` — a lista, uma pessoa por linha. Busca por nome ou @ (sem
+  acento e sem caixa, com ou sem arroba), filtro só das UFs que existem, chip
+  **JÁ TÁ AQUI** com link pro perfil de quem já chegou.
+- `/comecar` — a etapa nova do cadastro, antes do formulário. Quem se acha na
+  lista clica em **SOU EU** e o formulário abre com nome, cidade/UF, ocupação e
+  Instagram já preenchidos, sob uma placa amarela que explica por quê. Quem não
+  se acha vai pro formulário em branco com um clique, no botão que fica sempre
+  visível.
+- **Meu espaço** ganhou *"não era eu"*, que devolve o @ pra lista.
+
+**A reivindicação só acontece quando o perfil é publicado.** Quem desiste no meio
+não reivindica nada: o registro fica no rascunho do formulário (`suspenso_id`) e
+some junto com ele. Uma pessoa segura um @ só — no Postgres é um `unique` na
+coluna, e é por isso que o adaptador solta o anterior antes de pegar o novo.
+
+**A página é aberta, sem login.** É a única tela de dentro do site que é: quem
+está na lista, por definição, ainda não tem conta aqui, e precisa conseguir achar
+o próprio @ — inclusive pra pedir pra sair. A lista foi montada sem ninguém pedir
+pra entrar, então sair dela precisa ser mais fácil do que entrar: um link no fim
+da página, o @ digitado, e o registro some na hora, sem login e sem aprovação de
+ninguém.
+
+Isso custou uma função no banco, e não foi escolha de gosto. O Postgres exige que
+a linha **depois** de um `update` continue visível pela política de `select`, e a
+política esconde justamente o que foi removido: um `update` direto seria
+recusado. `sair_da_lista()` roda com os poderes de quem a criou, é a única porta
+que escreve `removido`, e escreve só isso — `anon` não tem permissão de escrita
+em coluna nenhuma da tabela. O `revoke` que abre a seção de RLS também não é
+decoração: o Supabase já concede tudo em toda tabela nova de `public`, e sem
+tirar primeiro a permissão por coluna não restringiria nada.
+
+**Um handle não vira link:** `fauxtino.com.br` parece endereço de site, não
+usuário do Instagram. O registro fica, o texto aparece, a âncora não — e a marca
+está **no dado** (`nao_linkar`), não num palpite por formato: `aya.morart` e
+`gia.quirino` também têm ponto e são @ legítimos.
+
+Os dados moram em `src/data/redes.json` e são a fonte dos dois lados:
+`src/data/redes.ts` os lê pro adaptador local e `scripts/gerar-redes-sql.mjs`
+escreve a migração 0005 a partir do mesmo arquivo (`npm run sql`). Duas cópias
+divergiriam; esta não tem como.
+
+**O que esta lista não faz:** verificação de identidade de qualquer tipo,
+importação de foto, bio ou seguidores do Instagram, convite por e-mail ou DM. E
+perfil suspenso não entra no diretório de Gente. Quem diz que é a pessoa, é a
+pessoa — a lista é de @ público de um grupo de curso, não de documento.
 
 ## Dados de exemplo
 
@@ -532,7 +593,7 @@ continua no cabeçalho.
 
 ### Desvios conscientes da marca
 
-Os dois que a spec já previu, mais um que apareceu na conferência:
+Os dois que a spec já previu, mais os que apareceram na conferência:
 
 1. **Botão amarelo leva texto `#111111`**, não branco (previsto na spec).
 2. **Corpo a 16px**, não 12,8px (previsto na spec).
@@ -559,6 +620,17 @@ Os dois que a spec já previu, mais um que apareceu na conferência:
    `verificar:ritmo` cobra isso em todo campo e todo chip de opção, do mesmo
    jeito que já cobrava dos botões.
 
+6. **O botão "confira as redes da turma aqui" tem contorno `--linha-campo`, não
+   `--linha`.** O pedido dizia `--linha`, que é a cor dos filetes. Pelo motivo
+   do desvio anterior, um contorno de botão é a fronteira de um componente e não
+   um filete: `--linha` daria 1,39:1 e o botão existiria só pelo rótulo. A cor
+   continua cinza neutra — o que ela precisava era não disputar com o vermelho,
+   e não disputa.
+
+7. **Cada `@` da lista é um alvo de 44px.** Eles parecem texto corrido e não
+   são: são destinos, e a auditoria pegou 245 links de 21px de altura. A linha
+   da lista cresceu por causa disso, e é o certo — dedo não acerta 21px.
+
 ---
 
 ## O que este MVP não faz
@@ -576,6 +648,27 @@ Duas perguntas da seção 14 continuam sem resposta e não são de software:
 - **Até quando isso precisa estar no ar.** Cada semana de construção custa uma
   aula de uso real.
 - **O que acontece depois de 14/11** — acervo congelado ou continuidade.
+
+### Em aberto na lista da turma
+
+Quatro coisas dependem de uma resposta dela, e nenhuma delas é código:
+
+- **`fauxtino.com.br`** — qual é o @ certo. Enquanto não vier, o registro fica e
+  o texto aparece sem link.
+- **`____amnh`** (em Ofe Martins) e **`cabeluda_` / `cabeluda__`** (em Bia Tech)
+  — de quem é, e qual dos dois. Estão no campo `conferir` de cada registro, que
+  nunca aparece na interface.
+- **Erick Reifanny e Carolina Ramos chegaram sem @.** Aparecem na lista pelo
+  nome, sem link nenhum. Na origem, o `@jahiamani` aparecia na linha da Carolina
+  **e** na do Jahi Amani; ficou com o Jahi.
+- **O registro da própria Kawany** entrou como qualquer outro, sem dono. Foi
+  decisão de não presumir: se ela quiser, é um clique em "sou eu" no cadastro, e
+  se não quiser estar lá, é o mesmo link de saída que vale pra turma toda.
+
+E o campo `linkedin` (29 registros têm) é guardado e **não é usado**. A lista
+tem o apelido (`ofe-martins`), não o endereço, e montar `linkedin.com/in/<x>` a
+partir dele seria o mesmo palpite que o `fauxtino.com.br` já mostrou custar
+caro. Basta ela confirmar que são caminhos de perfil pra virar link.
 
 E o risco número um segue sendo o mesmo que a spec apontou: **a plataforma nasce
 vazia**. Por isso os estados vazios são as telas mais trabalhadas aqui — cada

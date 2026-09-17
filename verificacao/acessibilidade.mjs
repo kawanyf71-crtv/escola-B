@@ -3,7 +3,9 @@
  * imagem, um h1 por pagina e navegacao por teclado — os requisitos nao-funcionais
  * de acessibilidade da spec que dao para conferir sozinho.
  */
-import { ir, abrirNavegador, criarParticipante } from './navegador.mjs';
+import {
+  ir, abrirNavegador, irAoFormularioDePerfil, marcarChip,
+} from './navegador.mjs';
 
 const AUDITOR = () => {
   const achados = [];
@@ -62,18 +64,38 @@ async function auditar(titulo) {
   }
 }
 
-for (const r of ['/', '/entrar', '/criar-conta']) { await ir(p, r); await auditar(r); }
+for (const r of ['/', '/entrar', '/criar-conta', '/gente/redes']) {
+  await ir(p, r);
+  await auditar(r);
+}
 
-await criarParticipante(p, {
-  email: 'a@b.org', nome: 'Kawany Feliciano', ocupacao: 'Produtora cultural',
-  cidade: 'Salvador, BA', bio: 'Produzo e escrevo sobre cultura negra.',
-  area: 'Comunicação', habilidades: ['Produção'], temas: ['Ancestralidade'],
-});
+// A etapa do começo só existe pra quem entrou e ainda não tem perfil: depois
+// dela a rota redireciona, então ou se audita aqui, ou não se audita nunca.
+await ir(p, '/criar-conta');
+await p.locator('#email').fill('a@b.org');
+await p.locator('#senha').fill('senha123');
+await p.getByRole('button', { name: /criar conta/i }).click();
+await p.waitForURL('**/comecar');
+await p.locator('#busca-comecar').fill('kawany');
+await p.locator('.rede').first().waitFor({ timeout: 5000 });
+await auditar('/comecar');
+await irAoFormularioDePerfil(p);
+
+await p.locator('#nome').fill('Kawany Feliciano');
+await p.locator('#ocupacao').fill('Produtora cultural');
+await p.locator('#cidade').fill('Salvador, BA');
+await p.locator('#mini_bio').fill('Produzo e escrevo sobre cultura negra.');
+await marcarChip(p, 'Áreas', 'Comunicação');
+await marcarChip(p, 'O que você sabe fazer', 'Produção');
+await marcarChip(p, 'O que te move', 'Ancestralidade');
+await p.getByRole('button', { name: /me apresentar pra turma/i }).click();
+await p.waitForURL('**/pessoas');
 
 for (const r of ['/inicio', '/eventos', '/eventos/novo',
                  '/pessoas', '/projetos', '/projetos/novo', '/assuntos',
                  '/assuntos/novo',
-                 '/temas', '/temas/ancestralidade', '/meu-espaco', '/meu-perfil']) {
+                 '/temas', '/temas/ancestralidade', '/meu-espaco', '/meu-perfil',
+                 '/gente/redes']) {
   await ir(p, r);
   await auditar(r);
 }

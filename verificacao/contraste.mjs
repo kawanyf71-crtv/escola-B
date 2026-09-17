@@ -5,7 +5,8 @@
  * 3,67:1 —, entao a conferencia precisa ser automatica.
  */
 import {
-  ir, abrirNavegador, criarEvento, criarParticipante, daquiAUmAno, marcarChip,
+  ir, abrirNavegador, criarEvento, criarParticipante, daquiAUmAno,
+  irAoFormularioDePerfil, marcarChip,
 } from './navegador.mjs';
 
 const AUDITOR = () => {
@@ -84,8 +85,10 @@ await ir(p, '/criar-conta');
 await p.locator('#email').fill('a@b.org');
 await p.locator('#senha').fill('senha123');
 await p.getByRole('button', { name: /criar conta/i }).click();
-await p.waitForURL('**/meu-perfil');
-await auditar('/meu-perfil (conta criada, perfil ainda vazio)');
+await p.waitForURL('**/comecar');
+await auditar('/comecar (conta criada, perfil ainda vazio)');
+await irAoFormularioDePerfil(p);
+await auditar('/meu-perfil (formulário em branco)');
 
 await p.locator('#nome').fill('Kawany Feliciano');
 await p.locator('#ocupacao').fill('Produtora cultural');

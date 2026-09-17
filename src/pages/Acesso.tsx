@@ -35,7 +35,10 @@ function FormularioAcesso({ modo }: { modo: 'entrar' | 'criar' }) {
     try {
       if (criando) {
         await criarConta(email.trim(), senha);
-        navegar('/meu-perfil'); // RF-002: direto ao formulario de perfil.
+        // RF-002: nada de home vazia. O comeco do cadastro pergunta antes se a
+        // pessoa ja estava esperada na lista de @ da turma; quem nao esta chega
+        // ao formulario em branco por um clique.
+        navegar('/comecar');
       } else {
         await entrar(email.trim(), senha);
         navegar('/pessoas');

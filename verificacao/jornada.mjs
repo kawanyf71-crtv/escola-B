@@ -31,8 +31,25 @@ await p.locator('#email').fill('kawany@exemplo.org');
 await p.locator('#senha').fill('senha123');
 await p.getByRole('button', { name: /criar conta/i }).click();
 
-await checar('RF-002 primeiro login cai direto no formulário de perfil', () =>
-  p.waitForURL('**/meu-perfil', { timeout: 5000 }));
+// A etapa do "já te esperavam por aqui?" entrou ANTES do formulário: quem
+// deixou o @ no grupo não digita de novo o que a turma já sabe. Quem não está
+// na lista chega ao formulário em branco por um clique, na mesma tela.
+await checar('RF-002 primeiro login cai no começo do cadastro, não numa home vazia', () =>
+  p.waitForURL('**/comecar', { timeout: 5000 }));
+
+await checar('Lista da turma: "sou eu" adianta nome, cidade e @ no formulário', async () => {
+  await p.locator('#busca-comecar').fill('kawany');
+  await p.locator('.rede').first().getByRole('button', { name: /^sou eu$/i })
+    .click({ timeout: 5000 });
+  await p.waitForURL('**/meu-perfil', { timeout: 5000 });
+  await p.getByText(/A gente já tava te esperando/i).waitFor({ timeout: 3000 });
+  const nome = await p.locator('#nome').inputValue();
+  const insta = await p.locator('#instagram').inputValue();
+  const cidade = await p.locator('#cidade').inputValue();
+  if (nome !== 'Kawany Feliciano') throw new Error(`nome veio "${nome}"`);
+  if (insta !== '@kawany_feliciano') throw new Error(`instagram veio "${insta}"`);
+  if (cidade !== 'SP') throw new Error(`cidade veio "${cidade}"`);
+});
 
 // -------------------------------------------------------------- H1 perfil
 await p.locator('#nome').fill('Kawany Feliciano');
@@ -73,6 +90,90 @@ await checar('H2 filtro sem resultado sugere afrouxar, não deixa tela em branco
   await p.getByText(/Tira um filtro e tenta de novo/i).waitFor({ timeout: 3000 });
 });
 await p.getByRole('button', { name: /limpar filtros/i }).first().click();
+
+// ------------------------------------------------------- as redes da turma
+await checar('Gente leva pra lista de @ da turma', async () => {
+  await ir(p, '/pessoas');
+  await p.getByRole('link', { name: /confira as redes da turma aqui/i })
+    .click({ timeout: 5000 });
+  await p.waitForURL('**/gente/redes', { timeout: 5000 });
+  await p.getByRole('heading', { name: /As redes da turma/i }).waitFor({ timeout: 3000 });
+});
+
+await checar('A lista traz os 139 registros e conta quem já chegou', async () => {
+  const linhas = await p.locator('.rede').count();
+  if (linhas !== 139) throw new Error(`${linhas} linhas, esperava 139`);
+  await p.locator('.contagem', { hasText: /139 pessoas na lista/i })
+    .waitFor({ timeout: 3000 });
+  await p.locator('.contagem', { hasText: /1 já chegou/i }).waitFor({ timeout: 3000 });
+});
+
+await checar('Quem reivindicou aparece com "já tá aqui" e link pro perfil', async () => {
+  const chip = p.locator('.rede', { hasText: '@kawany_feliciano' })
+    .getByRole('link', { name: /já tá aqui/i });
+  await chip.waitFor({ timeout: 3000 });
+  const destino = await chip.getAttribute('href');
+  if (!destino.includes('/pessoas/')) throw new Error(`link vai pra ${destino}`);
+});
+
+await checar('A busca acha por nome e por @, sem acento e sem caixa', async () => {
+  await p.locator('#busca-rede').fill('GRAZIELA');
+  await p.locator('.rede').first().waitFor({ timeout: 3000 });
+  if (await p.locator('.rede').count() !== 1) throw new Error('busca por nome falhou');
+  await p.locator('#busca-rede').fill('@mussssurana');
+  if (await p.locator('.rede').count() !== 1) throw new Error('busca por @ com arroba falhou');
+  await p.locator('#busca-rede').fill('');
+});
+
+await checar('O filtro de estado só oferece as UFs que existem na lista', async () => {
+  const quantas = await p.locator('#uf-rede option').count();
+  // 19 UFs na lista + a opção "Todos".
+  if (quantas !== 20) throw new Error(`${quantas} opções, esperava 20`);
+  await p.locator('#uf-rede').selectOption('BA');
+  const linhas = await p.locator('.rede').count();
+  if (linhas === 0 || linhas === 139) throw new Error(`filtro de UF trouxe ${linhas}`);
+  await p.locator('#uf-rede').selectOption('');
+});
+
+await checar('@ abre o Instagram em aba nova, e o que parece site não vira link', async () => {
+  const primeiro = p.locator('.rede__arrobas a').first();
+  const href = await primeiro.getAttribute('href');
+  if (!href.startsWith('https://instagram.com/')) throw new Error(`link é ${href}`);
+  if (await primeiro.getAttribute('rel') !== 'noopener noreferrer') {
+    throw new Error('link sem rel="noopener noreferrer"');
+  }
+  if (await primeiro.getAttribute('target') !== '_blank') {
+    throw new Error('link não abre em aba nova');
+  }
+  await p.locator('#busca-rede').fill('fauxtino');
+  const linha = p.locator('.rede').first();
+  await linha.waitFor({ timeout: 3000 });
+  if (await linha.locator('a[href*="instagram.com"]').count() > 0) {
+    throw new Error('fauxtino.com.br virou link');
+  }
+  await p.getByText('@fauxtino.com.br').waitFor({ timeout: 3000 });
+  await p.locator('#busca-rede').fill('');
+});
+
+await checar('Dá pra sair da lista sem login e sem aprovação de ninguém', async () => {
+  await p.getByRole('button', { name: /esse @ é meu e eu não quero estar aqui/i }).click();
+  await p.locator('#saida-handle').fill('@verdemel_');
+  await p.getByRole('button', { name: /tirar da lista/i }).click();
+  await p.getByText(/saiu da lista/i).waitFor({ timeout: 5000 });
+  await ir(p, '/gente/redes');
+  await p.locator('.rede').first().waitFor({ timeout: 3000 });
+  if (await p.locator('.rede', { hasText: '@verdemel_' }).count() > 0) {
+    throw new Error('o @ removido continua na lista');
+  }
+  await p.locator('.contagem', { hasText: /138 pessoas na lista/i })
+    .waitFor({ timeout: 3000 });
+});
+
+await checar('Quem já tem perfil não repete a etapa do começo', async () => {
+  await ir(p, '/comecar');
+  // Quem tem perfil não passa por essa etapa: é redirecionada pro formulário.
+  await p.waitForURL('**/meu-perfil', { timeout: 5000 });
+});
 
 // ------------------------------------------------- H3 projeto e H5 discussão
 await ir(p, '/projetos/novo');
@@ -498,7 +599,8 @@ await checar('Dá pra fechar o menu e continuar de onde estava', async () => {
 await checar('Nenhuma tela rola na horizontal a 390px', async () => {
   for (const rota of ['/pessoas', '/projetos', '/assuntos', '/temas',
                       '/temas/ancestralidade', '/meu-espaco', '/meu-perfil',
-                      '/eventos', '/eventos/novo', urlProjeto, urlEvento]) {
+                      '/eventos', '/eventos/novo', '/gente/redes',
+                      urlProjeto, urlEvento]) {
     await (rota.startsWith('http') ? p.goto(rota) : ir(p, rota));
     await p.waitForTimeout(250);
     const estoura = await p.evaluate(

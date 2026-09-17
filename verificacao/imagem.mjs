@@ -8,7 +8,7 @@
  */
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
-import { ir, abrirNavegador, marcarChip } from './navegador.mjs';
+import { ir, abrirNavegador, irAoFormularioDePerfil, marcarChip } from './navegador.mjs';
 
 const AQUI = dirname(fileURLToPath(import.meta.url));
 const amostra = (nome) => join(AQUI, 'amostras', nome);
@@ -26,7 +26,7 @@ await ir(p, '/criar-conta');
 await p.locator('#email').fill('foto@exemplo.org');
 await p.locator('#senha').fill('senha123');
 await p.getByRole('button', { name: /criar conta/i }).click();
-await p.waitForURL('**/meu-perfil');
+await irAoFormularioDePerfil(p);
 
 const zona = p.locator('.zona-imagem').first();
 const entrada = p.locator('.zona-imagem__entrada');

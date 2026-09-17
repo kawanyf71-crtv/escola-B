@@ -1,6 +1,6 @@
 import type {
   Area, Comentario, Discussao, Disponibilidade, EntradaEvento, Evento, Habilidade,
-  Interesse, Participante, Projeto, Tema, TipoParticipacao, Uf,
+  Interesse, Participante, PerfilSuspenso, Projeto, Tema, TipoParticipacao, Uf,
 } from '../lib/dominio';
 import type { Janela } from '../lib/datas';
 
@@ -182,6 +182,28 @@ export interface Repositorio {
   excluirEvento(id: string): Promise<void>;
   /** Alimenta os filtros de estado e cidade com o que existe de verdade. */
   locaisDeEventos(): Promise<LocalDeEventos[]>;
+
+  // --- As redes da turma (perfis suspensos) ---
+
+  /**
+   * A lista inteira, menos quem pediu pra sair. São 139 registros: cabe numa
+   * consulta só, e as duas telas que a usam (a lista pública e a busca do
+   * cadastro) filtram em memória. Não há paginação porque não há o que paginar.
+   */
+  listarPerfisSuspensos(): Promise<PerfilSuspenso[]>;
+  obterPerfilSuspenso(id: string): Promise<PerfilSuspenso | null>;
+  /** O registro que eu já disse ser meu, se houver. Alimenta o "não era eu". */
+  meuPerfilSuspenso(): Promise<PerfilSuspenso | null>;
+  /** "Sou eu": só quem está logado, e cada registro só uma vez. */
+  reivindicarPerfilSuspenso(id: string): Promise<void>;
+  /** "Não era eu": devolve o registro pra lista, do jeito que estava. */
+  devolverPerfilSuspenso(id: string): Promise<void>;
+  /**
+   * "Esse @ é meu e eu não quero estar aqui." Não pede login nem aprovação de
+   * ninguém: quem está na lista, por definição, ainda não tem conta aqui.
+   * Devolve `false` quando o @ digitado não está na lista.
+   */
+  sairDaLista(handle: string): Promise<boolean>;
 
   // --- Tema (RF-015) ---
   participantesPorTema(tema: Tema): Promise<Participante[]>;

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Campo, GrupoOpcoes } from '../components/Campos';
 import { CampoImagem } from '../components/CampoImagem';
 import { REGRA_FOTO } from '../lib/imagem';
+import { chaveDoRascunhoDePerfil } from '../lib/adiantado';
 import { Erro } from '../components/Estados';
 import {
   AREAS, DISPONIBILIDADES, HABILIDADES, TEMAS,
@@ -25,12 +26,18 @@ interface Formulario {
   instagram: string;
   linkedin: string;
   site: string;
+  /**
+   * O registro da lista da turma que a pessoa disse ser dela, vindo da etapa
+   * anterior. Vive no rascunho porque a reivindicação só acontece quando o
+   * perfil é publicado: quem desiste no meio não reivindica nada.
+   */
+  suspenso_id: string;
 }
 
 const VAZIO: Formulario = {
   nome: '', ocupacao: '', cidade: '', mini_bio: '', foto: '',
   areas: [], habilidades_oferecidas: [], temas_interesse: [], disponibilidade: [],
-  instagram: '', linkedin: '', site: '',
+  instagram: '', linkedin: '', site: '', suspenso_id: '',
 };
 
 function limparLink(valor: string): string | null {
@@ -44,7 +51,7 @@ export function MeuPerfil() {
   const editando = perfil !== null;
 
   const [form, setForm, descartarRascunho] = useRascunho<Formulario>(
-    `perfil/${sessao?.usuario_id ?? 'anon'}`,
+    chaveDoRascunhoDePerfil(sessao?.usuario_id ?? 'anon'),
     perfil
       ? {
           nome: perfil.nome, ocupacao: perfil.ocupacao, cidade: perfil.cidade,
@@ -52,7 +59,7 @@ export function MeuPerfil() {
           areas: perfil.areas, habilidades_oferecidas: perfil.habilidades_oferecidas,
           temas_interesse: perfil.temas_interesse, disponibilidade: perfil.disponibilidade,
           instagram: perfil.instagram ?? '', linkedin: perfil.linkedin ?? '',
-          site: perfil.site ?? '',
+          site: perfil.site ?? '', suspenso_id: '',
         }
       : VAZIO,
   );
@@ -106,6 +113,17 @@ export function MeuPerfil() {
         linkedin: limparLink(form.linkedin),
         site: limparLink(form.site),
       });
+      // A reivindicação vem DEPOIS de publicar: é o perfil que existe primeiro,
+      // e é ele que o registro da lista passa a apontar. Se falhar — alguém
+      // chegou antes no mesmo @ —, o perfil já está publicado e é isso que
+      // importa; a lista se acerta sozinha na próxima vez que alguém olhar.
+      if (form.suspenso_id) {
+        try {
+          await repo.reivindicarPerfilSuspenso(form.suspenso_id);
+        } catch {
+          /* o perfil é o que estava em jogo, e ele foi publicado */
+        }
+      }
       descartarRascunho();
       await recarregarPerfil();
       navegar('/pessoas');
@@ -130,6 +148,16 @@ export function MeuPerfil() {
 
       <section className="faixa">
         <div className="faixa__interno" style={{ maxWidth: '40rem' }}>
+          {form.suspenso_id && !editando && (
+            <div className="ja-esperavam">
+              <p className="ja-esperavam__titulo">A gente já tava te esperando.</p>
+              <p>
+                Achamos você na lista. Confere se tá tudo certo e completa o resto —
+                falta pouco.
+              </p>
+            </div>
+          )}
+
           <form onSubmit={enviar} noValidate>
             {falha && <Erro mensagem={falha} />}
 

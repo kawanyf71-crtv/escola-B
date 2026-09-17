@@ -193,6 +193,40 @@ export interface Interesse {
   demo?: boolean;
 }
 
+/**
+ * Alguém que a turma deixou no grupo e que ainda não chegou aqui. Não é conta,
+ * não é perfil: é um @ com um lugar guardado. Quando a pessoa cria o perfil
+ * dela, o registro é reivindicado e para de aparecer na busca do cadastro.
+ *
+ * O que este cadastro NÃO faz, de propósito: não verifica identidade de
+ * ninguém, não importa foto, bio nem seguidores do Instagram e não manda
+ * convite por e-mail nem por DM. Quem diz que é a pessoa, é a pessoa.
+ */
+export interface PerfilSuspenso {
+  id: string;
+  /** Algumas entradas do grupo só têm o @; aí o @ vira o rótulo na tela. */
+  nome: string | null;
+  uf: Uf | null;
+  /** Detalhe de região em texto livre: "Recôncavo", "Zona Leste", "Parnaíba". */
+  local: string | null;
+  /** Sem @ e em minúsculas. A interface é que escreve o @ na frente. */
+  handles: string[];
+  ocupacao: string | null;
+  linkedin: string | null;
+  /**
+   * Handles que aparecem como texto e não viram link. Existe por um caso só:
+   * `fauxtino.com.br` parece endereço de site, não usuário do Instagram, e
+   * mandar alguém pra um link errado é pior do que não mandar.
+   */
+  nao_linkar: string[];
+  /** Nota de quem montou a lista. Nunca aparece na interface. */
+  conferir: string | null;
+  /** Id do Participante que disse "sou eu". Null enquanto ninguém chegou. */
+  reivindicado_por: string | null;
+  /** Marcado por quem pediu pra sair. Some de toda a interface. */
+  removido: boolean;
+}
+
 /** RF-008: intersecao entre o que ofereco e o que o projeto procura. */
 export function correspondencia(
   habilidades: Habilidade[] | undefined,

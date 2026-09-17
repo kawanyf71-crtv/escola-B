@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Carregando, Erro } from '../components/Estados';
 import { CardEvento, CardProjeto } from '../components/Cards';
+import { comArroba, rotuloDaRede } from '../lib/redes';
 import { repo } from '../data';
 import { useConsulta } from '../lib/useConsulta';
 import { useSessao } from '../lib/sessao';
@@ -22,9 +23,12 @@ export function MeuEspaco() {
   const [confirmando, setConfirmando] = useState(false);
   const [excluindo, setExcluindo] = useState(false);
   const [mexendoNoExemplo, setMexendoNoExemplo] = useState(false);
+  const [devolvendo, setDevolvendo] = useState(false);
   const [falhaExemplo, setFalhaExemplo] = useState<string | null>(null);
 
   const temExemplo = useConsulta(() => repo.temDadosDeExemplo(), []);
+  // O @ da lista da turma que eu disse ser meu, se eu disse.
+  const meuArroba = useConsulta(() => repo.meuPerfilSuspenso(), []);
 
   /**
    * Carrega ou apaga o lote de demonstração. Só mexe em registros com
@@ -43,6 +47,17 @@ export function MeuEspaco() {
       setFalhaExemplo(e instanceof Error ? e.message : 'Não deu pra fazer isso.');
     } finally {
       setMexendoNoExemplo(false);
+    }
+  }
+
+  /** "Não era eu": devolve o @ pra lista, do jeito que ele estava. */
+  async function devolverArroba(id: string) {
+    setDevolvendo(true);
+    try {
+      await repo.devolverPerfilSuspenso(id);
+      meuArroba.recarregar();
+    } finally {
+      setDevolvendo(false);
     }
   }
 
@@ -212,6 +227,33 @@ export function MeuEspaco() {
           </div>
         </div>
       </section>
+
+      {meuArroba.dados && (
+        <section className="faixa">
+          <div className="faixa__interno" style={{ maxWidth: '36rem' }}>
+            <h2>Seu @ na lista da turma</h2>
+            <p className="miudo">
+              Quando você criou seu perfil, disse que{' '}
+              <strong className="destaque">
+                {meuArroba.dados.handles[0]
+                  ? comArroba(meuArroba.dados.handles[0])
+                  : rotuloDaRede(meuArroba.dados)}
+              </strong>{' '}
+              era você. Se não era, devolve pra lista — quem for dona acha depois.
+            </p>
+            <div className="acoes">
+              <button type="button" className="botao botao--contorno botao--pequeno"
+                      onClick={() => devolverArroba(meuArroba.dados!.id)}
+                      disabled={devolvendo}>
+                {devolvendo ? 'Devolvendo…' : 'Não era eu'}
+              </button>
+              <Link className="botao botao--contorno botao--pequeno" to="/gente/redes">
+                Ver a lista
+              </Link>
+            </div>
+          </div>
+        </section>
+      )}
 
       <section className="faixa">
         <div className="faixa__interno" style={{ maxWidth: '36rem' }}>

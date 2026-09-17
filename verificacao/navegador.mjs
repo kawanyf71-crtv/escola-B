@@ -44,14 +44,33 @@ export async function marcarChip(pagina, legenda, valor) {
   await grupo.locator('label.opcao', { hasText: new RegExp(`^${valor}$`) }).first().click();
 }
 
+/**
+ * Depois de criar a conta o caminho passa por /comecar, a etapa que pergunta se
+ * a pessoa ja estava esperada na lista de @ da turma. Com `daLista`, procura o
+ * termo e clica em "sou eu"; sem ele, segue pro formulario em branco. Nos dois
+ * casos termina no formulario de perfil.
+ */
+export async function irAoFormularioDePerfil(pagina, daLista = null) {
+  await pagina.waitForURL('**/comecar');
+  if (daLista) {
+    await pagina.locator('#busca-comecar').fill(daLista);
+    await pagina.locator('.rede').first()
+      .getByRole('button', { name: /^sou eu$/i }).click({ timeout: 5000 });
+  } else {
+    await pagina.getByRole('link', { name: /começar do zero/i }).click();
+  }
+  await pagina.waitForURL('**/meu-perfil');
+}
+
 /** Cria conta e publica um perfil completo, devolvendo o e-mail usado. */
 export async function criarParticipante(pagina, { email, nome, ocupacao, cidade, bio,
-                                                  area, habilidades, temas = [] }) {
+                                                  area, habilidades, temas = [],
+                                                  daLista = null }) {
   await ir(pagina, '/criar-conta');
   await pagina.locator('#email').fill(email);
   await pagina.locator('#senha').fill('senha123');
   await pagina.getByRole('button', { name: /criar conta/i }).click();
-  await pagina.waitForURL('**/meu-perfil');
+  await irAoFormularioDePerfil(pagina, daLista);
   await pagina.locator('#nome').fill(nome);
   await pagina.locator('#ocupacao').fill(ocupacao);
   await pagina.locator('#cidade').fill(cidade);

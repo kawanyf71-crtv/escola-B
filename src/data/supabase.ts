@@ -1,7 +1,7 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import type {
-  Comentario, Discussao, Evento, Interesse, Participante, Projeto, Tema,
-  TipoParticipacao, Uf,
+  Comentario, Discussao, Evento, Interesse, Participante, PerfilSuspenso, Projeto,
+  Tema, TipoParticipacao, Uf,
 } from '../lib/dominio';
 import { fimDaJanela, hoje } from '../lib/datas';
 import type {
@@ -18,6 +18,11 @@ const DISCUSSAO_COMPLETA =
   `*, autor:participantes!discussoes_autor_id_fkey(${CAMPOS_RESUMO}),` +
   ' projeto:projetos!discussoes_projeto_origem_id_fkey(id,nome),' +
   ' participacoes_discussao(count)';
+
+/* A coluna `ordem` fica de fora: e detalhe de armazenamento, existe so pra
+   lista sair na ordem em que ela chegou do grupo. */
+const CAMPOS_SUSPENSO = 'id,nome,uf,local,handles,ocupacao,linkedin,conferir,'
+  + 'nao_linkar,reivindicado_por,removido';
 
 /** PostgREST devolve `[{ count: n }]` para agregacoes aninhadas. */
 type Contagem = { count: number }[] | null;
@@ -477,6 +482,89 @@ export class RepositorioSupabase implements Repositorio {
         cidades: [...cidades].sort((a, z) => a.localeCompare(z, 'pt-BR')),
       }))
       .sort((a, z) => a.estado.localeCompare(z.estado));
+  }
+
+  // --- As redes da turma (perfis suspensos) ---
+
+  /**
+   * A tabela é pública de leitura, inclusive pra quem não entrou: quem está na
+   * lista, por definição, ainda não tem conta aqui, e precisa conseguir achar o
+   * próprio @ pra pedir pra sair. Quem foi removido some pela própria política
+   * de RLS, e não por este filtro.
+   */
+  async listarPerfisSuspensos(): Promise<PerfilSuspenso[]> {
+    const { data, error } = await this.cliente
+      .from('perfis_suspensos').select(CAMPOS_SUSPENSO)
+      .eq('removido', false).order('ordem', { ascending: true });
+    erro(error, 'Não deu pra buscar a lista da turma');
+    return (data ?? []) as unknown as PerfilSuspenso[];
+  }
+
+  async obterPerfilSuspenso(id: string): Promise<PerfilSuspenso | null> {
+    const { data, error } = await this.cliente
+      .from('perfis_suspensos').select(CAMPOS_SUSPENSO)
+      .eq('id', id).eq('removido', false).maybeSingle();
+    erro(error, 'Não deu pra buscar esse @');
+    return (data as unknown as PerfilSuspenso) ?? null;
+  }
+
+  async meuPerfilSuspenso(): Promise<PerfilSuspenso | null> {
+    const sessao = await this.sessaoAtual();
+    if (!sessao) return null;
+    const { data, error } = await this.cliente
+      .from('perfis_suspensos').select(CAMPOS_SUSPENSO)
+      .eq('reivindicado_por', sessao.usuario_id).eq('removido', false).maybeSingle();
+    erro(error, 'Não deu pra buscar seu @ na lista');
+    return (data as unknown as PerfilSuspenso) ?? null;
+  }
+
+  /**
+   * "Sou eu". A política de RLS é quem garante que ninguém tome o @ de outra
+   * pessoa: o update só enxerga registro sem dono ou com o dono sendo você.
+   * Uma pessoa segura um @ só — a coluna é única —, então soltar o anterior
+   * vem antes de pegar o novo.
+   */
+  async reivindicarPerfilSuspenso(id: string): Promise<void> {
+    const usuario = await this.exigirUsuario();
+    await this.cliente.from('perfis_suspensos')
+      .update({ reivindicado_por: null })
+      .eq('reivindicado_por', usuario).neq('id', id);
+    const { data, error } = await this.cliente
+      .from('perfis_suspensos').update({ reivindicado_por: usuario })
+      .eq('id', id).is('reivindicado_por', null).select('id');
+    erro(error, 'Não deu pra marcar esse @ como seu');
+    if ((data ?? []).length === 0) {
+      // Ou alguém chegou antes, ou o registro saiu da lista no meio do caminho.
+      const meu = await this.meuPerfilSuspenso();
+      if (meu?.id !== id) throw new Error('Alguém já disse que esse @ é dela.');
+    }
+  }
+
+  async devolverPerfilSuspenso(id: string): Promise<void> {
+    const usuario = await this.exigirUsuario();
+    const { error } = await this.cliente
+      .from('perfis_suspensos').update({ reivindicado_por: null })
+      .eq('id', id).eq('reivindicado_por', usuario);
+    erro(error, 'Não deu pra devolver esse @ pra lista');
+  }
+
+  /**
+   * "Esse @ é meu e eu não quero estar aqui." Sem login e sem aprovação: é o
+   * que a lista pede em troca de existir sem ninguém ter pedido pra entrar.
+   *
+   * Vai por uma função no banco e não por update direto, e não é preferência:
+   * o Postgres exige que a linha depois do update continue visível pela
+   * política de SELECT, e a política esconde justamente o que foi removido —
+   * um update direto seria recusado. A função é a única porta que escreve
+   * `removido`, e escreve só isso.
+   */
+  async sairDaLista(handle: string): Promise<boolean> {
+    const procurado = handle.trim().toLowerCase();
+    if (!procurado) return false;
+    const { data, error } = await this.cliente
+      .rpc('sair_da_lista', { p_handle: procurado });
+    erro(error, 'Não deu pra tirar esse @ da lista');
+    return data === true;
   }
 
   // --- Tema ---

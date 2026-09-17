@@ -4,6 +4,7 @@ import {
 } from 'react-router-dom';
 import { Layout } from './components/Layout';
 import { CriarConta, Entrar } from './pages/Acesso';
+import { Comecar } from './pages/Comecar';
 import { Discussao } from './pages/Discussao';
 import { Discussoes } from './pages/Discussoes';
 import { Entrada } from './pages/Entrada';
@@ -20,6 +21,7 @@ import { Perfil } from './pages/Perfil';
 import { Pessoas } from './pages/Pessoas';
 import { Projeto } from './pages/Projeto';
 import { Projetos } from './pages/Projetos';
+import { Redes } from './pages/Redes';
 import { Tema } from './pages/Tema';
 import { Temas } from './pages/Temas';
 import { ProvedorSessao, useSessao } from './lib/sessao';
@@ -42,8 +44,11 @@ function Espera() {
 }
 
 /**
- * RF-002: quem entrou mas ainda não tem perfil vai direto ao formulário, não a
- * uma home vazia. RN-009: só quem tem perfil publicado vê a rede.
+ * RF-002: quem entrou mas ainda não tem perfil não cai numa home vazia — vai
+ * direto pro começo do cadastro. Desde a lista de @ da turma, esse começo é
+ * `/comecar`, que pergunta se a pessoa já estava esperada antes de abrir o
+ * formulário; quem não está na lista chega ao formulário em branco por um
+ * clique. RN-009: só quem tem perfil publicado vê a rede.
  */
 function Protegida({ children, exigePerfil = true }: {
   children: React.ReactNode;
@@ -52,7 +57,7 @@ function Protegida({ children, exigePerfil = true }: {
   const { sessao, perfil, carregando } = useSessao();
   if (carregando) return <Espera />;
   if (!sessao) return <Navigate to="/entrar" replace />;
-  if (exigePerfil && !perfil) return <Navigate to="/meu-perfil" replace />;
+  if (exigePerfil && !perfil) return <Navigate to="/comecar" replace />;
   return <>{children}</>;
 }
 
@@ -60,7 +65,7 @@ function Protegida({ children, exigePerfil = true }: {
 function SoVisitante({ children }: { children: React.ReactNode }) {
   const { sessao, perfil, carregando } = useSessao();
   if (carregando) return <Espera />;
-  if (sessao && !perfil) return <Navigate to="/meu-perfil" replace />;
+  if (sessao && !perfil) return <Navigate to="/comecar" replace />;
   if (sessao) return <Navigate to="/pessoas" replace />;
   return <>{children}</>;
 }
@@ -76,6 +81,15 @@ function Rotas() {
 
         <Route path="/inicio" element={<Protegida><Inicio /></Protegida>} />
 
+        {/* A lista de @ da turma é a única tela aberta de dentro do site: quem
+            está nela, por definição, ainda não tem conta aqui, e precisa
+            conseguir achar o próprio @ — inclusive pra pedir pra sair. */}
+        <Route path="/gente/redes" element={<Redes />} />
+
+        <Route
+          path="/comecar"
+          element={<Protegida exigePerfil={false}><Comecar /></Protegida>}
+        />
         <Route
           path="/meu-perfil"
           element={<Protegida exigePerfil={false}><MeuPerfil /></Protegida>}
