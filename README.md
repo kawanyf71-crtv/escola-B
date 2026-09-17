@@ -140,6 +140,20 @@ por padrão, mas a Vercel exporta `VERCEL=1` durante o build e ele troca para
 absoluto. Sem isso, `./assets/x.js` sairia de dentro de `/eventos/abc` e a página
 abriria em branco em qualquer rota que não fosse a raiz.
 
+### Contagem de visitantes
+
+`@vercel/analytics` está ligado, mas **só no build que a Vercel faz** — em
+`npm run dev` e no build da prévia ele nem entra no pacote. O painel fica em
+**Análises**, no projeto da Vercel, e leva alguns minutos depois do primeiro
+deploy pra mostrar número.
+
+A instrução que o painel mostra por padrão é a do Next.js
+(`@vercel/analytics/next`); aqui é Vite, então o import é
+`@vercel/analytics/react`. Já está feito em `src/App.tsx` — não precisa mexer.
+
+Conta visita e página, sem cookie e sem identificar ninguém: não dá pra ligar
+uma visita a uma pessoa da rede, e nada disso passa pelo Supabase.
+
 ### 4. Voltar no Supabase
 
 Com o domínio em mãos, **Authentication → URL Configuration**: ponha o endereço

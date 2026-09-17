@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { Analytics } from '@vercel/analytics/react';
 import {
   BrowserRouter, HashRouter, Link, Navigate, Route, Routes, useLocation,
 } from 'react-router-dom';
@@ -161,6 +162,11 @@ export function App() {
       <ProvedorSessao>
         <Rotas />
       </ProvedorSessao>
+      {/* Contagem de visitas da Vercel. Conta quanta gente abriu e quais
+          páginas, sem cookie e sem saber quem é — não dá pra ligar uma visita a
+          uma pessoa da rede, e nada disso entra no banco. Só roda no build que
+          a Vercel faz: em desenvolvimento e na prévia não há o que contar. */}
+      {__NA_VERCEL__ && <Analytics />}
     </Roteador>
   );
 }

@@ -9,3 +9,6 @@ interface ImportMetaEnv {
 interface ImportMeta {
   readonly env: ImportMetaEnv;
 }
+
+/** Verdadeiro so no build que a Vercel faz. Definido em vite.config.ts. */
+declare const __NA_VERCEL__: boolean;
